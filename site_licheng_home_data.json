@@ -1,0 +1,71 @@
+{
+  "hero": {
+    "name": "LeeDaud",
+    "tagline": "达人于道，混混殊俗。",
+    "avatar": "images/avatar.jpg"
+  },
+  "now": {
+    "summary": "专注于 AI Agent 开发和个人系统构建",
+    "updated": "2026-01-16",
+    "detailLink": "https://notes.licheng.website/now"
+  },
+  "featuredProjects": [
+    {
+      "name": "长寿习惯",
+      "description": "面向长寿爱好者的数字习惯教练",
+      "link": "https://longevityhabits.licheng.website",
+      "status": "online",
+      "tags": ["React", "TypeScript"]
+    },
+    {
+      "name": "时间轴日记",
+      "description": "简洁的个人日记与时间记录工具",
+      "link": "https://timelinejournal.licheng.website",
+      "status": "online",
+      "tags": ["日记", "时间管理"]
+    },
+    {
+      "name": "LibreTV",
+      "description": "自由开放的视频聚合平台",
+      "link": "https://libretv.licheng.website",
+      "status": "online",
+      "tags": ["Vue.js", "Node.js"]
+    }
+  ],
+  "recentNotes": [
+    {
+      "title": "长期主义在信息过载时代的实践",
+      "summary": "当每天都有新的热点和机会，如何坚持长期主义？",
+      "date": "2025-01-10",
+      "link": "https://notes.licheng.website/notes/long-term-thinking"
+    },
+    {
+      "title": "为什么我要开发个人用的 AI Agent",
+      "summary": "市面上有那么多 AI 工具，为什么还要自己做？",
+      "date": "2025-01-05",
+      "link": "https://notes.licheng.website/notes/ai-agent-personal"
+    },
+    {
+      "title": "关于成长的思考",
+      "summary": "真正的成长不是变得完美，而是学会与不完美共舞",
+      "date": "2024-12-15",
+      "link": "https://notes.licheng.website/notes/growth-not-perfection"
+    }
+  ],
+  "navigation": {
+    "projectsListUrl": "https://notes.licheng.website/projects",
+    "notesListUrl": "https://notes.licheng.website/notes",
+    "nowUrl": "https://notes.licheng.website/now",
+    "gardenUrl": "https://notes.licheng.website"
+  },
+  "contact": {
+    "wechat": "惊鸿",
+    "publicAccount": "李怂",
+    "github": "https://github.com/LeeDaud"
+  },
+  "footer": {
+    "copyright": "2024-2026 LeeDaud",
+    "quote": "光而不耀，静水流深",
+    "githubUrl": "https://github.com/LeeDaud"
+  }
+}

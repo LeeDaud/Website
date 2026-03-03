@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LeeDaud的个人系统入口 - 长期主义者、技术探索者、持续写作者">
+    <meta name="keywords" content="李怂,LeeDaud,个人主页,技术博客,INTJ,长期主义">
+    <meta name="author" content="LeeDaud">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="LeeDaud">
+    <meta property="og:description" content="构建个人系统，践行长期主义">
+    <meta property="og:image" content="images/avatar.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title>LeeDaud</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+        </label>
+    </div>
+
+    <main class="home">
+        <!-- Hero: 我是谁 -->
+        <header class="home-header">
+            <div class="avatar-container">
+                <img src="images/avatar.jpg" alt="LeeDaud" class="avatar-image" id="hero-avatar">
+            </div>
+            <h1 id="hero-name">LeeDaud</h1>
+            <p class="home-tagline" id="hero-tagline">构建个人系统，践行长期主义</p>
+        </header>
+
+        <!-- Now/Status: 我在做什么 -->
+        <section class="home-section home-now">
+            <h2 class="section-label"><span class="status-dot status-online"></span>现在</h2>
+            <p class="now-text" id="now-summary">加载中...</p>
+            <div class="section-meta">
+                <span class="meta-date" id="now-updated"></span>
+                <a href="#" class="link-arrow" id="now-link" target="_blank">查看详情 →</a>
+            </div>
+        </section>
+
+        <!-- Featured Projects: 精选项目 -->
+        <section class="home-section">
+            <div class="section-header">
+                <h2 class="section-label">精选项目</h2>
+                <a href="#" class="link-arrow" id="projects-all-link" target="_blank">全部项目 →</a>
+            </div>
+            <div class="home-grid" id="projects-grid">
+                <!-- 由 JS 动态渲染 -->
+            </div>
+        </section>
+
+        <!-- Recent Notes: 最近思考 -->
+        <section class="home-section">
+            <div class="section-header">
+                <h2 class="section-label">最近思考</h2>
+                <a href="#" class="link-arrow" id="notes-all-link" target="_blank">全部笔记 →</a>
+            </div>
+            <div class="home-notes" id="notes-list">
+                <!-- 由 JS 动态渲染 -->
+            </div>
+        </section>
+
+        <!-- 导航入口 -->
+        <section class="home-section">
+            <h2 class="section-label">探索更多</h2>
+            <div class="home-nav home-nav-2col">
+                <a href="#" class="nav-card" id="nav-garden" target="_blank">
+                    <div class="nav-icon">📝</div>
+                    <h3>数字花园</h3>
+                    <p>笔记、思考、项目文档</p>
+                </a>
+                <a class='nav-card' href='/about'>
+                    <div class="nav-icon">👤</div>
+                    <h3>关于我</h3>
+                    <p>背景、方向、联系方式</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-contact" id="footer-contact">
+            <!-- 由 JS 动态渲染 -->
+        </div>
+        <p id="footer-copyright"></p>
+        <p class="footer-quote" id="footer-quote"></p>
+    </footer>
+
+    <script src="script.js" defer></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v67327c56f0bb4ef8b305cae61679db8f1769101564043" integrity="sha512-rdcWY47ByXd76cbCFzznIcEaCN71jqkWBBqlwhF1SY7KubdLKZiEGeP7AyieKZlGP9hbY/MhGrwXzJC/HulNyg==" data-cf-beacon='{"version":"2024.11.0","token":"572f5ecb75d34c898b0b12b544f50977","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿:root {
+  --el-color-primary: #000000;
+  --el-color-primary-light-3: #303133;
+  --el-color-primary-light-5: #606266;
+  --el-color-primary-light-7: #909399;
+  --el-color-primary-light-8: #c0c4cc;
+  --el-color-primary-light-9: #e4e7ed;
+  --el-color-primary-dark-2: #000000;
+
+  --el-text-color-primary: #303133;
+  --el-text-color-regular: #606266;
+  --el-text-color-secondary: #909399;
+  --el-text-color-placeholder: #c0c4cc;
+
+  --el-border-color: #e4e7ed;
+  --el-border-color-light: #ebeef5;
+  --el-border-color-lighter: #f2f6fc;
+
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f5f7fa;
+  --el-fill-color: #f5f7fa;
+  --el-fill-color-light: #fafafa;
+
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 12px;
+}
+
+html.dark {
+  --el-color-primary: #4f8cff;
+  --el-color-primary-light-3: #6ca2ff;
+  --el-color-primary-light-5: #86b3ff;
+  --el-color-primary-light-7: #a9c8ff;
+  --el-color-primary-light-8: #bfd7ff;
+  --el-color-primary-light-9: #d9e8ff;
+  --el-color-primary-dark-2: #3a78f0;
+
+  --el-text-color-primary: #e5e7eb;
+  --el-text-color-regular: #c3c8d1;
+  --el-text-color-secondary: #8d95a3;
+  --el-text-color-placeholder: #6f7785;
+
+  --el-border-color: #2a2f3a;
+  --el-border-color-light: #323845;
+  --el-border-color-lighter: #3b4250;
+
+  --el-bg-color: #171a21;
+  --el-bg-color-page: #0f1115;
+  --el-fill-color: #12151c;
+  --el-fill-color-light: #1f2430;
+}
+
+.el-button {
+  font-weight: 500;
+}
+
+.el-card {
+  border-radius: 10px;
+  border-color: var(--el-border-color);
+  box-shadow: none;
+}
+
+.el-table th {
+  font-weight: 600;
+}
+
+/* Tag */
+.el-tag {
+  --el-tag-bg-color: #f5f7fa;
+  --el-tag-border-color: #909399;
+  --el-tag-text-color: #303133;
+  --el-tag-hover-color: #606266;
+  font-weight: 500;
+}
+
+html.dark .el-tag {
+  --el-tag-bg-color: #1f2430;
+  --el-tag-border-color: #3b4250;
+  --el-tag-text-color: #d7dbe3;
+  --el-tag-hover-color: #e5e7eb;
+}
+
+.el-tag--success,
+.el-tag--warning,
+.el-tag--danger,
+.el-tag--info {
+  --el-tag-bg-color: #f5f7fa;
+  --el-tag-border-color: #909399;
+  --el-tag-text-color: #303133;
+}
+
+html.dark .el-tag--success,
+html.dark .el-tag--warning,
+html.dark .el-tag--danger,
+html.dark .el-tag--info {
+  --el-tag-bg-color: #1f2430;
+  --el-tag-border-color: #3b4250;
+  --el-tag-text-color: #d7dbe3;
+}
