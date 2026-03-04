@@ -203,3 +203,149 @@ html.dark .el-pager li.is-active {
   background: #2f6cff !important;
   border-color: #2f6cff !important;
 }
+
+html.dark .el-tabs__nav-wrap::after {
+  background-color: var(--admin-border) !important;
+}
+
+html.dark .el-tabs__item {
+  color: var(--admin-text3) !important;
+}
+
+html.dark .el-tabs__item:hover,
+html.dark .el-tabs__item.is-active {
+  color: var(--admin-text) !important;
+}
+
+html.dark .el-tabs__active-bar {
+  background-color: #2f6cff !important;
+}
+
+html.dark .el-tabs--border-card,
+html.dark .el-tabs--border-card > .el-tabs__header,
+html.dark .el-tabs--border-card > .el-tabs__content {
+  background: var(--admin-card) !important;
+  border-color: var(--admin-border) !important;
+}
+
+html.dark .el-tabs--card > .el-tabs__header .el-tabs__item {
+  background: var(--admin-soft-bg);
+  border-color: var(--admin-border);
+}
+
+html.dark .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+  background: var(--admin-card);
+}
+
+html.dark .el-descriptions,
+html.dark .el-descriptions__body,
+html.dark .el-descriptions__table {
+  background: var(--admin-card) !important;
+}
+
+html.dark .el-descriptions__table.is-bordered .el-descriptions__cell {
+  border-color: var(--admin-border) !important;
+}
+
+html.dark .el-descriptions__table.is-bordered .el-descriptions__cell.is-bordered-label {
+  background: var(--admin-soft-bg) !important;
+}
+
+html.dark .el-descriptions__table.is-bordered .el-descriptions__cell:not(.is-bordered-label) {
+  background: var(--admin-card) !important;
+}
+
+html.dark .el-radio-button__inner,
+html.dark .el-checkbox__inner,
+html.dark .el-switch__core,
+html.dark .el-input-number__decrease,
+html.dark .el-input-number__increase {
+  background: var(--admin-soft-bg) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-text2) !important;
+}
+
+html.dark .el-radio-button__original-radio:checked + .el-radio-button__inner {
+  background: #2f6cff !important;
+  border-color: #2f6cff !important;
+  color: #ffffff !important;
+}
+
+html.dark .el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: #2f6cff !important;
+  border-color: #2f6cff !important;
+}
+
+html.dark .el-checkbox__label {
+  color: var(--admin-text2) !important;
+}
+
+html.dark .el-select-dropdown,
+html.dark .el-picker-panel,
+html.dark .el-time-panel,
+html.dark .el-popper {
+  background: var(--admin-card) !important;
+  border-color: var(--admin-border) !important;
+}
+
+html.dark .el-select-dropdown__item,
+html.dark .el-picker-panel__icon-btn,
+html.dark .el-date-table td .el-date-table-cell__text,
+html.dark .el-month-table td .cell,
+html.dark .el-year-table td .cell {
+  color: var(--admin-text2) !important;
+}
+
+html.dark .el-select-dropdown__item.hover,
+html.dark .el-select-dropdown__item:hover {
+  background: var(--admin-hover) !important;
+}
+
+html.dark .el-upload-dragger {
+  background: var(--admin-soft-bg) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-text2) !important;
+}
+
+html.dark .el-divider {
+  border-color: var(--admin-border) !important;
+}
+
+html.dark .el-divider__text {
+  background: var(--admin-card) !important;
+  color: var(--admin-text3) !important;
+}
+
+html.dark .article-preview,
+html.dark .msg-content,
+html.dark .comment-content {
+  color: var(--admin-text) !important;
+}
+
+html.dark .article-preview pre,
+html.dark .article-preview code,
+html.dark .reply-quote,
+html.dark .reply-original {
+  background: var(--admin-soft-bg) !important;
+}
+
+html.dark .reply-quote,
+html.dark .reply-original {
+  border-left-color: var(--admin-border) !important;
+  color: var(--admin-text2) !important;
+}
+
+html.dark .reply-author,
+html.dark .page-heading,
+html.dark .link-href:hover {
+  color: var(--admin-text) !important;
+}
+
+html.dark .link-href {
+  color: var(--admin-text2) !important;
+}
+
+html.dark .logo-empty,
+html.dark .cover-empty {
+  color: var(--admin-text3) !important;
+}

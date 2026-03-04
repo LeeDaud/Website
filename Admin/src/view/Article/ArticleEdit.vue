@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useArticleStore } from '@/stores'
 import { uploadFile } from '@/api/settings'
@@ -9,6 +9,9 @@ import 'md-editor-v3/lib/style.css'
 const route = useRoute()
 const router = useRouter()
 const articleStore = useArticleStore()
+const isDarkMode = ref(document.documentElement.classList.contains('dark'))
+const editorTheme = computed(() => (isDarkMode.value ? 'dark' : 'light'))
+let themeObserver = null
 
 const isEdit = computed(() => !!route.params.id)
 
@@ -152,6 +155,14 @@ onBeforeRouteLeave(async () => {
 })
 
 onMounted(async () => {
+  themeObserver = new MutationObserver(() => {
+    isDarkMode.value = document.documentElement.classList.contains('dark')
+  })
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  })
+
   await Promise.all([articleStore.fetchCategories(), articleStore.fetchTags()])
   if (isEdit.value) {
     const res = await articleStore.fetchDetail(route.params.id)
@@ -170,6 +181,13 @@ onMounted(async () => {
     }
   }
   takeSnapshot()
+})
+
+onUnmounted(() => {
+  if (themeObserver) {
+    themeObserver.disconnect()
+    themeObserver = null
+  }
 })
 </script>
 
@@ -213,6 +231,7 @@ onMounted(async () => {
       <div class="editor-panel">
         <MdEditor
           v-model="form.contentMarkdown"
+          :theme="editorTheme"
           preview-theme="github"
           :toolbars-exclude="['mermaid', 'katex', 'github']"
           class="md-editor-fill"
@@ -315,13 +334,13 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f0f2f5;
+  background: var(--admin-bg);
 }
 
 /* ---- 顶栏 ---- */
 .edit-topbar {
-  background: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  background: var(--admin-card);
+  border-bottom: 1px solid var(--admin-border);
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -331,7 +350,7 @@ onMounted(async () => {
 .edit-title {
   font-size: 15px;
   font-weight: 600;
-  color: #303133;
+  color: var(--admin-text);
 }
 .edit-actions {
   display: flex;
@@ -341,9 +360,9 @@ onMounted(async () => {
 
 /* ---- 标题行 ---- */
 .title-row {
-  background: #fff;
+  background: var(--admin-card);
   padding: 10px 16px;
-  border-bottom: 1px solid #e4e7ed;
+  border-bottom: 1px solid var(--admin-border);
   flex-shrink: 0;
 }
 .title-input :deep(.el-input__inner) {
@@ -382,13 +401,48 @@ onMounted(async () => {
   border: none;
   border-radius: 0;
   height: 100%;
+  background: var(--admin-card);
+  --md-color: var(--admin-text);
+  --md-hover-color: var(--admin-text);
+  --md-bk-color: var(--admin-card);
+  --md-bk-color-outstand: var(--admin-soft-bg);
+  --md-bk-hover-color: var(--admin-hover);
+  --md-border-color: var(--admin-border);
+  --md-border-hover-color: var(--admin-text3);
+  --md-border-active-color: #2f6cff;
+  --md-scrollbar-bg-color: var(--admin-soft-bg);
+  --md-scrollbar-thumb-color: var(--admin-border);
+  --md-scrollbar-thumb-hover-color: var(--admin-text3);
+  --md-scrollbar-thumb-active-color: var(--admin-text2);
 }
 .editor-panel :deep(.md-editor-toolbar-wrapper) {
-  border-bottom: 1px solid #e4e7ed;
-  background: #fafafa;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-soft-bg);
+}
+.editor-panel :deep(.md-editor-input-wrapper),
+.editor-panel :deep(.md-editor-preview-wrapper) {
+  background: var(--admin-card);
+}
+.editor-panel :deep(.md-editor-input),
+.editor-panel :deep(.md-editor-preview) {
+  background: transparent;
+  color: var(--admin-text);
 }
 .editor-panel :deep(.md-editor-content) {
   font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+}
+.editor-panel :deep(.md-editor-footer) {
+  background: var(--admin-soft-bg);
+  border-top: 1px solid var(--admin-border);
+}
+.editor-panel :deep(.md-editor-preview blockquote) {
+  background: var(--admin-soft-bg);
+  border-inline-start-color: var(--admin-border);
+  color: var(--admin-text2);
+}
+.editor-panel :deep(.md-editor-preview pre),
+.editor-panel :deep(.md-editor-preview code) {
+  background: var(--admin-soft-bg);
 }
 
 /* 侧边栏 */
@@ -396,8 +450,8 @@ onMounted(async () => {
   width: 230px;
   flex-shrink: 0;
   overflow-y: auto;
-  background: #fff;
-  border-left: 1px solid #e4e7ed;
+  background: var(--admin-card);
+  border-left: 1px solid var(--admin-border);
   padding: 14px 12px;
 }
 .aside-section {
@@ -406,7 +460,7 @@ onMounted(async () => {
 .aside-label {
   font-size: 12px;
   font-weight: 600;
-  color: #606266;
+  color: var(--admin-text2);
   margin-bottom: 5px;
 }
 .req {
@@ -427,14 +481,14 @@ onMounted(async () => {
 .cover-placeholder {
   width: 100%;
   height: 78px;
-  border: 1px dashed #d3d6db;
+  border: 1px dashed var(--admin-border);
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: #909399;
+  color: var(--admin-text3);
   font-size: 12px;
   cursor: pointer;
   transition:
@@ -442,10 +496,18 @@ onMounted(async () => {
     color 0.2s;
 }
 .cover-placeholder:hover {
-  border-color: #303133;
-  color: #303133;
+  border-color: var(--admin-text2);
+  color: var(--admin-text);
 }
 .cover-placeholder .iconfont {
   font-size: 22px;
+}
+
+:global(html.dark) .article-edit :deep(.md-editor-preview),
+:global(html.dark) .article-edit :deep(.md-editor-input-wrapper),
+:global(html.dark) .article-edit :deep(.md-editor-preview-wrapper),
+:global(html.dark) .article-edit :deep(.md-editor-input) {
+  background: var(--admin-card);
+  color: var(--admin-text);
 }
 </style>

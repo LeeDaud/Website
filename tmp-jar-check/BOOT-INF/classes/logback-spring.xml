@@ -3,7 +3,7 @@
 
     <!-- 定义变量 -->
     <property name="LOG_HOME" value="/opt/app/logs" />
-    <property name="APP_NAME" value="LeeDaud" />
+    <property name="APP_NAME" value="feitwnd" />
     <property name="MAX_HISTORY" value="30" />
     <property name="MAX_FILE_SIZE" value="10MB" />
     <property name="TOTAL_SIZE_CAP" value="1GB" />
@@ -11,7 +11,7 @@
     <!-- 控制台输出（所有环境通用） -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -28,7 +28,7 @@
                 <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{0} - %msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -45,7 +45,7 @@
                 <totalSizeCap>500MB</totalSizeCap>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{0} - %msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -59,7 +59,7 @@
                 <totalSizeCap>2GB</totalSizeCap>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{0} - %msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{ip:-}] %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -72,7 +72,7 @@
                 <maxFileSize>10MB</maxFileSize>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         </appender>
 
