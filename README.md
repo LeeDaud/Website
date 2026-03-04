@@ -314,21 +314,6 @@ server {
 # 其他子站（home / admin / cv）配置类似，修改 server_name 和 root 即可
 ```
 
----
-
-## 效果预览
-
-
-| 博客首页 | 文章详情 |
-|:---:|:---:|
-| ![博客首页](screenshots/blog-home.png) | ![文章详情](screenshots/blog-article.png) |
-
-| 管理后台 | 暗黑模式 |
-|:---:|:---:|
-| ![管理后台](screenshots/admin-dashboard.png) | ![暗黑模式](screenshots/blog-dark.png) |
-
-
----
 
 ## 贡献
 
