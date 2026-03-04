@@ -88,9 +88,9 @@ build_frontend() {
 
   pushd "${app_dir}" >/dev/null
   if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
-    npm ci --no-audit --no-fund
+    HUSKY=0 npm ci --no-audit --no-fund
   else
-    npm install --no-audit --no-fund
+    HUSKY=0 npm install --no-audit --no-fund
   fi
   npm run build
   popd >/dev/null

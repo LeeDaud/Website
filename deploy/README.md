@@ -21,6 +21,8 @@ DNS `A` records should point to:
 - `deploy/deploy.env.example`: server deploy variables template.
 - `deploy/server/deploy-all.sh`: one-click sync/build/publish/restart on server.
 - `deploy/server/bootstrap-ubuntu.sh`: first-time bootstrap for a clean Ubuntu server.
+- `deploy/server/backup-mysql.sh`: MySQL backup script (gzip + retention cleanup).
+- `deploy/server/install-backup-cron.sh`: install daily cron job for backup script.
 - `deploy/server/nginx-sites.example.conf`: Nginx site config template.
 - `deploy/server/leedaud-backend.service.example`: systemd backend service template.
 - `deploy/windows/invoke-remote-deploy.ps1`: local PowerShell remote deploy trigger.
@@ -46,11 +48,62 @@ DNS `A` records should point to:
 bash /root/website/deploy/server/deploy-all.sh
 ```
 
+## Common Troubleshooting
+
+If homepage avatar/links are empty, or sub-sites open but show network errors, verify API proxy and backend health:
+
+```bash
+# 1) backend local health
+curl -fsS http://127.0.0.1:5922/health
+
+# 2) each frontend host must proxy /api/*
+curl -I https://licheng.website/api/home/personalInfo
+curl -I https://blog.licheng.website/api/blog/systemConfig?configKey=site-title
+curl -I https://cv.licheng.website/api/cv/personalInfo
+curl -I https://admin.licheng.website/api/health
+
+# 3) dedicated API host
+curl -I https://api.licheng.website/health
+```
+
+If any `/api` endpoint returns `404`, check your Nginx site file includes `location /api/ { proxy_pass http://127.0.0.1:5922/; ... }` for that domain.
+
 ## First-Time Bootstrap (Ubuntu, optional)
 
 ```bash
 chmod +x /root/website/deploy/server/bootstrap-ubuntu.sh
 bash /root/website/deploy/server/bootstrap-ubuntu.sh
+```
+
+## Daily Auto Backup (MySQL)
+
+1. Create backup config:
+
+```bash
+cp /root/website/deploy/backup.env.example /root/website/deploy/backup.env
+nano /root/website/deploy/backup.env
+```
+
+2. Test one backup manually:
+
+```bash
+chmod +x /root/website/deploy/server/backup-mysql.sh
+bash /root/website/deploy/server/backup-mysql.sh
+```
+
+3. Install daily cron job (default `03:30`):
+
+```bash
+chmod +x /root/website/deploy/server/install-backup-cron.sh
+bash /root/website/deploy/server/install-backup-cron.sh
+```
+
+4. Verify:
+
+```bash
+crontab -l
+ls -R /root/backup/mysql
+tail -n 50 /var/log/leedaud-backup-cron.log
 ```
 
 ## One-Click Deploy (Run on Local Windows)

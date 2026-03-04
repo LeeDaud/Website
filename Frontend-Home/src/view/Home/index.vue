@@ -1,14 +1,28 @@
 ﻿<script setup>
-import { onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { getSocialMediaAPI } from '@/api/socialMedia'
 import { getPersonalInfoAPI } from '@/api/personalInfo'
 import { recordVisitorAPI } from '@/api/visitor'
 import { getSystemConfigAPI } from '@/api/systemConfig'
 
+const FALLBACK_AVATAR = '/favicon.png'
+const REQUIRED_SOCIAL_LINKS = [
+  { name: 'Blog', icon: 'boke', link: 'https://blog.licheng.website' },
+  { name: 'CV', icon: 'jianli', link: 'https://cv.licheng.website' },
+  { name: 'TimelineJournal', icon: 'code', link: 'https://timelinejournal.licheng.website' },
+  { name: 'LongevityHabits', icon: 'code', link: 'https://longevityhabits.licheng.website' },
+  { name: 'Virtuals-Launch-Hunter', icon: 'code', link: 'https://launch.licheng.website' },
+  { name: 'GitHub', icon: 'github', link: 'https://github.com/LeeDaud' },
+  { name: 'X', icon: '', link: 'https://x.com/LeeDaud_0212' }
+]
+
 const startYear = ref(0)
 const currentYear = ref(0)
 
-const personalInfo = ref({})
+const personalInfo = ref({
+  nickname: 'LeeDaud',
+  avatar: FALLBACK_AVATAR
+})
 const socialMedia = ref([])
 const icpBeian = ref('')
 const gonganBeian = ref('')
@@ -45,6 +59,56 @@ const initTheme = () => {
   })
 }
 
+const normalizeExternalUrl = (url) => {
+  const value = (url || '').trim()
+  if (!value) return ''
+  if (/^https?:\/\//i.test(value)) return value
+  if (/^\/\//.test(value)) return `https:${value}`
+  return `https://${value}`
+}
+
+const normalizeSocialMedia = (list) => {
+  const items = Array.isArray(list) ? list : []
+  const normalized = []
+  const seenNames = new Set()
+
+  items.forEach((item, index) => {
+    const name = (item?.name || '').trim()
+    const link = normalizeExternalUrl(item?.link)
+    if (!name || !link) return
+    const key = name.toLowerCase()
+    if (seenNames.has(key)) return
+    seenNames.add(key)
+    normalized.push({
+      ...item,
+      id: item?.id ?? `api-${index}`,
+      name,
+      link
+    })
+  })
+
+  REQUIRED_SOCIAL_LINKS.forEach((item, index) => {
+    const key = item.name.toLowerCase()
+    if (seenNames.has(key)) return
+    seenNames.add(key)
+    normalized.push({
+      id: `default-${index}`,
+      ...item,
+      link: normalizeExternalUrl(item.link)
+    })
+  })
+
+  return normalized
+}
+
+const avatarUrl = computed(() => normalizeExternalUrl(personalInfo.value.avatar) || FALLBACK_AVATAR)
+
+const handleAvatarError = (event) => {
+  if (event?.target) {
+    event.target.src = FALLBACK_AVATAR
+  }
+}
+
 const fetchData = async () => {
   try {
     const [personalRes, socialRes, icpRes, gonganRes, startTimeRes] =
@@ -56,8 +120,13 @@ const fetchData = async () => {
         getSystemConfigAPI('start-time').catch(() => null)
       ])
 
-    personalInfo.value = personalRes?.data?.data || {}
-    socialMedia.value = socialRes?.data?.data || []
+    const personalData = personalRes?.data?.data || {}
+    personalInfo.value = {
+      ...personalInfo.value,
+      ...personalData,
+      avatar: normalizeExternalUrl(personalData.avatar) || FALLBACK_AVATAR
+    }
+    socialMedia.value = normalizeSocialMedia(socialRes?.data?.data || [])
     icpBeian.value = icpRes?.data?.data?.configValue || ''
     gonganBeian.value = gonganRes?.data?.data?.configValue || ''
 
@@ -66,7 +135,11 @@ const fetchData = async () => {
     startYear.value = Number.isFinite(parsed) && parsed > 0 ? parsed : currentYear.value
   } catch (error) {
     console.error('数据获取失败:', error)
-    socialMedia.value = []
+    socialMedia.value = normalizeSocialMedia([])
+    personalInfo.value = {
+      ...personalInfo.value,
+      avatar: FALLBACK_AVATAR
+    }
   } finally {
     isDataLoaded.value = true
   }
@@ -105,7 +178,7 @@ watch([() => socialMedia.value, isDataLoaded], () => {
   <div class="home-container">
     <main class="card" role="main">
       <div class="avatar-container">
-        <img :src="personalInfo.avatar" alt="头像" />
+        <img :src="avatarUrl" alt="头像" @error="handleAvatarError" />
       </div>
 
       <h1 data-name>{{ personalInfo.nickname || 'LeeDaud' }}</h1>
