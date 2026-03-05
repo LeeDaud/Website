@@ -76,6 +76,7 @@ If remote deploy exits with `Aborted (core dumped)` / exit code `134`, this is u
 
 ```bash
 FRONTEND_NODE_OPTIONS=--max-old-space-size=3072
+FRONTEND_BUILD_ARGS=--minify=esbuild
 ```
 
 2. Re-run one-click deploy from local.

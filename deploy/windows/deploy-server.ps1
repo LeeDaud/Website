@@ -2,6 +2,7 @@ param(
   [string]$Branch = 'main',
   [string]$CommitMessage = '',
   [string]$FrontendNodeOptions = '',
+  [string]$FrontendBuildArgs = '',
   [int]$PushRetryCount = 3,
   [int]$PushRetryDelaySeconds = 5,
   [switch]$NoAutoStashBeforeDeploy,
@@ -29,6 +30,7 @@ $argsList = @(
 
 if ($CommitMessage) { $argsList += @('-CommitMessage', $CommitMessage) }
 if ($FrontendNodeOptions) { $argsList += @('-FrontendNodeOptions', $FrontendNodeOptions) }
+if ($FrontendBuildArgs) { $argsList += @('-FrontendBuildArgs', $FrontendBuildArgs) }
 $argsList += @('-PushRetryCount', $PushRetryCount)
 $argsList += @('-PushRetryDelaySeconds', $PushRetryDelaySeconds)
 if ($NoAutoStashBeforeDeploy) { $argsList += '-NoAutoStashBeforeDeploy' }

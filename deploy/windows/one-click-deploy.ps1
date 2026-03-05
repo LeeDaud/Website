@@ -3,6 +3,7 @@ param(
   [string]$Branch = '',
   [string]$CommitMessage = '',
   [string]$FrontendNodeOptions = '',
+  [string]$FrontendBuildArgs = '',
   [int]$PushRetryCount = 3,
   [int]$PushRetryDelaySeconds = 5,
   [switch]$NoAutoStashBeforeDeploy,
@@ -103,6 +104,9 @@ $keyPath = if ($cfg.KeyPath) { [string]$cfg.KeyPath } else { '' }
 if (-not $FrontendNodeOptions) {
   $FrontendNodeOptions = if ($cfg.FrontendNodeOptions) { [string]$cfg.FrontendNodeOptions } else { '--max-old-space-size=2048' }
 }
+if (-not $FrontendBuildArgs) {
+  $FrontendBuildArgs = if ($cfg.FrontendBuildArgs) { [string]$cfg.FrontendBuildArgs } else { '--minify=esbuild' }
+}
 
 Push-Location $repoRoot
 try {
@@ -156,7 +160,8 @@ try {
       '-SshPort', $sshPort,
       '-ServerAppRoot', $serverAppRoot,
       '-RemoteScriptPath', $remoteScriptPath,
-      '-FrontendNodeOptions', $FrontendNodeOptions
+      '-FrontendNodeOptions', $FrontendNodeOptions,
+      '-FrontendBuildArgs', $FrontendBuildArgs
     )
 
     if ($keyPath) {
