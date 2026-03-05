@@ -31,6 +31,7 @@ BACKEND_PORT="${BACKEND_PORT:-5922}"
 SKIP_GIT_PULL="${SKIP_GIT_PULL:-0}"
 SKIP_FRONTEND_BUILD="${SKIP_FRONTEND_BUILD:-0}"
 SKIP_BACKEND_BUILD="${SKIP_BACKEND_BUILD:-0}"
+FRONTEND_NODE_OPTIONS="${FRONTEND_NODE_OPTIONS:---max-old-space-size=2048}"
 
 if [[ "${EUID}" -eq 0 ]]; then
   SUDO=""
@@ -84,6 +85,7 @@ build_frontend() {
   local dist_dir="$3"
 
   log "Building frontend: ${app_name}"
+  log "Frontend Node options: ${FRONTEND_NODE_OPTIONS}"
   [[ -f "${app_dir}/package.json" ]] || fail "package.json not found: ${app_dir}"
 
   pushd "${app_dir}" >/dev/null
@@ -92,7 +94,7 @@ build_frontend() {
   else
     HUSKY=0 npm install --no-audit --no-fund
   fi
-  npm run build
+  HUSKY=0 NODE_OPTIONS="${FRONTEND_NODE_OPTIONS}" npm run build
   popd >/dev/null
 
   run_maybe_sudo mkdir -p "${dist_dir}"

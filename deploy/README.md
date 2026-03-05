@@ -70,6 +70,22 @@ curl -I https://api.licheng.website/health
 
 If any `/api` endpoint returns `404`, check your Nginx site file includes `location /api/ { proxy_pass http://127.0.0.1:5922/; ... }` for that domain.
 
+If remote deploy exits with `Aborted (core dumped)` / exit code `134`, this is usually Node OOM during frontend build:
+
+1. Increase server frontend build memory in `/root/website/deploy/deploy.env`:
+
+```bash
+FRONTEND_NODE_OPTIONS=--max-old-space-size=3072
+```
+
+2. Re-run one-click deploy from local.
+
+3. Emergency fallback (backend only):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 -SkipFrontendBuild
+```
+
 ## First-Time Bootstrap (Ubuntu, optional)
 
 ```bash
@@ -140,6 +156,10 @@ Optional examples:
 # custom commit message
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
   -CommitMessage "feat: update homepage links"
+
+# temporary higher memory for remote frontend build
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -FrontendNodeOptions "--max-old-space-size=3072"
 
 # only deploy server (skip local commit/push)
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `

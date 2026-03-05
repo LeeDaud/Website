@@ -8,6 +8,7 @@ param(
   [string]$ServerAppRoot = '/root/website',
   [string]$RemoteScriptPath = '/root/website/deploy/server/deploy-all.sh',
   [string]$KeyPath = '',
+  [string]$FrontendNodeOptions = '',
   [switch]$SkipGitPull,
   [switch]$SkipFrontendBuild,
   [switch]$SkipBackendBuild
@@ -35,6 +36,7 @@ $envParts = @(
 if ($SkipGitPull) { $envParts += 'SKIP_GIT_PULL=1' }
 if ($SkipFrontendBuild) { $envParts += 'SKIP_FRONTEND_BUILD=1' }
 if ($SkipBackendBuild) { $envParts += 'SKIP_BACKEND_BUILD=1' }
+if ($FrontendNodeOptions) { $envParts += "FRONTEND_NODE_OPTIONS='$FrontendNodeOptions'" }
 
 $remoteCommand = "$($envParts -join ' ') bash '$RemoteScriptPath'"
 
@@ -52,6 +54,9 @@ Write-Step "Running remote deploy on $ServerUser@$ServerHost ..."
 & ssh @sshArgs
 
 if ($LASTEXITCODE -ne 0) {
+  if ($LASTEXITCODE -eq 134) {
+    throw "Remote deploy failed (exit code: 134, likely Node OOM during frontend build). Retry with -SkipFrontendBuild, or set -FrontendNodeOptions '--max-old-space-size=3072'."
+  }
   throw "Remote deploy failed (exit code: $LASTEXITCODE)"
 }
 

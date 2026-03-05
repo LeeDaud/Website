@@ -1,6 +1,7 @@
 param(
   [string]$Branch = 'main',
   [string]$CommitMessage = '',
+  [string]$FrontendNodeOptions = '',
   [switch]$SkipCommit,
   [switch]$SkipPush,
   [switch]$SkipFrontendBuild,
@@ -24,6 +25,7 @@ $argsList = @(
 )
 
 if ($CommitMessage) { $argsList += @('-CommitMessage', $CommitMessage) }
+if ($FrontendNodeOptions) { $argsList += @('-FrontendNodeOptions', $FrontendNodeOptions) }
 if ($SkipCommit) { $argsList += '-SkipCommit' }
 if ($SkipPush) { $argsList += '-SkipPush' }
 if ($SkipFrontendBuild) { $argsList += '-SkipFrontendBuild' }

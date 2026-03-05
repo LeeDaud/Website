@@ -2,6 +2,7 @@ param(
   [string]$ConfigPath = '',
   [string]$Branch = '',
   [string]$CommitMessage = '',
+  [string]$FrontendNodeOptions = '',
   [switch]$SkipCommit,
   [switch]$SkipPush,
   [switch]$SkipRemoteDeploy,
@@ -69,6 +70,9 @@ $serverAppRoot = [string]$cfg.ServerAppRoot
 $remoteScriptPath = if ($cfg.RemoteScriptPath) { [string]$cfg.RemoteScriptPath } else { '/root/website/deploy/server/deploy-all.sh' }
 $sshPort = if ($cfg.SshPort) { [int]$cfg.SshPort } else { 22 }
 $keyPath = if ($cfg.KeyPath) { [string]$cfg.KeyPath } else { '' }
+if (-not $FrontendNodeOptions) {
+  $FrontendNodeOptions = if ($cfg.FrontendNodeOptions) { [string]$cfg.FrontendNodeOptions } else { '--max-old-space-size=2048' }
+}
 
 Push-Location $repoRoot
 try {
@@ -122,7 +126,8 @@ try {
       '-Branch', $Branch,
       '-SshPort', $sshPort,
       '-ServerAppRoot', $serverAppRoot,
-      '-RemoteScriptPath', $remoteScriptPath
+      '-RemoteScriptPath', $remoteScriptPath,
+      '-FrontendNodeOptions', $FrontendNodeOptions
     )
 
     if ($keyPath) {
