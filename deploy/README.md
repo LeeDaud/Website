@@ -59,6 +59,9 @@ Backend runtime config behavior (important):
   - `/root/website/runtime/backend/application-prod.yml`
 - This prevents YAML syntax drift and startup failures after manual server edits.
 - If you need to change DB/Redis/Mail/JWT/site URLs, only update `deploy/deploy.env` in repo, then pull+deploy.
+- Mail parameters are configurable in `deploy/deploy.env`:
+  - `BACKEND_MAIL_PORT` / `BACKEND_MAIL_SSL_ENABLE` / `BACKEND_MAIL_STARTTLS_ENABLE`
+  - `BACKEND_MAIL_CONNECTION_TIMEOUT_MS` / `BACKEND_MAIL_TIMEOUT_MS`
 
 ## Common Troubleshooting
 
