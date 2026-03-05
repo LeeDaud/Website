@@ -8,6 +8,7 @@ param(
   [int]$SshRetryCount = 3,
   [int]$SshRetryDelaySeconds = 5,
   [int]$SshConnectTimeoutSeconds = 20,
+  [switch]$PreserveServerDeployEnv,
   [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipCommit,
   [switch]$SkipPush,
@@ -40,6 +41,7 @@ $argsList += @('-SshRetryCount', $SshRetryCount)
 $argsList += @('-SshRetryDelaySeconds', $SshRetryDelaySeconds)
 $argsList += @('-SshConnectTimeoutSeconds', $SshConnectTimeoutSeconds)
 if ($NoAutoStashBeforeDeploy) { $argsList += '-NoAutoStashBeforeDeploy' }
+if ($PreserveServerDeployEnv) { $argsList += '-PreserveServerDeployEnv' }
 if ($SkipCommit) { $argsList += '-SkipCommit' }
 if ($SkipPush) { $argsList += '-SkipPush' }
 if ($SkipFrontendBuild) { $argsList += '-SkipFrontendBuild' }

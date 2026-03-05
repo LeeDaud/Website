@@ -6,7 +6,7 @@ After=network.target mariadb.service redis.service
 Type=simple
 User=root
 WorkingDirectory=/root/website/runtime/backend
-ExecStart=/usr/bin/java -jar /root/website/runtime/backend/LeeDaud-server.jar --spring.profiles.active=prod
+ExecStart=/usr/bin/java -jar /root/website/runtime/backend/LeeDaud-server.jar --spring.profiles.active=prod --spring.config.additional-location=file:/root/website/runtime/backend/
 SuccessExitStatus=143
 Restart=always
 RestartSec=5

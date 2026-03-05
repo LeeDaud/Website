@@ -43,12 +43,22 @@ DNS `A` records should point to:
 5. Install backend service:
    - copy `deploy/server/leedaud-backend.service.example` to `/etc/systemd/system/leedaud-backend.service`
    - current example matches `/root/website`; if you change path/user, edit service file first, then `systemctl daemon-reload`
+6. Do not manually edit `/root/website/runtime/backend/application.yml` on server.
+   - `deploy-all.sh` will auto-generate backend runtime config from `deploy/deploy.env` on every deploy.
 
 ## One-Click Deploy (Run on Server)
 
 ```bash
 bash /root/website/deploy/server/deploy-all.sh
 ```
+
+Backend runtime config behavior (important):
+
+- `deploy-all.sh` writes:
+  - `/root/website/runtime/backend/application.yml`
+  - `/root/website/runtime/backend/application-prod.yml`
+- This prevents YAML syntax drift and startup failures after manual server edits.
+- If you need to change DB/Redis/Mail/JWT/site URLs, only update `deploy/deploy.env` in repo, then pull+deploy.
 
 ## Common Troubleshooting
 
@@ -153,6 +163,7 @@ This will do:
 - `git push origin <branch>`
 - SSH trigger remote `deploy-all.sh`
 - auto stash unexpected server local changes before pull (to avoid merge abort)
+- default behavior now syncs repo `deploy.env` to server (no manual server config edits required)
 
 `deploy-server.ps1` now wraps the same one-click flow:
 
@@ -178,6 +189,10 @@ powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
 # SSH unstable/reset: add retries + connect timeout
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
   -SshRetryCount 5 -SshRetryDelaySeconds 6 -SshConnectTimeoutSeconds 25
+
+# preserve old server deploy.env (if you intentionally keep server-only secrets)
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -PreserveServerDeployEnv
 
 # only deploy server (skip local commit/push)
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `

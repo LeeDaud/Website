@@ -9,6 +9,7 @@ param(
   [int]$SshRetryCount = 3,
   [int]$SshRetryDelaySeconds = 5,
   [int]$SshConnectTimeoutSeconds = 20,
+  [switch]$PreserveServerDeployEnv,
   [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipCommit,
   [switch]$SkipPush,
@@ -184,6 +185,9 @@ try {
     }
     if ($NoAutoStashBeforeDeploy) {
       $argsList += '-NoAutoStashBeforeDeploy'
+    }
+    if ($PreserveServerDeployEnv) {
+      $argsList += '-PreserveServerDeployEnv'
     }
 
     Write-Step "Triggering remote deploy: $serverUser@$serverHost"

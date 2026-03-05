@@ -13,6 +13,7 @@ param(
   [int]$SshRetryCount = 3,
   [int]$SshRetryDelaySeconds = 5,
   [int]$SshConnectTimeoutSeconds = 20,
+  [switch]$PreserveServerDeployEnv,
   [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipGitPull,
   [switch]$SkipFrontendBuild,
@@ -44,13 +45,18 @@ if ($SkipBackendBuild) { $envParts += 'SKIP_BACKEND_BUILD=1' }
 if ($FrontendNodeOptions) { $envParts += "FRONTEND_NODE_OPTIONS='$FrontendNodeOptions'" }
 if ($FrontendBuildArgs) { $envParts += "FRONTEND_BUILD_ARGS='$FrontendBuildArgs'" }
 
-$preflightCommand = ("if [ -d '{0}/.git' ]; then cd '{0}'; if git status --porcelain | grep -q .; then echo '[REMOTE-DEPLOY] Auto-stashing local changes before deploy...'; if [ -f deploy/deploy.env ]; then cp -f deploy/deploy.env /tmp/leedaud.deploy.env.backup; fi; git stash push --include-untracked --message auto-deploy-$(date +%s) >/dev/null 2>&1 || true; if [ -f /tmp/leedaud.deploy.env.backup ]; then cp -f /tmp/leedaud.deploy.env.backup deploy/deploy.env; rm -f /tmp/leedaud.deploy.env.backup; fi; fi; fi" -f $ServerAppRoot)
+$preflightCommandKeepEnv = ("if [ -d '{0}/.git' ]; then cd '{0}'; if git status --porcelain | grep -q .; then echo '[REMOTE-DEPLOY] Auto-stashing local changes before deploy (preserve server deploy.env)...'; if [ -f deploy/deploy.env ]; then cp -f deploy/deploy.env /tmp/leedaud.deploy.env.backup; fi; git stash push --include-untracked --message auto-deploy-$(date +%s) >/dev/null 2>&1 || true; if [ -f /tmp/leedaud.deploy.env.backup ]; then cp -f /tmp/leedaud.deploy.env.backup deploy/deploy.env; rm -f /tmp/leedaud.deploy.env.backup; fi; fi; fi" -f $ServerAppRoot)
+$preflightCommandSyncEnv = ("if [ -d '{0}/.git' ]; then cd '{0}'; if git status --porcelain | grep -q .; then echo '[REMOTE-DEPLOY] Auto-stashing local changes before deploy...'; git stash push --include-untracked --message auto-deploy-$(date +%s) >/dev/null 2>&1 || true; fi; fi" -f $ServerAppRoot)
 $deployCommand = "$($envParts -join ' ') bash '$RemoteScriptPath'"
 
 if ($NoAutoStashBeforeDeploy) {
   $remoteCommand = $deployCommand
 } else {
-  $remoteCommand = "$preflightCommand; $deployCommand"
+  if ($PreserveServerDeployEnv) {
+    $remoteCommand = "$preflightCommandKeepEnv; $deployCommand"
+  } else {
+    $remoteCommand = "$preflightCommandSyncEnv; $deployCommand"
+  }
 }
 
 $sshArgs = @()

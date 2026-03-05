@@ -22,11 +22,46 @@ BLOG_DIST="${BLOG_DIST:-${WWW_ROOT}/blog.licheng.website}"
 CV_DIST="${CV_DIST:-${WWW_ROOT}/cv.licheng.website}"
 ADMIN_DIST="${ADMIN_DIST:-${WWW_ROOT}/admin.licheng.website}"
 
-BACKEND_RUNTIME_DIR="${BACKEND_RUNTIME_DIR:-/opt/leedaud/backend}"
+BACKEND_RUNTIME_DIR="${BACKEND_RUNTIME_DIR:-/root/website/runtime/backend}"
 BACKEND_JAR_NAME="${BACKEND_JAR_NAME:-LeeDaud-server.jar}"
 BACKEND_SERVICE_NAME="${BACKEND_SERVICE_NAME:-leedaud-backend}"
 BACKEND_PROFILE="${BACKEND_PROFILE:-prod}"
 BACKEND_PORT="${BACKEND_PORT:-5922}"
+BACKEND_WRITE_RUNTIME_CONFIG="${BACKEND_WRITE_RUNTIME_CONFIG:-1}"
+BACKEND_CONFIG_FILE="${BACKEND_CONFIG_FILE:-${BACKEND_RUNTIME_DIR}/application.yml}"
+
+BACKEND_DB_HOST="${BACKEND_DB_HOST:-127.0.0.1}"
+BACKEND_DB_PORT="${BACKEND_DB_PORT:-3306}"
+BACKEND_DB_NAME="${BACKEND_DB_NAME:-LeeDaud}"
+BACKEND_DB_USER="${BACKEND_DB_USER:-leedaud}"
+BACKEND_DB_PASSWORD="${BACKEND_DB_PASSWORD:-LeeDaud@2026}"
+
+BACKEND_REDIS_HOST="${BACKEND_REDIS_HOST:-127.0.0.1}"
+BACKEND_REDIS_PORT="${BACKEND_REDIS_PORT:-6379}"
+BACKEND_REDIS_PASSWORD="${BACKEND_REDIS_PASSWORD:-}"
+BACKEND_REDIS_DATABASE="${BACKEND_REDIS_DATABASE:-0}"
+
+BACKEND_MAIL_HOST="${BACKEND_MAIL_HOST:-smtp.qq.com}"
+BACKEND_MAIL_PORT="${BACKEND_MAIL_PORT:-465}"
+BACKEND_MAIL_USER="${BACKEND_MAIL_USER:-1015976714@qq.com}"
+BACKEND_MAIL_PASSWORD="${BACKEND_MAIL_PASSWORD:-kptvjbecjhtubffi}"
+BACKEND_EMAIL_PERSONAL="${BACKEND_EMAIL_PERSONAL:-LeeDaud}"
+BACKEND_EMAIL_FROM="${BACKEND_EMAIL_FROM:-${BACKEND_MAIL_USER}}"
+
+BACKEND_JWT_SECRET="${BACKEND_JWT_SECRET:-LeeDaud-jwt-secret-2026-0123456789abcdef}"
+BACKEND_JWT_TTL="${BACKEND_JWT_TTL:-7200000}"
+BACKEND_JWT_TOKEN_NAME="${BACKEND_JWT_TOKEN_NAME:-Authorization}"
+
+BACKEND_VISITOR_VERIFY_CODE="${BACKEND_VISITOR_VERIFY_CODE:-123456}"
+BACKEND_MYBATIS_MAPPER_LOCATIONS="${BACKEND_MYBATIS_MAPPER_LOCATIONS:-classpath:mapper/*.xml}"
+BACKEND_MYBATIS_ALIASES_PACKAGE="${BACKEND_MYBATIS_ALIASES_PACKAGE:-cc.leedaud.entity,cc.feitwnd.entity}"
+BACKEND_LOG_ROOT_PACKAGE="${BACKEND_LOG_ROOT_PACKAGE:-cc}"
+
+BACKEND_WEBSITE_TITLE="${BACKEND_WEBSITE_TITLE:-LeeDaud}"
+BACKEND_WEBSITE_HOME="${BACKEND_WEBSITE_HOME:-https://licheng.website}"
+BACKEND_WEBSITE_ADMIN="${BACKEND_WEBSITE_ADMIN:-https://admin.licheng.website}"
+BACKEND_WEBSITE_CV="${BACKEND_WEBSITE_CV:-https://cv.licheng.website}"
+BACKEND_WEBSITE_BLOG="${BACKEND_WEBSITE_BLOG:-https://blog.licheng.website}"
 
 SKIP_GIT_PULL="${SKIP_GIT_PULL:-0}"
 SKIP_FRONTEND_BUILD="${SKIP_FRONTEND_BUILD:-0}"
@@ -76,6 +111,152 @@ run_root_bash() {
   else
     bash -lc "${cmd}"
   fi
+}
+
+write_backend_runtime_config() {
+  if [[ "${BACKEND_WRITE_RUNTIME_CONFIG}" != "1" ]]; then
+    log "Skip backend runtime config generation (BACKEND_WRITE_RUNTIME_CONFIG=${BACKEND_WRITE_RUNTIME_CONFIG})."
+    return
+  fi
+
+  local config_dir config_file profile_file tmp_cfg tmp_profile
+  config_file="${BACKEND_CONFIG_FILE}"
+  config_dir="$(dirname "${config_file}")"
+  profile_file="${config_dir}/application-prod.yml"
+  tmp_cfg="$(mktemp)"
+  tmp_profile="$(mktemp)"
+
+  cat > "${tmp_cfg}" <<EOF
+server:
+  port: ${BACKEND_PORT}
+
+spring:
+  profiles:
+    active: ${BACKEND_PROFILE}
+  main:
+    allow-circular-references: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${BACKEND_DB_HOST}:${BACKEND_DB_PORT}/${BACKEND_DB_NAME}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${BACKEND_DB_USER}
+    password: "${BACKEND_DB_PASSWORD}"
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+  data:
+    redis:
+      host: ${BACKEND_REDIS_HOST}
+      port: ${BACKEND_REDIS_PORT}
+      password: "${BACKEND_REDIS_PASSWORD}"
+      database: ${BACKEND_REDIS_DATABASE}
+  mail:
+    host: ${BACKEND_MAIL_HOST}
+    port: ${BACKEND_MAIL_PORT}
+    username: ${BACKEND_MAIL_USER}
+    password: "${BACKEND_MAIL_PASSWORD}"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: false
+            required: false
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+
+mybatis:
+  mapper-locations: ${BACKEND_MYBATIS_MAPPER_LOCATIONS}
+  type-aliases-package: ${BACKEND_MYBATIS_ALIASES_PACKAGE}
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    ${BACKEND_LOG_ROOT_PACKAGE}:
+      mapper: debug
+      service: info
+      controller: info
+
+leedaud:
+  jwt:
+    secret-key: ${BACKEND_JWT_SECRET}
+    ttl: ${BACKEND_JWT_TTL}
+    token-name: ${BACKEND_JWT_TOKEN_NAME}
+  alioss:
+    endpoint: ""
+    access-key-id: ""
+    access-key-secret: ""
+    bucket-name: ""
+  email:
+    personal: ${BACKEND_EMAIL_PERSONAL}
+    from: ${BACKEND_EMAIL_FROM}
+  visitor:
+    verify-code: "${BACKEND_VISITOR_VERIFY_CODE}"
+  image:
+    compress:
+      enabled: true
+      max-size-kb: 500
+      quality: 0.9
+      output-format: webp
+  website:
+    title: ${BACKEND_WEBSITE_TITLE}
+    home: ${BACKEND_WEBSITE_HOME}
+    admin: ${BACKEND_WEBSITE_ADMIN}
+    cv: ${BACKEND_WEBSITE_CV}
+    blog: ${BACKEND_WEBSITE_BLOG}
+EOF
+
+  cat > "${tmp_profile}" <<'EOF'
+# Auto-generated by deploy-all.sh
+# Keep this file valid to avoid parser failures from stale manual edits.
+runtime:
+  generated: true
+EOF
+
+  run_maybe_sudo mkdir -p "${config_dir}"
+  run_maybe_sudo cp -f "${tmp_cfg}" "${config_file}"
+  run_maybe_sudo cp -f "${tmp_profile}" "${profile_file}"
+  run_maybe_sudo chmod 600 "${config_file}" "${profile_file}"
+  rm -f "${tmp_cfg}" "${tmp_profile}"
+
+  log "Backend runtime config generated: ${config_file}"
+}
+
+ensure_backend_systemd_override() {
+  local service="${BACKEND_SERVICE_NAME}.service"
+
+  if ! command -v systemctl >/dev/null 2>&1; then
+    return
+  fi
+  if ! systemctl list-unit-files | grep -q "^${service}[[:space:]]"; then
+    return
+  fi
+
+  local dropin_dir override_file tmp_override runtime_jar
+  runtime_jar="${BACKEND_RUNTIME_DIR}/${BACKEND_JAR_NAME}"
+  dropin_dir="/etc/systemd/system/${service}.d"
+  override_file="${dropin_dir}/override.conf"
+  tmp_override="$(mktemp)"
+
+  cat > "${tmp_override}" <<EOF
+[Service]
+WorkingDirectory=${BACKEND_RUNTIME_DIR}
+ExecStart=
+ExecStart=/usr/bin/java -jar ${runtime_jar} --spring.profiles.active=${BACKEND_PROFILE} --spring.config.additional-location=file:${BACKEND_RUNTIME_DIR}/
+EOF
+
+  run_maybe_sudo mkdir -p "${dropin_dir}"
+  run_maybe_sudo cp -f "${tmp_override}" "${override_file}"
+  rm -f "${tmp_override}"
+  run_maybe_sudo systemctl daemon-reload || true
+
+  log "Updated systemd override: ${override_file}"
 }
 
 ensure_swap() {
@@ -188,6 +369,7 @@ restart_backend() {
   local out_log="${log_dir}/backend.out.log"
 
   if command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files | grep -q "^${service}"; then
+    ensure_backend_systemd_override
     log "Restarting systemd service: ${service}"
     run_maybe_sudo systemctl daemon-reload || true
     run_maybe_sudo systemctl restart "${service}"
@@ -245,6 +427,7 @@ main() {
 
   if [[ "${SKIP_BACKEND_BUILD}" != "1" ]]; then
     build_backend
+    write_backend_runtime_config
     restart_backend
     check_backend
   else

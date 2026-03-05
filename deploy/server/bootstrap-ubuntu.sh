@@ -82,30 +82,12 @@ prepare_files() {
   systemctl enable leedaud-backend.service
 }
 
-check_prod_config() {
-  local prod_cfg="${APP_ROOT}/Backend/LeeDaud-server/src/main/resources/application-prod.yml"
-  [[ -f "${prod_cfg}" ]] || fail "Missing ${prod_cfg}"
-
-  if grep -q "your_production" "${prod_cfg}"; then
-    cat <<'EOF'
-[BOOTSTRAP][WARN] application-prod.yml still has placeholder values.
-Edit this file first:
-  /root/website/Backend/LeeDaud-server/src/main/resources/application-prod.yml
-
-Then run:
-  bash /root/website/deploy/server/deploy-all.sh
-EOF
-    exit 2
-  fi
-}
-
 main() {
   need_root
   install_base_deps
   install_node22_if_needed
   sync_repo
   prepare_files
-  check_prod_config
   bash "${APP_ROOT}/deploy/server/deploy-all.sh"
   log "Bootstrap + first deploy done."
 }
