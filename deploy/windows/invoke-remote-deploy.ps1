@@ -9,6 +9,7 @@ param(
   [string]$RemoteScriptPath = '/root/website/deploy/server/deploy-all.sh',
   [string]$KeyPath = '',
   [string]$FrontendNodeOptions = '',
+  [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipGitPull,
   [switch]$SkipFrontendBuild,
   [switch]$SkipBackendBuild
@@ -38,7 +39,14 @@ if ($SkipFrontendBuild) { $envParts += 'SKIP_FRONTEND_BUILD=1' }
 if ($SkipBackendBuild) { $envParts += 'SKIP_BACKEND_BUILD=1' }
 if ($FrontendNodeOptions) { $envParts += "FRONTEND_NODE_OPTIONS='$FrontendNodeOptions'" }
 
-$remoteCommand = "$($envParts -join ' ') bash '$RemoteScriptPath'"
+$preflightCommand = ("if [ -d '{0}/.git' ]; then cd '{0}'; if git status --porcelain | grep -q .; then echo '[REMOTE-DEPLOY] Auto-stashing local changes before deploy...'; if [ -f deploy/deploy.env ]; then cp -f deploy/deploy.env /tmp/leedaud.deploy.env.backup; fi; git stash push --include-untracked --message auto-deploy-$(date +%s) >/dev/null 2>&1 || true; if [ -f /tmp/leedaud.deploy.env.backup ]; then cp -f /tmp/leedaud.deploy.env.backup deploy/deploy.env; rm -f /tmp/leedaud.deploy.env.backup; fi; fi; fi" -f $ServerAppRoot)
+$deployCommand = "$($envParts -join ' ') bash '$RemoteScriptPath'"
+
+if ($NoAutoStashBeforeDeploy) {
+  $remoteCommand = $deployCommand
+} else {
+  $remoteCommand = "$preflightCommand; $deployCommand"
+}
 
 $sshArgs = @()
 if ($KeyPath) {

@@ -32,6 +32,9 @@ SKIP_GIT_PULL="${SKIP_GIT_PULL:-0}"
 SKIP_FRONTEND_BUILD="${SKIP_FRONTEND_BUILD:-0}"
 SKIP_BACKEND_BUILD="${SKIP_BACKEND_BUILD:-0}"
 FRONTEND_NODE_OPTIONS="${FRONTEND_NODE_OPTIONS:---max-old-space-size=2048}"
+ENABLE_AUTO_SWAP="${ENABLE_AUTO_SWAP:-1}"
+SWAP_SIZE_MB="${SWAP_SIZE_MB:-2048}"
+SWAP_FILE_PATH="${SWAP_FILE_PATH:-/swapfile.leedaud}"
 
 if [[ "${EUID}" -eq 0 ]]; then
   SUDO=""
@@ -63,6 +66,60 @@ run_maybe_sudo() {
   else
     "$@"
   fi
+}
+
+run_root_bash() {
+  local cmd="$1"
+  if [[ -n "${SUDO}" ]]; then
+    ${SUDO} bash -lc "${cmd}"
+  else
+    bash -lc "${cmd}"
+  fi
+}
+
+ensure_swap() {
+  [[ "${ENABLE_AUTO_SWAP}" == "1" ]] || {
+    log "Auto swap disabled (ENABLE_AUTO_SWAP=${ENABLE_AUTO_SWAP})."
+    return
+  }
+
+  ensure_cmd free
+  ensure_cmd awk
+
+  local current_swap_mb
+  current_swap_mb="$(free -m | awk '/^Swap:/ {print $2}')"
+  current_swap_mb="${current_swap_mb:-0}"
+
+  if [[ "${current_swap_mb}" -ge 512 ]]; then
+    log "Swap already available: ${current_swap_mb} MB"
+    return
+  fi
+
+  log "Swap is low (${current_swap_mb} MB). Creating swap file ${SWAP_FILE_PATH} (${SWAP_SIZE_MB} MB) ..."
+
+  if ! run_root_bash "
+set -Eeuo pipefail
+if [[ ! -f '${SWAP_FILE_PATH}' ]]; then
+  if command -v fallocate >/dev/null 2>&1; then
+    fallocate -l ${SWAP_SIZE_MB}M '${SWAP_FILE_PATH}' || dd if=/dev/zero of='${SWAP_FILE_PATH}' bs=1M count='${SWAP_SIZE_MB}' status=none
+  else
+    dd if=/dev/zero of='${SWAP_FILE_PATH}' bs=1M count='${SWAP_SIZE_MB}' status=none
+  fi
+  chmod 600 '${SWAP_FILE_PATH}'
+  mkswap '${SWAP_FILE_PATH}' >/dev/null
+fi
+swapon --show | grep -q '${SWAP_FILE_PATH}' || swapon '${SWAP_FILE_PATH}'
+grep -qF '${SWAP_FILE_PATH} none swap sw 0 0' /etc/fstab || echo '${SWAP_FILE_PATH} none swap sw 0 0' >> /etc/fstab
+"
+  then
+    warn "Auto swap setup failed, continue without swap."
+    return
+  fi
+
+  local updated_swap_mb
+  updated_swap_mb="$(free -m | awk '/^Swap:/ {print $2}')"
+  updated_swap_mb="${updated_swap_mb:-0}"
+  log "Swap ready: ${updated_swap_mb} MB"
 }
 
 sync_repo() {
@@ -170,6 +227,7 @@ main() {
   sync_repo
 
   if [[ "${SKIP_FRONTEND_BUILD}" != "1" ]]; then
+    ensure_swap
     build_frontend "Frontend-Home" "${APP_ROOT}/Frontend-Home" "${HOME_DIST}"
     build_frontend "Blog" "${APP_ROOT}/Blog" "${BLOG_DIST}"
     build_frontend "Cv" "${APP_ROOT}/Cv" "${CV_DIST}"

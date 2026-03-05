@@ -86,6 +86,14 @@ FRONTEND_NODE_OPTIONS=--max-old-space-size=3072
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 -SkipFrontendBuild
 ```
 
+4. `deploy-all.sh` now supports auto swap creation (default enabled):
+
+```bash
+ENABLE_AUTO_SWAP=1
+SWAP_SIZE_MB=2048
+SWAP_FILE_PATH=/swapfile.leedaud
+```
+
 ## First-Time Bootstrap (Ubuntu, optional)
 
 ```bash
@@ -143,6 +151,7 @@ This will do:
 - auto `git commit` (if there are changes)
 - `git push origin <branch>`
 - SSH trigger remote `deploy-all.sh`
+- auto stash unexpected server local changes before pull (to avoid merge abort)
 
 `deploy-server.ps1` now wraps the same one-click flow:
 
@@ -160,6 +169,10 @@ powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
 # temporary higher memory for remote frontend build
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
   -FrontendNodeOptions "--max-old-space-size=3072"
+
+# git push unstable network: add retries
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -PushRetryCount 5 -PushRetryDelaySeconds 6
 
 # only deploy server (skip local commit/push)
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `

@@ -3,6 +3,9 @@ param(
   [string]$Branch = '',
   [string]$CommitMessage = '',
   [string]$FrontendNodeOptions = '',
+  [int]$PushRetryCount = 3,
+  [int]$PushRetryDelaySeconds = 5,
+  [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipCommit,
   [switch]$SkipPush,
   [switch]$SkipRemoteDeploy,
@@ -27,6 +30,33 @@ function Invoke-Git([string[]]$GitArgs) {
   & git @GitArgs
   if ($LASTEXITCODE -ne 0) {
     throw "git $($GitArgs -join ' ') failed (exit code: $LASTEXITCODE)"
+  }
+}
+
+function Invoke-GitPushWithRetry(
+  [string]$DeployBranch,
+  [int]$RetryCount,
+  [int]$RetryDelaySeconds
+) {
+  $attempt = 1
+  $maxAttempts = [Math]::Max(1, $RetryCount)
+  $baseDelay = [Math]::Max(1, $RetryDelaySeconds)
+
+  while ($true) {
+    Write-Step "Pushing branch '$DeployBranch' to origin ... (attempt $attempt/$maxAttempts)"
+    & git push origin $DeployBranch
+    if ($LASTEXITCODE -eq 0) {
+      return
+    }
+
+    if ($attempt -ge $maxAttempts) {
+      throw "git push origin $DeployBranch failed after $maxAttempts attempts (last exit code: $LASTEXITCODE)"
+    }
+
+    $sleepSeconds = $baseDelay * [Math]::Pow(2, $attempt - 1)
+    Write-Warning "git push failed (exit code: $LASTEXITCODE). Retry in $sleepSeconds seconds ..."
+    Start-Sleep -Seconds $sleepSeconds
+    $attempt++
   }
 }
 
@@ -111,8 +141,7 @@ try {
   }
 
   if (-not $SkipPush) {
-    Write-Step "Pushing branch '$Branch' to origin ..."
-    Invoke-Git -GitArgs @('push', 'origin', $Branch)
+    Invoke-GitPushWithRetry -DeployBranch $Branch -RetryCount $PushRetryCount -RetryDelaySeconds $PushRetryDelaySeconds
   } else {
     Write-Step 'Skip git push by -SkipPush.'
   }
@@ -141,6 +170,9 @@ try {
     }
     if ($SkipBackendBuild) {
       $argsList += '-SkipBackendBuild'
+    }
+    if ($NoAutoStashBeforeDeploy) {
+      $argsList += '-NoAutoStashBeforeDeploy'
     }
 
     Write-Step "Triggering remote deploy: $serverUser@$serverHost"
