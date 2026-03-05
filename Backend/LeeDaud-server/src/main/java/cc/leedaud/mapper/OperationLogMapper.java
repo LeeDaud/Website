@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.dto.OperationLogPageQueryDTO;
 import cc.leedaud.entity.OperationLogs;
@@ -10,20 +10,20 @@ import java.util.List;
 @Mapper
 public interface OperationLogMapper {
     /**
-     * 淇濆瓨鎿嶄綔鏃ュ織
+     * 保存操作日志
      * @param operationLogs
      */
     void save(OperationLogs operationLogs);
 
     /**
-     * 鍒嗛〉鏌ヨ鎿嶄綔鏃ュ織
+     * 分页查询操作日志
      * @param operationLogPageQueryDTO
      * @return
      */
     Page<OperationLogs> pageQuery(OperationLogPageQueryDTO operationLogPageQueryDTO);
 
     /**
-     * 鎵归噺鍒犻櫎鎿嶄綔鏃ュ織
+     * 批量删除操作日志
      * @param ids
      */
     void batchDelete(List<Long> ids);

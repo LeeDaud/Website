@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.cv;
+package cc.leedaud.controller.cv;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.service.PersonalInfoService;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 绠€鍘嗙涓汉淇℃伅鎺ュ彛
+ * 简历端个人信息接口
  */
 @RestController("cvPersonalInfoController")
 @RequestMapping("/cv/personalInfo")
@@ -19,7 +19,7 @@ public class PersonalInfoController {
     private PersonalInfoService personalInfoService;
 
     /**
-     * 鑾峰彇涓汉淇℃伅
+     * 获取个人信息
      */
     @GetMapping
     public Result<PersonalInfoVO> getPersonalInfo() {

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鍗氬绔枃绔犲垪琛╒O锛堜笉鍚枃绔犲唴瀹癸級
+ * 博客端文章列表VO（不含文章内容）
  */
 @Data
 @Builder

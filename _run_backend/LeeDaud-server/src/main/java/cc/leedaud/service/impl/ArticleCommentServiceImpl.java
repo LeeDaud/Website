@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.StatusConstant;
 import cc.leedaud.dto.ArticleCommentDTO;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 鏂囩珷璇勮鏈嶅姟瀹炵幇
+ * 文章评论服务实现
  */
 @Slf4j
 @Service
@@ -50,7 +50,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     private WebsiteProperties websiteProperties;
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ璇勮锛堟椂闂淬€佹槸鍚﹀鏍革級
+     * 分页条件查询评论（时间、是否审核）
      * @param articleCommentPageQueryDTO
      * @return
      */
@@ -61,7 +61,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     }
 
     /**
-     * 鏍规嵁鏂囩珷ID鏌ヨ璇勮
+     * 根据文章ID查询评论
      * @param articleId
      * @return
      */
@@ -70,12 +70,12 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     }
 
     /**
-     * 鎵归噺瀹℃牳閫氳繃璇勮
+     * 批量审核通过评论
      * @param ids
      */
     @Transactional
     public void batchApprove(List<Long> ids) {
-        // 鍏堟煡璇㈡瘡鏉¤瘎璁猴紝鍙"褰撳墠鏈鏍?鐨勮瘎璁哄鍔犳枃绔犺瘎璁烘暟
+        // 先查询每条评论，只对"当前未审核"的评论增加文章评论数
         for (Long id : ids) {
             ArticleComments comment = articleCommentMapper.getById(id);
             if (comment != null && comment.getArticleId() != null
@@ -87,7 +87,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎璇勮
+     * 批量删除评论
      * @param ids
      */
     @Transactional
@@ -97,9 +97,9 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
             if (comment == null || comment.getArticleId() == null) {
                 continue;
             }
-            // 濡傛灉鏄牴璇勮锛岀骇鑱斿垹闄ゆ墍鏈夊瓙璇勮
+            // 如果是根评论，级联删除所有子评论
             if (comment.getRootId() == null || comment.getRootId() == 0) {
-                // 鍙宸插鏍哥殑瀛愯瘎璁哄噺灏戣瘎璁烘暟
+                // 只对已审核的子评论减少评论数
                 Integer approvedChildCount = articleCommentMapper.countApprovedByRootId(id);
                 if (approvedChildCount != null && approvedChildCount > 0) {
                     for (int i = 0; i < approvedChildCount; i++) {
@@ -108,7 +108,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 }
                 articleCommentMapper.deleteByRootId(id);
             }
-            // 鍙湁宸插鏍哥殑璇勮鎵嶅噺灏戞枃绔犺瘎璁烘暟
+            // 只有已审核的评论才减少文章评论数
             if (comment.getIsApproved() != null && comment.getIsApproved() == 1) {
                 articleCommentMapper.decrementCommentCount(comment.getArticleId());
             }
@@ -117,13 +117,14 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     }
 
     /**
-     * 绠＄悊鍛樺洖澶嶈瘎璁?     * @param articleCommentReplyDTO
+     * 管理员回复评论
+     * @param articleCommentReplyDTO
      */
     public void adminReply(ArticleCommentReplyDTO articleCommentReplyDTO, HttpServletRequest request) {
         ArticleComments articleComments = new ArticleComments();
         BeanUtils.copyProperties(articleCommentReplyDTO, articleComments);
 
-        // 澶勭悊Markdown鍐呭
+        // 处理Markdown内容
         if (articleCommentReplyDTO.getIsMarkdown() != null && articleCommentReplyDTO.getIsMarkdown() == 1) {
             String html = MarkdownUtil.toHtml(articleCommentReplyDTO.getContent());
             articleComments.setContentHtml(html);
@@ -131,12 +132,13 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
             articleComments.setContentHtml(articleCommentReplyDTO.getContent());
         }
 
-        // 璁剧疆绠＄悊鍛樺洖澶嶆爣璇?        articleComments.setIsAdminReply(StatusConstant.ENABLE);
+        // 设置管理员回复标识
+        articleComments.setIsAdminReply(StatusConstant.ENABLE);
         articleComments.setIsApproved(StatusConstant.ENABLE);
         articleComments.setIsEdited(StatusConstant.DISABLE);
         articleComments.setNickname(websiteProperties.getTitle());
 
-        // 鎹曡幏 IP / 鍦扮悊浣嶇疆 / UserAgent
+        // 捕获 IP / 地理位置 / UserAgent
         if (request != null) {
             String clientIp = IpUtil.getClientIp(request);
             Map<String, String> geoInfo = IpUtil.getGeoInfo(clientIp);
@@ -155,36 +157,37 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
 
         articleCommentMapper.save(articleComments);
 
-        // 绠＄悊鍛樺洖澶嶈嚜鍔ㄩ€氳繃瀹℃牳锛屾枃绔犺瘎璁烘暟+1
+        // 管理员回复自动通过审核，文章评论数+1
         if (articleCommentReplyDTO.getArticleId() != null) {
             articleCommentMapper.incrementCommentCount(articleCommentReplyDTO.getArticleId());
         }
 
-        // 妫€鏌ョ埗璇勮鏄惁寮€鍚偖绠遍€氱煡
+        // 检查父评论是否开启邮箱通知
         notifyParentIfNeeded(articleCommentReplyDTO.getParentId(), "LeeDaud",
                 articleCommentReplyDTO.getContent(), "comment");
     }
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鏍规嵁鏂囩珷ID鑾峰彇璇勮鍒楄〃锛堟爲褰㈢粨鏋勶級
+     * 根据文章ID获取评论列表（树形结构）
      * @param articleId
      * @return
      */
     public List<ArticleCommentVO> getCommentTree(Long articleId, Long visitorId) {
         List<ArticleCommentVO> allComments = articleCommentMapper.getApprovedByArticleId(articleId, visitorId);
-        // 鏋勫缓鏍戝舰缁撴瀯锛氭牴璇勮锛坮ootId涓簄ull鎴?锛変綔涓轰竴绾э紝鍏朵綑鎸傚埌鏍硅瘎璁轰笅
+        // 构建树形结构：根评论（rootId为null或0）作为一级，其余挂到根评论下
         List<ArticleCommentVO> rootComments = new ArrayList<>();
         Map<Long, ArticleCommentVO> commentMap = allComments.stream()
                 .collect(Collectors.toMap(ArticleCommentVO::getId, c -> c));
 
         for (ArticleCommentVO comment : allComments) {
             if (comment.getRootId() == null || comment.getRootId() == 0) {
-                // 鏍硅瘎璁?                comment.setChildren(new ArrayList<>());
+                // 根评论
+                comment.setChildren(new ArrayList<>());
                 rootComments.add(comment);
             } else {
-                // 瀛愯瘎璁猴紝鎸傚埌鏍硅瘎璁轰笅
+                // 子评论，挂到根评论下
                 ArticleCommentVO rootComment = commentMap.get(comment.getRootId());
                 if (rootComment != null) {
                     if (rootComment.getChildren() == null) {
@@ -198,17 +201,19 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     }
 
     /**
-     * 鎻愪氦璇勮锛堟坊鍔犺瘎璁?鍥炲璇勮锛?     * @param articleCommentDTO
+     * 提交评论（添加评论/回复评论）
+     * @param articleCommentDTO
      */
     @Transactional
     public void submitComment(ArticleCommentDTO articleCommentDTO, HttpServletRequest request) {
-        // 1. 鏍￠獙閭鎴朡Q鍙?        validateEmailOrQq(articleCommentDTO.getEmailOrQq());
+        // 1. 校验邮箱或QQ号
+        validateEmailOrQq(articleCommentDTO.getEmailOrQq());
 
-        // 2. 鍒涘缓璇勮瀹炰綋
+        // 2. 创建评论实体
         ArticleComments articleComments = new ArticleComments();
         BeanUtils.copyProperties(articleCommentDTO, articleComments);
 
-        // 3. 澶勭悊Markdown鍐呭
+        // 3. 处理Markdown内容
         if (articleCommentDTO.getIsMarkdown() != null && articleCommentDTO.getIsMarkdown() == 1) {
             String html = MarkdownUtil.toHtml(articleCommentDTO.getContent());
             articleComments.setContentHtml(html);
@@ -216,11 +221,11 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
             articleComments.setContentHtml(articleCommentDTO.getContent());
         }
 
-        // 4. 璁剧疆璁垮ID
+        // 4. 设置访客ID
         Long visitorId = articleCommentDTO.getVisitorId();
         articleComments.setVisitorId(visitorId);
 
-        // 5. 鑾峰彇IP鍦板潃淇℃伅
+        // 5. 获取IP地址信息
         String clientIp = IpUtil.getClientIp(request);
         Map<String, String> geoInfo = IpUtil.getGeoInfo(clientIp);
         String province = geoInfo.getOrDefault("province", "");
@@ -232,40 +237,42 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
             articleComments.setLocation(location);
         }
 
-        // 6. 瑙ｆ瀽UserAgent
+        // 6. 解析UserAgent
         String userAgent = request.getHeader("User-Agent");
         String osName = userAgentService.getOsName(userAgent);
         String browserName = userAgentService.getBrowserName(userAgent);
         articleComments.setUserAgentOs(osName);
         articleComments.setUserAgentBrowser(browserName);
 
-        // 7. 璁剧疆榛樿鍊?        articleComments.setIsApproved(0);
+        // 7. 设置默认值
+        articleComments.setIsApproved(0);
         articleComments.setIsEdited(0);
         articleComments.setIsAdminReply(0);
 
-        // 8. 淇濆瓨鍒版暟鎹簱
+        // 8. 保存到数据库
         articleCommentMapper.save(articleComments);
 
-        // 9. 璇勮鏁颁笉鍦ㄦ彁浜ゆ椂+1锛屾敼涓哄鏍搁€氳繃鏃?1锛堣 batchApprove锛?
-        // 10. 妫€鏌ョ埗璇勮鏄惁寮€鍚偖绠遍€氱煡
+        // 9. 评论数不在提交时+1，改为审核通过时+1（见 batchApprove）
+
+        // 10. 检查父评论是否开启邮箱通知
         if (articleCommentDTO.getParentId() != null) {
             notifyParentIfNeeded(articleCommentDTO.getParentId(),
                     articleCommentDTO.getNickname(), articleCommentDTO.getContent(), "comment");
         }
 
-        log.info("璁垮鎻愪氦鏂囩珷璇勮鎴愬姛: {}", articleComments);
+        log.info("访客提交文章评论成功: {}", articleComments);
     }
 
     /**
-     * 璁垮缂栬緫璇勮
+     * 访客编辑评论
      */
     public void editComment(ArticleCommentEditDTO editDTO) {
         ArticleComments comment = articleCommentMapper.getById(editDTO.getId());
         if (comment == null) {
-            throw new ValidationException("璇勮涓嶅瓨鍦?);
+            throw new ValidationException("评论不存在");
         }
         if (!comment.getVisitorId().equals(editDTO.getVisitorId())) {
-            throw new ValidationException("鏃犳潈缂栬緫姝よ瘎璁?);
+            throw new ValidationException("无权编辑此评论");
         }
 
         ArticleComments updateComment = new ArticleComments();
@@ -279,25 +286,25 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         }
 
         articleCommentMapper.updateContent(updateComment);
-        log.info("璁垮缂栬緫璇勮鎴愬姛: id={}, visitorId={}", editDTO.getId(), editDTO.getVisitorId());
+        log.info("访客编辑评论成功: id={}, visitorId={}", editDTO.getId(), editDTO.getVisitorId());
     }
 
     /**
-     * 璁垮鍒犻櫎璇勮
+     * 访客删除评论
      */
     @Transactional
     public void visitorDeleteComment(Long id, Long visitorId) {
         ArticleComments comment = articleCommentMapper.getById(id);
         if (comment == null) {
-            throw new ValidationException("璇勮涓嶅瓨鍦?);
+            throw new ValidationException("评论不存在");
         }
         if (!comment.getVisitorId().equals(visitorId)) {
-            throw new ValidationException("鏃犳潈鍒犻櫎姝よ瘎璁?);
+            throw new ValidationException("无权删除此评论");
         }
 
-        // 濡傛灉鏄牴璇勮锛岀骇鑱斿垹闄ゆ墍鏈夊瓙璇勮
+        // 如果是根评论，级联删除所有子评论
         if (comment.getRootId() == null || comment.getRootId() == 0) {
-            // 鍙宸插鏍哥殑瀛愯瘎璁哄噺灏戣瘎璁烘暟
+            // 只对已审核的子评论减少评论数
             Integer approvedChildCount = articleCommentMapper.countApprovedByRootId(id);
             if (approvedChildCount != null && approvedChildCount > 0) {
                 for (int i = 0; i < approvedChildCount; i++) {
@@ -311,15 +318,15 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         }
 
         articleCommentMapper.deleteById(id);
-        // 鍙湁宸插鏍哥殑璇勮鎵嶅噺灏戞枃绔犺瘎璁烘暟
+        // 只有已审核的评论才减少文章评论数
         if (comment.getIsApproved() != null && comment.getIsApproved() == 1) {
             articleCommentMapper.decrementCommentCount(comment.getArticleId());
         }
-        log.info("璁垮鍒犻櫎璇勮鎴愬姛: id={}, visitorId={}", id, visitorId);
+        log.info("访客删除评论成功: id={}, visitorId={}", id, visitorId);
     }
 
     /**
-     * 妫€鏌ョ埗璇勮鏄惁寮€鍚偖绠遍€氱煡锛屽鏋滄槸鍒欏彂閫侀€氱煡閭欢
+     * 检查父评论是否开启邮箱通知，如果是则发送通知邮件
      */
     private void notifyParentIfNeeded(Long parentId, String replyNickname, String replyContent, String type) {
         if (parentId == null) {
@@ -334,12 +341,13 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 String emailOrQq = parentComment.getEmailOrQq().trim();
                 String email;
                 if (emailOrQq.contains("@")) {
-                    // 鏈韩灏辨槸閭锛岀洿鎺ヤ娇鐢?                    email = emailOrQq;
+                    // 本身就是邮箱，直接使用
+                    email = emailOrQq;
                 } else if (emailOrQq.matches("^[1-9]\\d{4,10}$")) {
-                    // QQ 鍙凤紝鎷兼帴 @qq.com 鏋勯€犻偖绠卞湴鍧€
+                    // QQ 号，拼接 @qq.com 构造邮箱地址
                     email = emailOrQq + "@qq.com";
                 } else {
-                    return; // 鏍煎紡涓嶈瘑鍒紝璺宠繃
+                    return; // 格式不识别，跳过
                 }
                 asyncEmailService.sendReplyNotificationAsync(
                         email,
@@ -351,20 +359,21 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 );
             }
         } catch (Exception e) {
-            log.error("鍙戦€佽瘎璁哄洖澶嶉€氱煡閭欢寮傚父: parentId={}, ex={}", parentId, e.getMessage());
+            log.error("发送评论回复通知邮件异常: parentId={}, ex={}", parentId, e.getMessage());
         }
     }
 
     /**
-     * 鏍￠獙閭鎴朡Q鍙锋牸寮?     */
+     * 校验邮箱或QQ号格式
+     */
     private void validateEmailOrQq(String emailOrQq) {
         if (emailOrQq == null || emailOrQq.isEmpty()) {
-            throw new ValidationException("璇疯緭鍏ラ偖绠辨垨QQ鍙?);
+            throw new ValidationException("请输入邮箱或QQ号");
         }
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         String qqRegex = "^[1-9]\\d{4,10}$";
         if (!emailOrQq.matches(emailRegex) && !emailOrQq.matches(qqRegex)) {
-            throw new ValidationException("閭鎴朡Q鍙锋牸寮忎笉姝ｇ‘");
+            throw new ValidationException("邮箱或QQ号格式不正确");
         }
     }
 }

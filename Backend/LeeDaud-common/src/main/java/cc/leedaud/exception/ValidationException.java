@@ -1,7 +1,7 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 /**
- * 鍙傛暟鏍￠獙寮傚父
+ * 参数校验异常
  */
 public class ValidationException extends BaseException {
     public ValidationException() {

@@ -1,17 +1,18 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * 寮傛閭欢鏈嶅姟锛堥€氳繃鐙珛 Service 纭繚 @Async 浠ｇ悊鐢熸晥锛? */
+ * 异步邮件服务（通过独立 Service 确保 @Async 代理生效）
+ */
 public interface AsyncEmailService {
 
     /**
-     * 寮傛鍙戦€佽瘎璁?鐣欒█鍥炲閫氱煡閭欢
+     * 异步发送评论/留言回复通知邮件
      */
     void sendReplyNotificationAsync(String toEmail, String parentNickname, String parentContent,
                                     String replyNickname, String replyContent, String type);
 
     /**
-     * 寮傛鍙戦€佹柊鏂囩珷閫氱煡閭欢
+     * 异步发送新文章通知邮件
      */
     void sendNewArticleNotificationAsync(String toEmail, String nickname, String articleTitle,
                                          String articleSummary, String articleUrl);

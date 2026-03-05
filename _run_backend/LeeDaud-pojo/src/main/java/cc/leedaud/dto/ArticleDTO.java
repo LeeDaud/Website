@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 鏂囩珷鍒涘缓/鏇存柊DTO
+ * 文章创建/更新DTO
  */
 @Data
 @AllArgsConstructor
@@ -19,40 +19,43 @@ import java.util.List;
 @Builder
 public class ArticleDTO {
 
-    // 鏂囩珷ID锛堟洿鏂版椂浣跨敤锛?    private Long id;
+    // 文章ID（更新时使用）
+    private Long id;
 
-    // 鏂囩珷鏍囬
-    @NotBlank(message = "鏂囩珷鏍囬涓嶈兘涓虹┖")
-    @Size(max = 50, message = "鏂囩珷鏍囬涓嶈兘瓒呰繃50瀛?)
+    // 文章标题
+    @NotBlank(message = "文章标题不能为空")
+    @Size(max = 50, message = "文章标题不能超过50字")
     private String title;
 
-    // URL鏍囪瘑
-    @NotBlank(message = "URL鏍囪瘑涓嶈兘涓虹┖")
-    @Size(max = 50, message = "URL鏍囪瘑涓嶈兘瓒呰繃50瀛?)
+    // URL标识
+    @NotBlank(message = "URL标识不能为空")
+    @Size(max = 50, message = "URL标识不能超过50字")
     private String slug;
 
-    // 鏂囩珷鎽樿
+    // 文章摘要
     private String summary;
 
-    // 灏侀潰鍥剧墖url
+    // 封面图片url
     private String coverImage;
 
-    // Markdown鍐呭
-    @NotBlank(message = "鏂囩珷鍐呭涓嶈兘涓虹┖")
+    // Markdown内容
+    @NotBlank(message = "文章内容不能为空")
     private String contentMarkdown;
 
-    // 鍓嶇缂栬緫鍣ㄦ覆鏌撶殑HTML鍐呭锛堝彲閫夛紝鑻ユ彁渚涘垯鐩存帴浣跨敤锛屼笉鍐嶅悗绔浆鎹級
+    // 前端编辑器渲染的HTML内容（可选，若提供则直接使用，不再后端转换）
     private String contentHtml;
 
-    // 鍒嗙被ID
-    @NotNull(message = "鏂囩珷鍒嗙被涓嶈兘涓虹┖")
+    // 分类ID
+    @NotNull(message = "文章分类不能为空")
     private Long categoryId;
 
-    // 鏄惁鍙戝竷,0-鍚︼紙鑽夌锛夛紝1-鏄?    private Integer isPublished;
+    // 是否发布,0-否（草稿），1-是
+    private Integer isPublished;
 
-    // 鏄惁缃《,0-鍚︼紝1-鏄?    private Integer isTop;
+    // 是否置顶,0-否，1-是
+    private Integer isTop;
 
-    // 鏍囩ID鍒楄〃
+    // 标签ID列表
     private List<Long> tagIds;
 }
 

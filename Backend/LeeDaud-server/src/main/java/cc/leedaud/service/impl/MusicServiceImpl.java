@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.MusicDTO;
 import cc.leedaud.dto.MusicPageQueryDTO;
@@ -25,7 +25,7 @@ public class MusicServiceImpl implements MusicService {
     private MusicMapper musicMapper;
 
     /**
-     * 娣诲姞闊充箰
+     * 添加音乐
      * @param music
      */
     @CacheEvict(value = "musicList", allEntries = true)
@@ -36,7 +36,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     /**
-     * 鍒嗛〉鏌ヨ闊充箰鍒楄〃
+     * 分页查询音乐列表
      * @param musicPageQueryDTO
      * @return
      */
@@ -49,7 +49,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     /**
-     * 鏇存柊闊充箰
+     * 更新音乐
      * @param music
      */
     @CacheEvict(value = "musicList", allEntries = true)
@@ -60,7 +60,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎闊充箰
+     * 批量删除音乐
      * @param ids
      */
     @CacheEvict(value = "musicList", allEntries = true)
@@ -69,7 +69,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     /**
-     * 鏍规嵁ID鏌ヨ闊充箰
+     * 根据ID查询音乐
      * @param id
      * @return
      */
@@ -78,14 +78,14 @@ public class MusicServiceImpl implements MusicService {
     }
 
     /**
-     * 鑾峰彇鎵€鏈夊彲瑙佺殑闊充箰
+     * 获取所有可见的音乐
      * @return
      */
     @Cacheable(value = "musicList", key = "'visible'")
     public List<MusicVO> getAllVisibleMusic() {
         List<Music> musicList = musicMapper.getAllVisibleMusic();
         if(musicList != null && !musicList.isEmpty()) {
-            // 杞崲涓篤O
+            // 转换为VO
             List<MusicVO> musicVOList = musicList.stream().map(music -> MusicVO.builder()
                     .id(music.getId())
                     .title(music.getTitle())

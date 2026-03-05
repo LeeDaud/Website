@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.dto.MusicPageQueryDTO;
@@ -14,41 +14,41 @@ import java.util.List;
 @Mapper
 public interface MusicMapper {
     /**
-     * 鎻掑叆闊充箰
+     * 插入音乐
      * @param music
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Music music);
 
     /**
-     * 鍒嗛〉鏌ヨ闊充箰
+     * 分页查询音乐
      * @param musicPageQueryDTO
      * @return
      */
     Page<Music> pageQuery(MusicPageQueryDTO musicPageQueryDTO);
 
     /**
-     * 鏇存柊闊充箰
+     * 更新音乐
      * @param music
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Music music);
 
     /**
-     * 鍒犻櫎闊充箰
+     * 删除音乐
      * @param id
      */
     @Delete("delete from music where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 鎵归噺鍒犻櫎闊充箰
+     * 批量删除音乐
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鏍规嵁ID鏌ヨ闊充箰
+     * 根据ID查询音乐
      * @param id
      * @return
      */
@@ -56,7 +56,7 @@ public interface MusicMapper {
     Music getById(Long id);
 
     /**
-     * 鑾峰彇鎵€鏈夊彲瑙佺殑闊充箰
+     * 获取所有可见的音乐
      * @return
      */
     @Select("select * from music where is_visible = 1 order by sort asc, id desc")

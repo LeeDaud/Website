@@ -1,31 +1,32 @@
-﻿package cc.leedaud.constant;
+package cc.leedaud.constant;
 
 /**
- * 淇℃伅鎻愮ず甯搁噺绫? */
+ * 信息提示常量类
+ */
 public class MessageConstant {
-    public static final String PASSWORD_ERROR = "瀵嗙爜閿欒";
-    public static final String NEW_PASSWORD_NOT_MATCH = "涓ゆ杈撳叆鐨勬柊瀵嗙爜涓嶄竴鑷?;
-    public static final String OLD_PASSWORD_ERROR = "鍘熷瘑鐮侀敊璇?;
-    public static final String NEW_PASSWORD_NOT_CHANGE = "鏂板瘑鐮佷笉寰椾笌鍘熷瘑鐮佺浉鍚?;
-    public static final String ACCOUNT_NOT_FOUND = "璐﹀彿涓嶅瓨鍦?;
-    public static final String UPLOAD_FAILED = "鏂囦欢涓婁紶澶辫触";
-    public static final String FILE_EMPTY = "鏂囦欢涓虹┖";
-    public static final String ALREADY_EXIST = "宸插瓨鍦?;
-    public static final String UNKNOWN_ERROR = "鏈煡閿欒";
-    public static final String EMAIL_SEND_ERROR = "閭欢楠岃瘉鐮佸彂閫佸け璐?;
-    public static final String VERIFY_CODE_ERROR = "閭欢楠岃瘉鐮侀敊璇?;
-    public static final String VERIFY_CODE_LOCK = "楠岃瘉鐮佽緭鍏ラ敊璇鏁拌繃澶?楠岃瘉鐮佸凡琚攣瀹?;
-    public static final String NOT_LOGIN = "鏈櫥褰?璇峰厛鐧诲綍";
-    public static final String NOT_AUTHORIZED = "鐧诲綍鐘舵€佸け鏁?璇烽噸鏂扮櫥褰?;
-    public static final String VISITOR_VERIFY_CODE_ERROR = "娓稿鏃犻』閭楠岃瘉鐮?璇疯緭鍏?";
-    public static final String VISITOR_BLOCKED = "璁块棶琚皝绂?;
-    public static final String INVALID_EMAIL_FORMAT = "閭鏍煎紡涓嶆纭?;
-    public static final String INVALID_QQ_FORMAT = "QQ鍙锋牸寮忎笉姝ｇ‘";
-    public static final String EMAIL_OR_QQ_REQUIRED = "璇疯緭鍏ラ偖绠辨垨QQ鍙?;
-    public static final String RssNotFound = "Rss璁㈤槄涓嶅瓨鍦?;
-    public static final String RssAlreadyExists = "Rss璁㈤槄宸插瓨鍦?;
-    public static final String ConfigKeyExists = "閰嶇疆閿凡瀛樺湪";
-    public static final String ARTICLE_NOT_FOUND = "鏂囩珷涓嶅瓨鍦?;
-    public static final String GUEST_READ_ONLY = "娓稿璐﹀彿浠呮湁鏌ョ湅鏉冮檺锛屾棤娉曡繘琛屾鎿嶄綔";
+    public static final String PASSWORD_ERROR = "密码错误";
+    public static final String NEW_PASSWORD_NOT_MATCH = "两次输入的新密码不一致";
+    public static final String OLD_PASSWORD_ERROR = "原密码错误";
+    public static final String NEW_PASSWORD_NOT_CHANGE = "新密码不得与原密码相同";
+    public static final String ACCOUNT_NOT_FOUND = "账号不存在";
+    public static final String UPLOAD_FAILED = "文件上传失败";
+    public static final String FILE_EMPTY = "文件为空";
+    public static final String ALREADY_EXIST = "已存在";
+    public static final String UNKNOWN_ERROR = "未知错误";
+    public static final String EMAIL_SEND_ERROR = "邮件验证码发送失败";
+    public static final String VERIFY_CODE_ERROR = "邮件验证码错误";
+    public static final String VERIFY_CODE_LOCK = "验证码输入错误次数过多,验证码已被锁定";
+    public static final String NOT_LOGIN = "未登录,请先登录";
+    public static final String NOT_AUTHORIZED = "登录状态失效,请重新登录";
+    public static final String VISITOR_VERIFY_CODE_ERROR = "游客无须邮箱验证码,请输入:";
+    public static final String VISITOR_BLOCKED = "访问被封禁";
+    public static final String INVALID_EMAIL_FORMAT = "邮箱格式不正确";
+    public static final String INVALID_QQ_FORMAT = "QQ号格式不正确";
+    public static final String EMAIL_OR_QQ_REQUIRED = "请输入邮箱或QQ号";
+    public static final String RssNotFound = "Rss订阅不存在";
+    public static final String RssAlreadyExists = "Rss订阅已存在";
+    public static final String ConfigKeyExists = "配置键已存在";
+    public static final String ARTICLE_NOT_FOUND = "文章不存在";
+    public static final String GUEST_READ_ONLY = "游客账号仅有查看权限，无法进行此操作";
 }
 

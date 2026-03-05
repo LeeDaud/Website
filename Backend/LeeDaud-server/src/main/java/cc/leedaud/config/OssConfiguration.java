@@ -1,4 +1,4 @@
-﻿package cc.leedaud.config;
+package cc.leedaud.config;
 
 import cc.leedaud.properties.AliOssProperties;
 import cc.leedaud.utils.AliOssUtil;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 闃块噷浜戞枃浠朵笂浼犻厤缃被锛岀敤浜庡垱寤篈liOssUtil瀵硅薄
+ * 阿里云文件上传配置类，用于创建AliOssUtil对象
  */
 @Configuration
 public class OssConfiguration {

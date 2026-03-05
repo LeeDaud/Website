@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,14 +15,14 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class AdminChangePasswordDTO implements Serializable {
 
-    @NotBlank(message = "鏃у瘑鐮佷笉鑳戒负绌?)
+    @NotBlank(message = "旧密码不能为空")
     private String oldPassword;
 
-    @NotBlank(message = "鏂板瘑鐮佷笉鑳戒负绌?)
-    @Size(min = 6, max = 32, message = "瀵嗙爜闀垮害搴斿湪6-32浣嶄箣闂?)
+    @NotBlank(message = "新密码不能为空")
+    @Size(min = 6, max = 32, message = "密码长度应在6-32位之间")
     private String newPassword;
 
-    @NotBlank(message = "纭瀵嗙爜涓嶈兘涓虹┖")
+    @NotBlank(message = "确认密码不能为空")
     private String confirmNewPassword;
 }
 

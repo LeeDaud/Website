@@ -1,4 +1,4 @@
-﻿package cc.leedaud.aspect;
+package cc.leedaud.aspect;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.service.SaveLogAsyncService;
@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 
 /**
- * 鑷畾涔夊垏闈㈢被锛岀敤浜庤褰曟搷浣滄棩蹇? */
+ * 自定义切面类，用于记录操作日志
+ */
 @Aspect
 @Component
 @Slf4j
@@ -24,13 +25,14 @@ public class OperationLogAspect {
     private SaveLogAsyncService saveLogAsyncService;
 
     /**
-     * 瀹氫箟鍒囧叆鐐?     */
+     * 定义切入点
+     */
     @Pointcut("@annotation(cc.leedaud.annotation.OperationLog)")
     public void operationLogPointCut() {
     }
 
     /**
-     * 鐜粫閫氱煡
+     * 环绕通知
      */
     @Around("operationLogPointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -42,15 +44,15 @@ public class OperationLogAspect {
             return result;
         } catch (Throwable e) {
             error = e;
-            throw e; // 閲嶆柊鎶涘嚭寮傚父
+            throw e; // 重新抛出异常
         } finally {
-            // 鑾峰彇娉ㄨВ
-            MethodSignature signature = (MethodSignature) joinPoint.getSignature(); // 鏂规硶绛惧悕瀵硅薄
-            Method method = signature.getMethod(); // 鏂规硶瀵硅薄
-            OperationLog operationLog = method.getAnnotation(OperationLog.class); // 鑾峰彇鏂规硶涓婄殑娉ㄨВ瀵硅薄
+            // 获取注解
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature(); // 方法签名对象
+            Method method = signature.getMethod(); // 方法对象
+            OperationLog operationLog = method.getAnnotation(OperationLog.class); // 获取方法上的注解对象
 
             if (operationLog != null) {
-                // 寮傛璁板綍鎿嶄綔鏃ュ織
+                // 异步记录操作日志
                 saveLogAsyncService.saveLogAsync(joinPoint, result, error, operationLog);
             }
         }

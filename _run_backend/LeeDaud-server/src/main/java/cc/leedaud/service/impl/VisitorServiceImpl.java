@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.StatusConstant;
 import cc.leedaud.dto.VisitorPageQueryDTO;
@@ -41,43 +41,46 @@ public class VisitorServiceImpl implements VisitorService {
     @Autowired
     private BlockService blockService;
 
-    // Redis閿墠缂€
+    // Redis键前缀
     public static final String VISITOR_KEY = "visitor:fingerprint:";
 
     /**
-     * 璁板綍璁垮璁块棶淇℃伅
+     * 记录访客访问信息
      * @param visitorRecordDTO
      * @param request
      * @return
      */
     public VisitorRecordVO recordVisitorViewInfo(VisitorRecordDTO visitorRecordDTO, HttpServletRequest request) {
 
-        // 鐢熸垚/鑾峰彇浼氳瘽Id
+        // 生成/获取会话Id
         String sessionId = getOrCreateSessionId(request);
 
-        // 鐢熸垚璁惧鎸囩汗
+        // 生成设备指纹
         String fingerprint = fingerprintService.generateVisitorFingerprint(visitorRecordDTO,request);
 
-        // 鑾峰彇IP
+        // 获取IP
         String ip = IpUtil.getClientIp(request);
         String userAgent = request.getHeader("User-Agent");
 
-        // 妫€鏌ヨ瀹㈡槸鍚﹀湪缂撳瓨涓湁灏佺璁板綍
+        // 检查访客是否在缓存中有封禁记录
         blockService.checkIfBlocked(fingerprint);
 
-        // 妫€鏌ヨ姹傞鐜?        blockService.checkRateLimit(fingerprint,ip);
+        // 检查请求频率
+        blockService.checkRateLimit(fingerprint,ip);
 
-        // 鏌ユ壘鎴栧垱寤鸿瀹㈣褰?        Visitors visitor = findOrCreateVisitor(fingerprint, sessionId, userAgent, ip);
+        // 查找或创建访客记录
+        Visitors visitor = findOrCreateVisitor(fingerprint, sessionId, userAgent, ip);
 
-        // 寮傛澶勭悊锛欼P鍦扮悊浣嶇疆鏌ヨ + 璁垮鍦扮悊淇℃伅鏇存柊 + 娴忚璁板綍鍐欏叆
-        // 浼犻€?visitorId 鑰岄潪瀵硅薄寮曠敤锛岄伩鍏嶄富绾跨▼涓庡紓姝ョ嚎绋嬪叡浜彲鍙樺璞″鑷寸珵鎬佹潯浠?        asyncVisitorService.processGeoAndRecordViewAsync(
+        // 异步处理：IP地理位置查询 + 访客地理信息更新 + 浏览记录写入
+        // 传递 visitorId 而非对象引用，避免主线程与异步线程共享可变对象导致竞态条件
+        asyncVisitorService.processGeoAndRecordViewAsync(
                 visitor.getId(), ip, userAgent,
                 visitorRecordDTO.getPagePath(),
                 visitorRecordDTO.getReferer(),
                 visitorRecordDTO.getPageTitle()
         );
 
-        // 灏佽VO锛堢珛鍗宠繑鍥烇紝涓嶇瓑寰呭紓姝ユ搷浣滃畬鎴愶級
+        // 封装VO（立即返回，不等待异步操作完成）
         VisitorRecordVO visitorRecordVO = VisitorRecordVO.builder()
                 .visitorFingerprint(fingerprint)
                 .sessionId(sessionId)
@@ -88,7 +91,7 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     /**
-     * 鑾峰彇鎴栧垱寤轰細璇滻D
+     * 获取或创建会话ID
      * @param request
      * @return
      */
@@ -96,14 +99,16 @@ public class VisitorServiceImpl implements VisitorService {
         HttpSession session = request.getSession(false);
         if(session==null){
             session = request.getSession(true);
-            // 璁剧疆浼氳瘽灞炴€у垱寤烘椂闂?            session.setAttribute("visitTime", LocalDateTime.now());
+            // 设置会话属性创建时间
+            session.setAttribute("visitTime", LocalDateTime.now());
         }
         return session.getId();
     }
 
 
     /**
-     * 鏌ユ壘鎴栧垱寤鸿瀹㈣褰曪紙涓嶅惈鍦扮悊浣嶇疆锛屽湴鐞嗕綅缃敱寮傛鏈嶅姟濉厖锛?     * @param fingerprint
+     * 查找或创建访客记录（不含地理位置，地理位置由异步服务填充）
+     * @param fingerprint
      * @param sessionId
      * @param userAgent
      * @param ip
@@ -111,27 +116,30 @@ public class VisitorServiceImpl implements VisitorService {
      */
     private Visitors findOrCreateVisitor(String fingerprint, String sessionId,
                                          String userAgent, String ip){
-        // 灏濊瘯浠嶳edis涓幏鍙栬瀹俊鎭?        String cacheKey = VISITOR_KEY + fingerprint;
+        // 尝试从Redis中获取访客信息
+        String cacheKey = VISITOR_KEY + fingerprint;
         Visitors visitor = (Visitors) redisTemplate.opsForValue().get(cacheKey);
 
         if(visitor!=null){
-            // 缂撳瓨鍛戒腑,鏇存柊鍩烘湰淇℃伅
-            log.info("銆愯瀹㈣拷韪€戠紦瀛樺懡涓? id={}, fingerprint={}, ip={}, cachedViews={}",
+            // 缓存命中,更新基本信息
+            log.info("【访客追踪】缓存命中: id={}, fingerprint={}, ip={}, cachedViews={}",
                     visitor.getId(), fingerprint, ip, visitor.getTotalViews());
             visitor.setSessionId(sessionId);
             visitor.setIp(ip);
             visitor.setLastVisitTime(LocalDateTime.now());
             visitor.setTotalViews(visitor.getTotalViews() + 1);
             visitorMapper.updateById(visitor);
-            // 鍥炲啓Redis缂撳瓨锛屼繚鎸佺紦瀛樻暟鎹笌鏁版嵁搴撳悓姝ワ紙淇totalViews绛夊瓧娈典笉涓€鑷寸殑闂锛?            redisTemplate.opsForValue().set(cacheKey, visitor, 1, TimeUnit.HOURS);
+            // 回写Redis缓存，保持缓存数据与数据库同步（修复totalViews等字段不一致的问题）
+            redisTemplate.opsForValue().set(cacheKey, visitor, 1, TimeUnit.HOURS);
             return visitor;
         }
 
-        // 缂撳瓨鏈懡涓紝閫氳繃鎸囩汗鏌ユ壘璁垮
+        // 缓存未命中，通过指纹查找访客
         visitor = visitorMapper.findVisitorByFingerprint(fingerprint);
 
         if(visitor==null){
-            // 鏂拌瀹細鍒涘缓璁板綍锛堝湴鐞嗕綅缃瓧娈电敱寮傛浠诲姟濉厖锛?            log.info("銆愯瀹㈣拷韪€戞柊璁垮鍒涘缓: fingerprint={}, ip={}", fingerprint, ip);
+            // 新访客：创建记录（地理位置字段由异步任务填充）
+            log.info("【访客追踪】新访客创建: fingerprint={}, ip={}", fingerprint, ip);
             visitor = Visitors.builder()
                     .fingerprint(fingerprint)
                     .sessionId(sessionId)
@@ -144,10 +152,10 @@ public class VisitorServiceImpl implements VisitorService {
                     .build();
             try {
                 visitorMapper.insertVisitor(visitor);
-                log.info("銆愯瀹㈣拷韪€戞柊璁垮鎻掑叆鎴愬姛: id={}, fingerprint={}", visitor.getId(), fingerprint);
+                log.info("【访客追踪】新访客插入成功: id={}, fingerprint={}", visitor.getId(), fingerprint);
             } catch (DuplicateKeyException e) {
-                // 骞跺彂鍦烘櫙锛氬彟涓€涓姹傚凡缁忔彃鍏ヤ簡鐩稿悓鎸囩汗鐨勮瀹紝鍥為€€鍒版暟鎹簱鏌ヨ
-                log.warn("銆愯瀹㈣拷韪€戝苟鍙戝垱寤猴紝鍥為€€鏌ヨ: fingerprint={}", fingerprint);
+                // 并发场景：另一个请求已经插入了相同指纹的访客，回退到数据库查询
+                log.warn("【访客追踪】并发创建，回退查询: fingerprint={}", fingerprint);
                 visitor = visitorMapper.findVisitorByFingerprint(fingerprint);
                 if (visitor != null) {
                     visitor.setLastVisitTime(LocalDateTime.now());
@@ -158,13 +166,14 @@ public class VisitorServiceImpl implements VisitorService {
                 }
             }
         }else{
-            // 鑰佽瀹細鏇存柊鍩烘湰淇℃伅
-            log.info("銆愯瀹㈣拷韪€戣€佽瀹㈡洿鏂? id={}, fingerprint={}, ip={}, dbViews={}",
+            // 老访客：更新基本信息
+            log.info("【访客追踪】老访客更新: id={}, fingerprint={}, ip={}, dbViews={}",
                     visitor.getId(), fingerprint, ip, visitor.getTotalViews());
             visitor.setLastVisitTime(LocalDateTime.now());
             visitor.setTotalViews(visitor.getTotalViews() + 1);
 
-            // 濡傛灉session宸茶繃鏈熸垨涓嶅悓锛屽垯瑙嗕负鏂扮殑娴忚鍣ㄤ細璇?            boolean sessionExpired = !sessionId.equals(visitor.getSessionId());
+            // 如果session已过期或不同，则视为新的浏览器会话
+            boolean sessionExpired = !sessionId.equals(visitor.getSessionId());
             if(sessionExpired){
                 visitor.setSessionId(sessionId);
             }
@@ -173,7 +182,7 @@ public class VisitorServiceImpl implements VisitorService {
             visitorMapper.updateById(visitor);
         }
 
-        // 缁熶竴鍐欏叆/鏇存柊Redis缂撳瓨
+        // 统一写入/更新Redis缓存
         if (visitor != null) {
             redisTemplate.opsForValue().set(cacheKey, visitor, 1, TimeUnit.HOURS);
         }
@@ -181,7 +190,7 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     /**
-     * 鍒嗛〉鏌ヨ璁垮鍒楄〃
+     * 分页查询访客列表
      * @param visitorPageQueryDTO
      * @return
      */
@@ -194,7 +203,7 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     /**
-     * 鎵归噺灏佺璁垮
+     * 批量封禁访客
      * @param ids
      */
     public void batchBlock(List<Long> ids) {
@@ -202,16 +211,18 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     /**
-     * 鎵归噺瑙ｅ皝璁垮锛堝悓鏃舵竻闄?Redis 灏佺缂撳瓨锛?     * @param ids
+     * 批量解封访客（同时清除 Redis 封禁缓存）
+     * @param ids
      */
     public void batchUnblock(List<Long> ids) {
-        // 鍏堟煡鍑鸿繖浜涜瀹㈢殑 fingerprint锛岀敤浜庢竻闄?Redis 灏佺缂撳瓨
+        // 先查出这些访客的 fingerprint，用于清除 Redis 封禁缓存
         for (Long id : ids) {
             Visitors visitor = visitorMapper.findById(id);
             if (visitor != null && visitor.getFingerprint() != null) {
                 String blockedKey = "visitor:blocked:" + visitor.getFingerprint();
                 redisTemplate.delete(blockedKey);
-                // 鍚屾椂娓呴櫎璁垮淇℃伅缂撳瓨锛岄伩鍏嶆棫鐨?isBlocked=1 鐘舵€佹畫鐣?                String visitorKey = VISITOR_KEY + visitor.getFingerprint();
+                // 同时清除访客信息缓存，避免旧的 isBlocked=1 状态残留
+                String visitorKey = VISITOR_KEY + visitor.getFingerprint();
                 redisTemplate.delete(visitorKey);
             }
         }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 闊充箰DTO
+ * 音乐DTO
  */
 @Data
 @Builder
@@ -20,36 +20,39 @@ public class MusicDTO implements Serializable {
 
     private Long id;
 
-    // 闊充箰鏍囬
-    @NotBlank(message = "闊充箰鏍囬涓嶈兘涓虹┖")
-    @Size(max = 50, message = "闊充箰鏍囬涓嶈兘瓒呰繃50瀛?)
+    // 音乐标题
+    @NotBlank(message = "音乐标题不能为空")
+    @Size(max = 50, message = "音乐标题不能超过50字")
     private String title;
 
-    // 浣滆€?    @Size(max = 50, message = "浣滆€呭悕绉颁笉鑳借秴杩?0瀛?)
+    // 作者
+    @Size(max = 50, message = "作者名称不能超过50字")
     private String artist;
 
-    // 鏃堕暱锛屽崟浣嶏細绉?    private Integer duration;
+    // 时长，单位：秒
+    private Integer duration;
 
-    // 灏侀潰鍥剧墖url
+    // 封面图片url
     private String coverImage;
 
-    // 闊抽鏂囦欢url
-    @NotBlank(message = "闊抽鏂囦欢涓嶈兘涓虹┖")
+    // 音频文件url
+    @NotBlank(message = "音频文件不能为空")
     private String musicUrl;
 
-    // 姝岃瘝鏂囦欢url
+    // 歌词文件url
     private String lyricUrl;
 
-    // 鏄惁鏈夋瓕璇嶏紝0-鍚︼紝1-鏄?    private Integer hasLyric;
+    // 是否有歌词，0-否，1-是
+    private Integer hasLyric;
 
-    // 姝岃瘝绫诲瀷,lrc,json,txt
-    @Size(max = 10, message = "姝岃瘝绫诲瀷涓嶈兘瓒呰繃10瀛?)
+    // 歌词类型,lrc,json,txt
+    @Size(max = 10, message = "歌词类型不能超过10字")
     private String lyricType;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 }
 

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.ArticleCategoryDTO;
 import cc.leedaud.entity.ArticleCategories;
@@ -7,31 +7,33 @@ import java.util.List;
 
 public interface ArticleCategoryService {
     /**
-     * 鑾峰彇鎵€鏈夋枃绔犲垎绫?     * @return
+     * 获取所有文章分类
+     * @return
      */
     List<ArticleCategories> listAll();
 
     /**
-     * 娣诲姞鏂囩珷鍒嗙被
+     * 添加文章分类
      * @param articleCategoryDTO
      */
     void addCategory(ArticleCategoryDTO articleCategoryDTO);
 
     /**
-     * 鏇存柊鏂囩珷鍒嗙被锛堝惈鎺掑簭锛?     * @param articleCategoryDTO
+     * 更新文章分类（含排序）
+     * @param articleCategoryDTO
      */
     void updateCategory(ArticleCategoryDTO articleCategoryDTO);
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷鍒嗙被
+     * 批量删除文章分类
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鑾峰彇鎵€鏈夋湁宸插彂甯冩枃绔犵殑鍙鍒嗙被
+     * 获取所有有已发布文章的可见分类
      */
     List<ArticleCategories> getVisibleCategories();
 }

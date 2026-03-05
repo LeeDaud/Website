@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 鏂囩珷褰掓。VO锛堟寜骞存湀鍒嗙粍锛? */
+ * 文章归档VO（按年月分组）
+ */
 @Data
 @Builder
 @NoArgsConstructor

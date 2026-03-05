@@ -1,18 +1,18 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.service.UserAgentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * UserAgent瑙ｆ瀽鏈嶅姟瀹炵幇
+ * UserAgent解析服务实现
  */
 @Slf4j
 @Service
 public class UserAgentServiceImpl implements UserAgentService {
 
     /**
-     * 鑾峰彇鎿嶄綔绯荤粺鍚嶇О
+     * 获取操作系统名称
      * @param userAgent
      * @return
      */
@@ -23,7 +23,7 @@ public class UserAgentServiceImpl implements UserAgentService {
         
         String ua = userAgent.toLowerCase();
         
-        // Windows绯诲垪
+        // Windows系列
         if (ua.contains("windows nt 10.0")) {
             return "Windows";
         } else if (ua.contains("windows nt 6.3")) {
@@ -36,21 +36,21 @@ public class UserAgentServiceImpl implements UserAgentService {
             return "Windows";
         }
         
-        // macOS绯诲垪
+        // macOS系列
         if (ua.contains("mac os x") || ua.contains("macintosh")) {
             return "Macos";
         }
         
-        // Linux绯诲垪
+        // Linux系列
         if (ua.contains("linux")) {
-            // Android鍩轰簬Linux锛屼絾浼樺厛璇嗗埆涓篈ndroid
+            // Android基于Linux，但优先识别为Android
             if (ua.contains("android")) {
                 return "Android";
             }
             return "Linux";
         }
         
-        // 绉诲姩璁惧
+        // 移动设备
         if (ua.contains("android")) {
             return "Android";
         }
@@ -58,7 +58,7 @@ public class UserAgentServiceImpl implements UserAgentService {
             return "Ios";
         }
         
-        // 鍏朵粬绯荤粺
+        // 其他系统
         if (ua.contains("freebsd")) {
             return "Freebsd";
         }
@@ -70,7 +70,8 @@ public class UserAgentServiceImpl implements UserAgentService {
     }
 
     /**
-     * 鑾峰彇娴忚鍣ㄥ悕绉?     * @param userAgent
+     * 获取浏览器名称
+     * @param userAgent
      * @return
      */
     public String getBrowserName(String userAgent) {
@@ -80,39 +81,43 @@ public class UserAgentServiceImpl implements UserAgentService {
         
         String ua = userAgent.toLowerCase();
         
-        // 寰俊鍐呯疆娴忚鍣紙UA鍖呭惈Chrome锛屽繀椤讳紭鍏堝垽鏂級
+        // 微信内置浏览器（UA包含Chrome，必须优先判断）
         if (ua.contains("micromessenger")) {
             return "Wechat";
         }
         
-        // QQ鍐呯疆娴忚鍣紙UA鍖呭惈Chrome锛屽繀椤讳紭鍏堝垽鏂級
+        // QQ内置浏览器（UA包含Chrome，必须优先判断）
         if (ua.contains("qq/")) {
             return "QQ";
         }
         
-        // Edge娴忚鍣?(鏂扮増鍩轰簬Chromium)
+        // Edge浏览器 (新版基于Chromium)
         if (ua.contains("edg/") || ua.contains("edge/")) {
             return "Edge";
         }
         
-        // Opera娴忚鍣紙UA鍖呭惈Chrome锛岄渶鍦–hrome涔嬪墠鍒ゆ柇锛?        if (ua.contains("opr/") || ua.contains("opera/")) {
+        // Opera浏览器（UA包含Chrome，需在Chrome之前判断）
+        if (ua.contains("opr/") || ua.contains("opera/")) {
             return "Opera";
         }
         
-        // Chrome娴忚鍣?(闇€鍦⊿afari涔嬪墠鍒ゆ柇,鍥犱负Chrome鐨刄A鍖呭惈Safari)
+        // Chrome浏览器 (需在Safari之前判断,因为Chrome的UA包含Safari)
         if (ua.contains("chrome/") && !ua.contains("edg")) {
             return "Chrome";
         }
         
-        // Safari娴忚鍣?        if (ua.contains("safari/") && !ua.contains("chrome")) {
+        // Safari浏览器
+        if (ua.contains("safari/") && !ua.contains("chrome")) {
             return "Safari";
         }
         
-        // Firefox娴忚鍣?        if (ua.contains("firefox/")) {
+        // Firefox浏览器
+        if (ua.contains("firefox/")) {
             return "Firefox";
         }
         
-        // IE娴忚鍣?        if (ua.contains("msie") || ua.contains("trident/")) {
+        // IE浏览器
+        if (ua.contains("msie") || ua.contains("trident/")) {
             return "Ie";
         }
         

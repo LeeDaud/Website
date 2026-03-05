@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鐣欒█鍒嗛〉鏌ヨDTO
+ * 留言分页查询DTO
  */
 @Data
 @Builder
@@ -22,12 +22,14 @@ public class MessagePageQueryDTO implements Serializable {
 
     private Integer pageSize;
 
-    // 鏄惁瀹℃牳閫氳繃锛?-鍚︼紝1-鏄?    private Integer isApproved;
+    // 是否审核通过，0-否，1-是
+    private Integer isApproved;
 
-    // 寮€濮嬫椂闂?    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    // 开始时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
-    // 缁撴潫鏃堕棿
+    // 结束时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 }

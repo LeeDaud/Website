@@ -1,13 +1,14 @@
-﻿package cc.leedaud.constant;
+package cc.leedaud.constant;
 
 /**
- * 鐘舵€佸父閲忥紝鍚敤鎴栬€呯鐢? */
+ * 状态常量，启用或者禁用
+ */
 public class StatusConstant {
 
-    //鍚敤
+    //启用
     public static final Integer ENABLE = 1;
 
-    //绂佺敤
+    //禁用
     public static final Integer DISABLE = 0;
 }
 

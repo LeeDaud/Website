@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.JwtClaimsConstant;
 import cc.leedaud.properties.JwtProperties;
@@ -27,10 +27,10 @@ public class TokenServiceImpl implements TokenService {
     private static final String TOKEN_PREFIX = "token:active:";
 
     /**
-     * 鍒涘缓骞朵繚瀛榯oken
+     * 创建并保存token
      */
     public String createAndStoreToken(Long userId, Integer role) {
-        // 鐢熸垚token
+        // 生成token
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.ADMIN_ID,userId);
         claims.put(JwtClaimsConstant.ADMIN_ROLE,role);
@@ -39,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
                 jwtProperties.getTtl(),
                 claims);
 
-        // 灏唗oken瀛樺偍鑷砇edis,鐢╯et鍙互澶氱鐧诲綍
+        // 将token存储至Redis,用set可以多端登录
         String tokenKey = TOKEN_PREFIX + userId;
         redis.opsForSet().add(tokenKey, token);
         redis.expire(tokenKey, jwtProperties.getTtl(), TimeUnit.MILLISECONDS);
@@ -48,7 +48,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     /**
-     * 楠岃瘉token鏈夋晥鎬?     * @param userId
+     * 验证token有效性
+     * @param userId
      * @param token
      * @return
      */
@@ -58,7 +59,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     /**
-     * 閫€鍑虹櫥褰?- 鍒犻櫎token
+     * 退出登录 - 删除token
      */
     public void logout(Long userId, String token) {
         String key = TOKEN_PREFIX + userId;
@@ -66,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     /**
-     * 閫€鍑虹櫥褰?- 鍒犻櫎鎵€鏈塼oken
+     * 退出登录 - 删除所有token
      */
     public void logoutAll(Long userId) {
         String key = TOKEN_PREFIX + userId;

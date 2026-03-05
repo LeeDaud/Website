@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.entity.ArticleTags;
@@ -13,64 +13,68 @@ import java.util.List;
 public interface ArticleTagMapper {
 
     /**
-     * 鑾峰彇鎵€鏈夋爣绛?     */
+     * 获取所有标签
+     */
     @Select("select * from article_tags order by id")
     List<ArticleTags> listAll();
 
     /**
-     * 鏍规嵁鏂囩珷ID鑾峰彇鏍囩ID鍒楄〃
+     * 根据文章ID获取标签ID列表
      */
     @Select("select tag_id from article_tag_relations where article_id = #{articleId}")
     List<Long> getTagIdsByArticleId(Long articleId);
 
     /**
-     * 娣诲姞鏍囩
+     * 添加标签
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(ArticleTags articleTag);
 
     /**
-     * 鏇存柊鏍囩
+     * 更新标签
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(ArticleTags articleTag);
 
     /**
-     * 鎵归噺鍒犻櫎鏍囩
+     * 批量删除标签
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鏍规嵁ID鏌ヨ鏍囩
+     * 根据ID查询标签
      */
     @Select("select * from article_tags where id = #{id}")
     ArticleTags getById(Long id);
 
     /**
-     * 鏍规嵁鏂囩珷ID鏌ヨ鍏宠仈鐨勬爣绛惧垪琛?     */
+     * 根据文章ID查询关联的标签列表
+     */
     List<ArticleTags> getTagsByArticleId(Long articleId);
 
     /**
-     * 鎵归噺鎻掑叆鏂囩珷-鏍囩鍏宠仈
+     * 批量插入文章-标签关联
      */
     void batchInsertRelations(Long articleId, List<Long> tagIds);
 
     /**
-     * 鍒犻櫎鏂囩珷鐨勬墍鏈夋爣绛惧叧鑱?     */
+     * 删除文章的所有标签关联
+     */
     @Delete("delete from article_tag_relations where article_id = #{articleId}")
     void deleteRelationsByArticleId(Long articleId);
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷鐨勬爣绛惧叧鑱旓紙鎸夋枃绔營D鍒楄〃锛?     */
+     * 批量删除文章的标签关联（按文章ID列表）
+     */
     void batchDeleteRelationsByArticleIds(List<Long> articleIds);
 
     /**
-     * 鑾峰彇鏈夊凡鍙戝竷鏂囩珷鐨勬爣绛惧垪琛紙鍗氬绔級
+     * 获取有已发布文章的标签列表（博客端）
      */
     List<ArticleTags> getVisibleTags();
 
     /**
-     * 鑾峰彇鏍囩鎬绘暟
+     * 获取标签总数
      */
     @Select("select count(*) from article_tags")
     Integer countTotal();

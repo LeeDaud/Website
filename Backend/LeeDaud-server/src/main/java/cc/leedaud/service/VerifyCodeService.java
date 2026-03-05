@@ -1,47 +1,52 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * 楠岃瘉鐮佹湇鍔? */
+ * 验证码服务
+ */
 public interface VerifyCodeService {
     
     /**
-     * 鐢熸垚楠岃瘉鐮?     */
+     * 生成验证码
+     */
     String generateCode();
     
     /**
-     * 淇濆瓨楠岃瘉鐮佸苟璁剧疆鍙戦€侀鐜?     */
+     * 保存验证码并设置发送频率
+     */
     void saveCode(String code);
     
     /**
-     * 閭鏄惁鍙互鍙戦€侀獙璇佺爜锛堥鐜囬檺鍒讹級
+     * 邮箱是否可以发送验证码（频率限制）
      */
     boolean canSendCode();
     
     /**
-     * 鑾峰彇鍓╀綑楠岃瘉鐮佸喎鍗存椂闂?绉?
+     * 获取剩余验证码冷却时间(秒)
      */
     Long getRemainingCooldown();
     
     /**
-     * 鏄惁琚攣瀹?     */
+     * 是否被锁定
+     */
     boolean isLocked();
     
     /**
-     * 鑾峰彇閿佸畾鍓╀綑鏃堕棿锛堝垎閽燂級
+     * 获取锁定剩余时间（分钟）
      */
     Long getLockRemainingMinutes();
     
     /**
-     * 鏄惁鍏佽灏濊瘯楠岃瘉
+     * 是否允许尝试验证
      */
     boolean canAttempt();
     
     /**
-     * 楠岃瘉楠岃瘉鐮?     */
+     * 验证验证码
+     */
     boolean verifyCode(String code);
     
     /**
-     * 鑾峰彇鍓╀綑灏濊瘯娆℃暟
+     * 获取剩余尝试次数
      */
     Long getRemainingAttempts();
 }

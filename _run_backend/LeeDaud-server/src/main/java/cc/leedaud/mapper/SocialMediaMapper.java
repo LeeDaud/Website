@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.entity.SocialMedia;
@@ -13,37 +13,38 @@ import java.util.List;
 @Mapper
 public interface SocialMediaMapper {
     /**
-     * 鑾峰彇鍙绀句氦濯掍綋淇℃伅
+     * 获取可见社交媒体信息
      */
     @Select("select * from social_media where is_visible = 1")
     List<SocialMedia> getVisibleSocialMedia();
 
     /**
-     * 鑾峰彇鎵€鏈夌ぞ浜ゅ獟浣撲俊鎭?     */
+     * 获取所有社交媒体信息
+     */
     @Select("select * from social_media")
     List<SocialMedia> getAllSocialMedia();
 
     /**
-     * 娣诲姞绀句氦濯掍綋
+     * 添加社交媒体
      */
     @AutoFill(value = OperationType.INSERT)
     @Insert("insert into social_media (name, icon, link, sort, is_visible, create_time, update_time) values (#{name}, #{icon}, #{link}, #{sort}, #{isVisible}, #{createTime}, #{updateTime})")
     void insert(SocialMedia socialMedia);
 
     /**
-     * 鍒犻櫎绀句氦濯掍綋
+     * 删除社交媒体
      */
     @Delete("delete from social_media where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 鎵归噺鍒犻櫎绀句氦濯掍綋
+     * 批量删除社交媒体
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 淇敼绀句氦濯掍綋淇℃伅
+     * 修改社交媒体信息
      */
     @AutoFill(value = OperationType.UPDATE)
     void updateById(SocialMedia socialMedia);

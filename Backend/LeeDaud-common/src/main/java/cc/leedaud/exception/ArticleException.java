@@ -1,7 +1,7 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 /**
- * 鏂囩珷鐩稿叧寮傚父
+ * 文章相关异常
  */
 public class ArticleException extends BaseException {
     public ArticleException() {

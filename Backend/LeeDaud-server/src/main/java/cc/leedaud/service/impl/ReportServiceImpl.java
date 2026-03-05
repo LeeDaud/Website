@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.ArticleTitleViewCountDTO;
 import cc.leedaud.dto.DailyViewCountDTO;
@@ -38,7 +38,7 @@ public class ReportServiceImpl implements ReportService {
     private ArticleTagMapper articleTagMapper;
 
     /**
-     * 鑾峰彇鍗氬缁熻鏁版嵁
+     * 获取博客统计数据
      */
     @Cacheable(value = "blogReport", key = "'stats'")
     public BlogReportVO getBlogReport() {
@@ -53,7 +53,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 娴忚閲忕粺璁?     */
+     * 浏览量统计
+     */
     public ViewReportVO getViewStatistics(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = getDateList(begin, end);
 
@@ -72,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 璁垮缁熻
+     * 访客统计
      */
     public VisitorReportVO getVisitorStatistics(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = getDateList(begin, end);
@@ -85,7 +86,8 @@ public class ReportServiceImpl implements ReportService {
                 .map(date -> dailyNewVisitorMap.getOrDefault(date, 0))
                 .collect(Collectors.toList());
 
-        // 璁＄畻绱璁垮鏁?        List<Integer> totalVisitorCountList = new ArrayList<>();
+        // 计算累计访客数
+        List<Integer> totalVisitorCountList = new ArrayList<>();
         for (int i = 0; i < newVisitorCountList.size(); i++) {
             if (i == 0) {
                 totalVisitorCountList.add(newVisitorCountList.get(i));
@@ -102,7 +104,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 璁垮鐪佷唤鍒嗗竷缁熻
+     * 访客省份分布统计
      */
     public ProvinceVisitorVO getProvinceDistribution() {
         List<ProvinceCountDTO> provinceStats = visitorMapper.getProvinceDistribution();
@@ -121,7 +123,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 鏂囩珷璁块棶閲忔帓琛屽墠鍗?     */
+     * 文章访问量排行前十
+     */
     public ArticleViewTop10VO getArticleViewTop10() {
         List<ArticleTitleViewCountDTO> top10List = articleMapper.getViewTop10();
 
@@ -139,7 +142,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 鑾峰彇绠＄悊绔€昏鏁版嵁
+     * 获取管理端总览数据
      */
     public AdminOverviewVO getAdminOverview() {
         return AdminOverviewVO.builder()
@@ -156,7 +159,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * 鑾峰彇鎸囧畾鏃ユ湡鑼冨洿鍐呯殑鏃ユ湡鍒楄〃
+     * 获取指定日期范围内的日期列表
      */
     private List<LocalDate> getDateList(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();

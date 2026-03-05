@@ -129,6 +129,12 @@ $Command
   ) | Out-Null
 }
 
+function Get-ListeningPid([int]$Port) {
+  $line = netstat -ano | Select-String (":$Port\s+.*LISTENING\s+(\d+)$") | Select-Object -First 1
+  if (-not $line) { return $null }
+  return [int]$line.Matches[0].Groups[1].Value
+}
+
 function Ensure-FrontendDeps([string]$AppName, [string]$AppDir) {
   $viteScript = Join-Path $AppDir 'node_modules\\.bin\\vite.ps1'
   if (Test-Path $viteScript) {
@@ -179,8 +185,9 @@ function Start-All {
   Assert-Command 'powershell'
   Assert-Command 'node'
 
+  $effectiveSkipBackend = $SkipBackend
   $javaRuntime = $null
-  if (-not $SkipBackend -or $RebuildBackend) {
+  if (-not $effectiveSkipBackend -or $RebuildBackend) {
     $javaRuntime = Resolve-JavaRuntime -ProjectRoot $root
     if ($javaRuntime.JavaHome) {
       $env:JAVA_HOME = $javaRuntime.JavaHome
@@ -192,15 +199,22 @@ function Start-All {
   $backendPom = Join-Path $backendRoot 'pom.xml'
   $infraScript = Join-Path $root 'start-infra.ps1'
 
-  if (-not $SkipBackend -and -not $SkipInfra) {
+  if (-not $effectiveSkipBackend -and -not $SkipInfra) {
     Assert-Path $infraScript 'Infrastructure script not found (start-infra.ps1).'
     Write-Step 'Ensuring infrastructure (MariaDB/Redis) ...'
-    & $infraScript -DryRun:$DryRun
-  } elseif (-not $SkipBackend -and $SkipInfra) {
+    try {
+      & $infraScript -DryRun:$DryRun
+    } catch {
+      $infraError = $_.Exception.Message
+      Write-Warning "Infrastructure startup failed: $infraError"
+      Write-Step 'Continue with frontends only. Resolve MariaDB/Redis and run ./restart-backend.ps1 afterwards.'
+      $effectiveSkipBackend = $true
+    }
+  } elseif (-not $effectiveSkipBackend -and $SkipInfra) {
     Write-Step 'Skip infrastructure startup by -SkipInfra'
   }
 
-  if (-not $SkipBackend -or $RebuildBackend) {
+  if (-not $effectiveSkipBackend -or $RebuildBackend) {
     Assert-Path $backendPom 'Backend project not found (Backend/pom.xml).'
   }
 
@@ -216,33 +230,49 @@ function Start-All {
   }
 
   $backendJar = $null
-  if (-not $SkipBackend) {
-    $backendJar = Get-BackendJar -RootDir $root
-    if (-not $backendJar) {
-      throw "Backend jar not found. Run once with: ./start-all.ps1 -RebuildBackend"
+  $backendAlreadyRunning = $false
+  if (-not $effectiveSkipBackend) {
+    $backendPid = Get-ListeningPid -Port 5922
+    if ($backendPid) {
+      $backendAlreadyRunning = $true
+      Write-Step "Backend already listening on 5922 (PID $backendPid), skip backend startup."
+    } else {
+      $backendJar = Get-BackendJar -RootDir $root
+      if (-not $backendJar) {
+        throw "Backend jar not found. Run once with: ./start-all.ps1 -RebuildBackend"
+      }
     }
   }
 
   $apps = @(
-    @{ Name = 'Blog';          Dir = (Join-Path $root 'Blog') },
-    @{ Name = 'Admin';         Dir = (Join-Path $root 'Admin') },
-    @{ Name = 'Frontend-Home'; Dir = (Join-Path $root 'Frontend-Home') },
-    @{ Name = 'Cv';            Dir = (Join-Path $root 'Cv') }
+    @{ Name = 'Blog';          Dir = (Join-Path $root 'Blog');          Port = 5173 },
+    @{ Name = 'Admin';         Dir = (Join-Path $root 'Admin');         Port = 5174 },
+    @{ Name = 'Frontend-Home'; Dir = (Join-Path $root 'Frontend-Home'); Port = 5175 },
+    @{ Name = 'Cv';            Dir = (Join-Path $root 'Cv');            Port = 5176 }
   )
 
+  $frontendNeedsStart = @{}
   foreach ($app in $apps) {
+    $existingPid = Get-ListeningPid -Port $app.Port
+    if ($existingPid) {
+      Write-Step "[$($app.Name)] already listening on $($app.Port) (PID $existingPid), skip startup."
+      $frontendNeedsStart[$app.Name] = $false
+      continue
+    }
+    $frontendNeedsStart[$app.Name] = $true
     Ensure-FrontendDeps -AppName $app.Name -AppDir $app.Dir
   }
 
-  if (-not $SkipBackend) {
+  if (-not $effectiveSkipBackend -and -not $backendAlreadyRunning) {
     Write-Step 'Starting backend service ...'
     $backendCmd = "& '$($javaRuntime.JavaExe)' -jar '$backendJar' --spring.profiles.active=dev"
     Start-DevWindow -Title 'Backend-5922' -WorkingDir $backendRoot -Command $backendCmd
-  } else {
-    Write-Step 'Skip backend startup by -SkipBackend'
+  } elseif ($effectiveSkipBackend) {
+    Write-Step 'Skip backend startup for this run.'
   }
 
   foreach ($app in $apps) {
+    if (-not $frontendNeedsStart[$app.Name]) { continue }
     Write-Step "Starting frontend: $($app.Name) ..."
     $viteCmd = "& '.\\node_modules\\.bin\\vite.ps1'"
     Start-DevWindow -Title $app.Name -WorkingDir $app.Dir -Command $viteCmd
@@ -254,7 +284,7 @@ function Start-All {
   Write-Host '  Admin         -> http://localhost:5174'
   Write-Host '  Frontend-Home -> http://localhost:5175'
   Write-Host '  Cv            -> http://localhost:5176'
-  if (-not $SkipBackend) {
+  if (-not $effectiveSkipBackend) {
     Write-Host '  Backend API   -> http://localhost:5922'
   }
   Write-Host ''

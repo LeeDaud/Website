@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 璁垮
+ * 访客
  */
 @Data
 @Builder
@@ -22,54 +22,56 @@ public class Visitors implements Serializable {
 
     private Long id;
 
-    // 璁垮鎸囩汗,鐢ㄤ簬鍞竴鏍囪瘑璁垮
+    // 访客指纹,用于唯一标识访客
     private String fingerprint;
 
-    // 浼氳瘽ID(褰撳墠娴忚鍣ㄤ細璇?
+    // 会话ID(当前浏览器会话)
     private String sessionId;
 
-    // IP鍦板潃
+    // IP地址
     private String ip;
 
-    // 鐢ㄦ埛浠ｇ悊
+    // 用户代理
     private String userAgent;
 
-    // 鍥藉
+    // 国家
     private String country;
 
-    // 鐪佷唤
+    // 省份
     private String province;
 
-    // 鍩庡競
+    // 城市
     private String city;
 
-    // 缁忓害
+    // 经度
     private String longitude;
 
-    // 绾害
+    // 纬度
     private String latitude;
 
-    // 棣栨璁块棶鏃堕棿
+    // 首次访问时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime firstVisitTime;
 
-    // 鏈€鍚庤闂椂闂?    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    // 最后访问时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastVisitTime;
 
-    // 璁块棶娆℃暟
+    // 访问次数
     private Long totalViews;
 
-    // 鏄惁琚皝绂?0-鍚︼紝1-鏄?    private Integer isBlocked;
+    // 是否被封禁,0-否，1-是
+    private Integer isBlocked;
 
-    // 灏佺缁撴潫鏃堕棿
+    // 封禁结束时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expiresAt;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

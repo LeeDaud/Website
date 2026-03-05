@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 涓汉淇℃伅DTO
+ * 个人信息DTO
  */
 @Data
 @Builder
@@ -20,36 +20,37 @@ public class PersonalInfoDTO implements Serializable {
 
     private Long id;
 
-    // 鏄电О
-    @NotBlank(message = "鏄电О涓嶈兘涓虹┖")
-    @Size(max = 20, message = "鏄电О涓嶈兘瓒呰繃20瀛?)
+    // 昵称
+    @NotBlank(message = "昵称不能为空")
+    @Size(max = 20, message = "昵称不能超过20字")
     private String nickname;
 
-    // 鏍囩
-    @NotBlank(message = "鏍囩涓嶈兘涓虹┖")
-    @Size(max = 30, message = "鏍囩涓嶈兘瓒呰繃30瀛?)
+    // 标签
+    @NotBlank(message = "标签不能为空")
+    @Size(max = 30, message = "标签不能超过30字")
     private String tag;
 
-    // 涓汉绠€浠?    @Size(max = 50, message = "涓汉绠€浠嬩笉鑳借秴杩?0瀛?)
+    // 个人简介
+    @Size(max = 50, message = "个人简介不能超过50字")
     private String description;
 
-    // 澶村儚url
+    // 头像url
     private String avatar;
 
-    // 涓汉缃戠珯
-    @Size(max = 100, message = "缃戠珯鍦板潃涓嶈兘瓒呰繃100瀛?)
+    // 个人网站
+    @Size(max = 100, message = "网站地址不能超过100字")
     private String website;
 
-    // 鐢靛瓙閭
-    @Size(max = 50, message = "閭涓嶈兘瓒呰繃50瀛?)
+    // 电子邮箱
+    @Size(max = 50, message = "邮箱不能超过50字")
     private String email;
 
     // GitHub
-    @Size(max = 100, message = "GitHub鍦板潃涓嶈兘瓒呰繃100瀛?)
+    @Size(max = 100, message = "GitHub地址不能超过100字")
     private String github;
 
-    // 鎵€鍦ㄥ湴
-    @Size(max = 50, message = "鎵€鍦ㄥ湴涓嶈兘瓒呰繃50瀛?)
+    // 所在地
+    @Size(max = 50, message = "所在地不能超过50字")
     private String location;
 }
 

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 娴忚
+ * 浏览
  */
 @Data
 @Builder
@@ -22,25 +22,25 @@ public class Views implements Serializable {
 
     private Long id;
 
-    // 璁垮ID
+    // 访客ID
     private Long visitorId;
 
-    // 椤甸潰璺緞
+    // 页面路径
     private String pagePath;
 
-    // 鏉ユ簮URL
+    // 来源URL
     private String referer;
 
-    // 椤甸潰鏍囬
+    // 页面标题
     private String pageTitle;
 
-    // IP鍦板潃
+    // IP地址
     private String ipAddress;
 
-    // 鐢ㄦ埛浠ｇ悊
+    // 用户代理
     private String userAgent;
 
-    // 璁块棶鏃堕棿
+    // 访问时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime viewTime;
 }

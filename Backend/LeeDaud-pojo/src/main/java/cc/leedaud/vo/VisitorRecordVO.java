@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,14 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VisitorRecordVO {
-    // 缁欏墠绔繑鍥炶瀹㈡爣璇?
-    // 璁惧鎸囩汗
+    // 给前端返回访客标识
+
+    // 设备指纹
     private String visitorFingerprint;
-    // 褰撳墠浼氳瘽ID
+    // 当前会话ID
     private String sessionId;
-    // 璁垮鍦ㄦ暟鎹簱涓殑ID
+    // 访客在数据库中的ID
     private Long visitorId;
-    // 鏄惁鏄柊璁垮
+    // 是否是新访客
     private Boolean isNewVisitor;
 }
 

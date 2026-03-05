@@ -1,4 +1,4 @@
-﻿package cc.leedaud.config;
+package cc.leedaud.config;
 
 import cc.leedaud.interceptor.JwtTokenAdminInterceptor;
 import cc.leedaud.json.JacksonObjectMapper;
@@ -17,7 +17,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import java.util.List;
 
 /**
- * 閰嶇疆绫伙紝娉ㄥ唽web灞傜浉鍏崇粍浠? */
+ * 配置类，注册web层相关组件
+ */
 @Configuration
 @Slf4j
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
@@ -26,7 +27,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     /**
-     * 娉ㄥ唽鑷畾涔夋嫤鎴櫒
+     * 注册自定义拦截器
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
@@ -36,7 +37,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/admin/admin/sendCode")
                 .excludePathPatterns("/admin/admin/logout");
 
-        // API 鍝嶅簲绂佹 CDN/娴忚鍣ㄧ紦瀛橈紝闃叉 GET 璇锋眰杩斿洖杩囨湡鏁版嵁
+        // API 响应禁止 CDN/浏览器缓存，防止 GET 请求返回过期数据
         registry.addInterceptor(new HandlerInterceptor() {
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -48,28 +49,30 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 閰嶇疆璺ㄥ煙鏀寔
+     * 配置跨域支持
      * @param registry
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")  // 鍏佽鎵€鏈夋簮锛屾垨鎸囧畾鍩熷悕
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 鍏佽鐨凥TTP鏂规硶
+                .allowedOriginPatterns("*")  // 允许所有源，或指定域名
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 允许的HTTP方法
                 .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(3600);  // 棰勬璇锋眰缂撳瓨鏃堕棿
+                .maxAge(3600);  // 预检请求缓存时间
     }
 
     /**
-     * 鎵╁睍娑堟伅杞崲鍣? 灏咼ava瀵硅薄杞崲涓篔SON鏍煎紡鐨勫搷搴旀暟鎹?     * @param converters
+     * 扩展消息转换器, 将Java对象转换为JSON格式的响应数据
+     * @param converters
      */
     @Override
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // 鍒涘缓娑堟伅杞崲鍣ㄥ璞?        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        // 璁剧疆瀵硅薄杞崲鍣紝搴曞眰浣跨敤FastJSON灏咼ava瀵硅薄杞负JSON
+        // 创建消息转换器对象
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        // 设置对象转换器，底层使用FastJSON将Java对象转为JSON
         converter.setObjectMapper(new JacksonObjectMapper());
-        // 灏嗘秷鎭浆鎹㈠櫒鍔犲叆鍒板鍣ㄤ腑
+        // 将消息转换器加入到容器中
         converters.add(0, converter);
     }
 }

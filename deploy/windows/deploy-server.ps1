@@ -1,5 +1,7 @@
 param(
   [string]$Branch = 'main',
+  [string]$CommitMessage = '',
+  [switch]$SkipCommit,
   [switch]$SkipPush,
   [switch]$SkipFrontendBuild,
   [switch]$SkipBackendBuild
@@ -7,17 +9,22 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$scriptPath = Join-Path $PSScriptRoot 'push-and-deploy.ps1'
+$scriptPath = Join-Path $PSScriptRoot 'one-click-deploy.ps1'
+
+$localConfig = Join-Path $PSScriptRoot 'deploy.local.psd1'
+if (-not (Test-Path $localConfig)) {
+  $localConfig = Join-Path $PSScriptRoot 'deploy.local.example.psd1'
+}
 
 $argsList = @(
   '-ExecutionPolicy', 'Bypass',
   '-File', $scriptPath,
-  '-ServerHost', '66.63.173.143',
-  '-ServerUser', 'root',
-  '-Branch', $Branch,
-  '-ServerAppRoot', '/root/website'
+  '-ConfigPath', $localConfig,
+  '-Branch', $Branch
 )
 
+if ($CommitMessage) { $argsList += @('-CommitMessage', $CommitMessage) }
+if ($SkipCommit) { $argsList += '-SkipCommit' }
 if ($SkipPush) { $argsList += '-SkipPush' }
 if ($SkipFrontendBuild) { $argsList += '-SkipFrontendBuild' }
 if ($SkipBackendBuild) { $argsList += '-SkipBackendBuild' }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.ArticleCategoryDTO;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔枃绔犲垎绫绘帴鍙? */
+ * 管理端文章分类接口
+ */
 @Slf4j
 @RestController("adminArticleCategoryController")
 @RequestMapping("/admin/articleCategory")
@@ -24,7 +25,8 @@ public class ArticleCategoryController {
     private ArticleCategoryService articleCategoryService;
 
     /**
-     * 鑾峰彇鎵€鏈夋枃绔犲垎绫?     * @return
+     * 获取所有文章分类
+     * @return
      */
     @GetMapping
     public Result<List<ArticleCategories>> listAll() {
@@ -33,40 +35,40 @@ public class ArticleCategoryController {
     }
 
     /**
-     * 娣诲姞鏂囩珷鍒嗙被
+     * 添加文章分类
      * @param articleCategoryDTO
      * @return
      */
     @PostMapping
     @OperationLog(value = OperationType.INSERT, target = "articleCategory")
     public Result addCategory(@Valid @RequestBody ArticleCategoryDTO articleCategoryDTO) {
-        log.info("娣诲姞鏂囩珷鍒嗙被,{}", articleCategoryDTO);
+        log.info("添加文章分类,{}", articleCategoryDTO);
         articleCategoryService.addCategory(articleCategoryDTO);
         return Result.success();
     }
 
     /**
-     * 鏇存柊鏂囩珷鍒嗙被
+     * 更新文章分类
      * @param articleCategoryDTO
      * @return
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "articleCategory", targetId = "#articleCategoryDTO.id")
     public Result updateCategory(@Valid @RequestBody ArticleCategoryDTO articleCategoryDTO) {
-        log.info("鏇存柊鏂囩珷鍒嗙被,{}", articleCategoryDTO);
+        log.info("更新文章分类,{}", articleCategoryDTO);
         articleCategoryService.updateCategory(articleCategoryDTO);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷鍒嗙被
+     * 批量删除文章分类
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "articleCategory", targetId = "#ids")
     public Result deleteCategory(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎鏂囩珷鍒嗙被,{}", ids);
+        log.info("批量删除文章分类,{}", ids);
         articleCategoryService.batchDelete(ids);
         return Result.success();
     }

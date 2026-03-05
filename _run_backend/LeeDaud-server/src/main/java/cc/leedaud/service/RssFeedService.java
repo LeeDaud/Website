@@ -1,8 +1,8 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 public interface RssFeedService {
     /**
-     * 鐢熸垚RSS Feed
+     * 生成RSS Feed
      * @return
      */
     String generateRssFeed();

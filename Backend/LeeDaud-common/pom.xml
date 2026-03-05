@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -15,7 +15,7 @@
     </properties>
 
     <dependencies>
-        <!-- Lombok 渚濊禆 -->
+        <!-- Lombok 依赖 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -28,19 +28,19 @@
             <artifactId>fastjson</artifactId>
         </dependency>
 
-        <!-- commons-lang 渚濊禆 -->
+        <!-- commons-lang 依赖 -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
 
-        <!-- Spring Boot JSON 鏀寔 -->
+        <!-- Spring Boot JSON 支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
 
-        <!-- JWT 渚濊禆闇€瑕佹媶鍒?-->
+        <!-- JWT 依赖需要拆分 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -56,14 +56,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 閰嶇疆灞炴€у鐞嗗櫒 -->
+        <!-- 配置属性处理器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- 闃块噷浜?OSS -->
+        <!-- 阿里云 OSS -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
@@ -84,49 +84,49 @@
             <artifactId>tomcat-embed-core</artifactId>
         </dependency>
 
-        <!-- 鍥剧墖澶勭悊 -->
+        <!-- 图片处理 -->
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
         </dependency>
 
-        <!-- 澶勭悊WebP鏍煎紡 -->
+        <!-- 处理WebP格式 -->
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-webp</artifactId>
         </dependency>
 
-        <!-- WebP鏀寔sejda -->
+        <!-- WebP支持sejda -->
         <dependency>
             <groupId>org.sejda.imageio</groupId>
             <artifactId>webp-imageio</artifactId>
         </dependency>
 
-        <!-- CommonMark鏍稿績 -->
+        <!-- CommonMark核心 -->
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
         </dependency>
 
-        <!-- 琛ㄦ牸鎵╁睍 -->
+        <!-- 表格扩展 -->
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-gfm-tables</artifactId>
         </dependency>
 
-        <!-- 鑷姩閾炬帴鎵╁睍 -->
+        <!-- 自动链接扩展 -->
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-autolink</artifactId>
         </dependency>
 
-        <!-- 浠诲姟鍒楄〃鎵╁睍 -->
+        <!-- 任务列表扩展 -->
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-task-list-items</artifactId>
         </dependency>
 
-        <!-- Jsoup HTML娓呯悊 -->
+        <!-- Jsoup HTML清理 -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 
 import cc.leedaud.dto.PersonalInfoDTO;
@@ -19,7 +19,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     private PersonalInfoMapper personalInfoMapper;
 
     /**
-     * 绠＄悊绔幏鍙栨墍鏈変釜浜轰俊鎭?     * @return
+     * 管理端获取所有个人信息
+     * @return
      */
     @Cacheable(value = "personalInfo", key = "'all'")
     public PersonalInfo getAllPersonalInfo() {
@@ -28,18 +29,20 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     }
 
     /**
-     * 绠＄悊绔洿鏂颁釜浜轰俊鎭?     * @param personalInfo
+     * 管理端更新个人信息
+     * @param personalInfo
      */
     @CacheEvict(value = "personalInfo", allEntries = true)
     public void updatePersonalInfo(PersonalInfoDTO personalInfoDTO) {
         PersonalInfo personalInfo = new PersonalInfo();
         BeanUtils.copyProperties(personalInfoDTO, personalInfo);
-        // 鏇存柊涓汉淇℃伅
+        // 更新个人信息
         personalInfoMapper.updateById(personalInfo);
     }
 
     /**
-     * 鍏朵粬绔幏鍙栦釜浜轰俊鎭?     * @return
+     * 其他端获取个人信息
+     * @return
      */
     @Cacheable(value = "personalInfo", key = "'vo'")
     public PersonalInfoVO getPersonalInfo() {

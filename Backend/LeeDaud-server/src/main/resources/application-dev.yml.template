@@ -1,4 +1,4 @@
-﻿LeeDaud:
+leedaud:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: localhost
@@ -12,4 +12,4 @@
     password: your_redis_password
     database: 0
   jwt:
-    ttl: 172800000 # 2澶╋紝鍗曚綅姣
+    ttl: 172800000 # 2天，单位毫秒

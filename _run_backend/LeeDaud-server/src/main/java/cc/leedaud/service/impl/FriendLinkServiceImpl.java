@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.FriendLinkDTO;
 import cc.leedaud.entity.FriendLinks;
@@ -24,7 +24,8 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     private FriendLinkMapper friendLinkMapper;
 
     /**
-     * 鑾峰彇鎵€鏈夊弸閾?     * @return
+     * 获取所有友链
+     * @return
      */
     @Cacheable(value = "friendLinks", key = "'all'")
     public List<FriendLinks> getAllFriendLink() {
@@ -36,7 +37,7 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     /**
-     * 娣诲姞鍙嬮摼
+     * 添加友链
      * @param friendLink
      */
     @CacheEvict(value = "friendLinks", allEntries = true)
@@ -47,7 +48,7 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鍙嬮摼
+     * 批量删除友链
      * @param ids
      */
     @CacheEvict(value = "friendLinks", allEntries = true)
@@ -56,7 +57,7 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     /**
-     * 淇敼鍙嬮摼
+     * 修改友链
      * @param friendLink
      */
     @CacheEvict(value = "friendLinks", allEntries = true)
@@ -67,7 +68,7 @@ public class FriendLinkServiceImpl implements FriendLinkService {
     }
 
     /**
-     * 鍗氬绔幏鍙栧彲瑙佺殑鍙嬮摼
+     * 博客端获取可见的友链
      * @return
      */
     @Cacheable(value = "friendLinks", key = "'visible'")

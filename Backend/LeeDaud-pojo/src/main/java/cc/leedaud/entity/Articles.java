@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 鏂囩珷
+ * 文章
  */
 @Data
 @Builder
@@ -24,69 +24,73 @@ public class Articles implements Serializable {
 
     private Long id;
 
-    // 鏂囩珷鏍囬
+    // 文章标题
     private String title;
 
-    // URL鏍囪瘑
+    // URL标识
     private String slug;
 
-    // 鏂囩珷鎽樿
+    // 文章摘要
     private String summary;
 
-    // 灏侀潰鍥剧墖url
+    // 封面图片url
     private String coverImage;
 
-    // Markdown鍐呭
+    // Markdown内容
     private String contentMarkdown;
 
-    // 杞崲鍚庣殑HTML鍐呭
+    // 转换后的HTML内容
     private String contentHtml;
 
-    // 鍒嗙被ID
+    // 分类ID
     private Long categoryId;
 
-    // 娴忚娆℃暟
+    // 浏览次数
     private Long viewCount;
 
-    // 鐐硅禐娆℃暟
+    // 点赞次数
     private Long likeCount;
 
-    // 璇勮鏁?    private Long commentCount;
+    // 评论数
+    private Long commentCount;
 
-    // 瀛楁暟缁熻
+    // 字数统计
     private Long wordCount;
 
-    // 棰勮闃呰鏃堕棿锛屽崟浣嶏細鍒嗛挓
+    // 预计阅读时间，单位：分钟
     private Long readingTime;
 
-    // 鏄惁鍙戝竷,0-鍚︼紝1-鏄?    private Integer isPublished;
+    // 是否发布,0-否，1-是
+    private Integer isPublished;
 
-    // 鏄惁缃《,0-鍚︼紝1-鏄?    private Integer isTop;
+    // 是否置顶,0-否，1-是
+    private Integer isTop;
 
-    // 鍙戝竷鏃堕棿
+    // 发布时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
 
-    // 鍙戝竷骞翠唤
+    // 发布年份
     private Integer publishYear;
 
-    // 鍙戝竷鏈堜唤
+    // 发布月份
     private Integer publishMonth;
 
-    // 鍙戝竷鏃ユ湡
+    // 发布日期
     private Integer publishDay;
 
-    // 鍙戝竷鏃ユ湡锛堝幓鎺夋椂闂达級
+    // 发布日期（去掉时间）
     private LocalDate publishDate;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
-    // 鏍囩ID鍒楄〃锛堥潪鏁版嵁搴撳瓧娈碉紝绠＄悊绔繑鍥炴椂濉厖锛?    private List<Long> tagIds;
+    // 标签ID列表（非数据库字段，管理端返回时填充）
+    private List<Long> tagIds;
 }
 

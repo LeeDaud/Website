@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.ArticleCategoryDTO;
 import cc.leedaud.entity.ArticleCategories;
@@ -24,7 +24,8 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
     private ArticleMapper articleMapper;
 
     /**
-     * 鑾峰彇鎵€鏈夋枃绔犲垎绫?     * @return
+     * 获取所有文章分类
+     * @return
      */
     @Cacheable(value = "articleCategories", key = "'all'")
     public List<ArticleCategories> listAll() {
@@ -32,7 +33,7 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
     }
 
     /**
-     * 娣诲姞鏂囩珷鍒嗙被
+     * 添加文章分类
      * @param articleCategoryDTO
      */
     @Caching(evict = {
@@ -47,7 +48,8 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
     }
 
     /**
-     * 鏇存柊鏂囩珷鍒嗙被锛堝惈鎺掑簭锛?     * @param articleCategoryDTO
+     * 更新文章分类（含排序）
+     * @param articleCategoryDTO
      */
     @Caching(evict = {
             @CacheEvict(value = "articleCategories", allEntries = true),
@@ -61,7 +63,7 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷鍒嗙被
+     * 批量删除文章分类
      * @param ids
      */
     @Caching(evict = {
@@ -70,16 +72,17 @@ public class ArticleCategoryServiceImpl implements ArticleCategoryService {
             @CacheEvict(value = "blogReport", allEntries = true)
     })
     public void batchDelete(List<Long> ids) {
-        // 妫€鏌ュ垎绫讳笅鏄惁鏈夊叧鑱旀枃绔?        for (Long id : ids) {
+        // 检查分类下是否有关联文章
+        for (Long id : ids) {
             Integer count = articleMapper.countByCategoryId(id);
             if (count != null && count > 0) {
-                throw new RuntimeException("鍒嗙被涓嬪瓨鍦ㄥ叧鑱旀枃绔狅紝鏃犳硶鍒犻櫎");
+                throw new RuntimeException("分类下存在关联文章，无法删除");
             }
         }
         articleCategoryMapper.batchDelete(ids);
     }
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     @Cacheable(value = "articleCategories", key = "'visible'")
     public List<ArticleCategories> getVisibleCategories() {

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 璁垮缂栬緫璇勮DTO
+ * 访客编辑评论DTO
  */
 @Data
 @Builder
@@ -19,20 +19,20 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ArticleCommentEditDTO implements Serializable {
 
-    // 璇勮ID
-    @NotNull(message = "璇勮ID涓嶈兘涓虹┖")
+    // 评论ID
+    @NotNull(message = "评论ID不能为空")
     private Long id;
 
-    // 璁垮ID锛堢敤浜庨獙璇佽韩浠斤級
-    @NotNull(message = "璁垮ID涓嶈兘涓虹┖")
+    // 访客ID（用于验证身份）
+    @NotNull(message = "访客ID不能为空")
     private Long visitorId;
 
-    // 缂栬緫鍚庣殑鍐呭
-    @NotBlank(message = "璇勮鍐呭涓嶈兘涓虹┖")
-    @Size(max = 2000, message = "璇勮鍐呭涓嶈兘瓒呰繃2000瀛?)
+    // 编辑后的内容
+    @NotBlank(message = "评论内容不能为空")
+    @Size(max = 2000, message = "评论内容不能超过2000字")
     private String content;
 
-    // 鏄惁浣跨敤markdown
+    // 是否使用markdown
     private Integer isMarkdown;
 }
 

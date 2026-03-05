@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.entity.SystemConfig;
 import cc.leedaud.result.Result;
@@ -19,12 +19,13 @@ public class SystemConfigController {
     private SystemConfigService systemConfigService;
 
     /**
-     * 鏍规嵁閰嶇疆閿幏鍙栭厤缃?     * @param configKey
+     * 根据配置键获取配置
+     * @param configKey
      * @return
      */
     @GetMapping("/key/{configKey}")
     public Result<SystemConfig> getByKey(@PathVariable String configKey) {
-        log.info("鏍规嵁閰嶇疆閿幏鍙栭厤缃?{}", configKey);
+        log.info("根据配置键获取配置,{}", configKey);
         SystemConfig systemConfig = systemConfigService.getByKey(configKey);
         return Result.success(systemConfig);
     }

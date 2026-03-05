@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 鏂囩珷涓婁笅绡囧鑸猇O
+ * 文章上下篇导航VO
  */
 @Data
 @Builder
@@ -18,8 +18,10 @@ public class ArticleNavigationVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // 涓婁竴绡?    private BlogArticleVO prevArticle;
+    // 上一篇
+    private BlogArticleVO prevArticle;
 
-    // 涓嬩竴绡?    private BlogArticleVO nextArticle;
+    // 下一篇
+    private BlogArticleVO nextArticle;
 }
 

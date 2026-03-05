@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.service.AsyncEmailService;
 import cc.leedaud.service.EmailService;
@@ -8,7 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
- * 寮傛閭欢鏈嶅姟瀹炵幇锛堢嫭绔?Service 淇濊瘉 @Async 浠ｇ悊鐢熸晥锛? */
+ * 异步邮件服务实现（独立 Service 保证 @Async 代理生效）
+ */
 @Service
 @Slf4j
 public class AsyncEmailServiceImpl implements AsyncEmailService {
@@ -17,7 +18,7 @@ public class AsyncEmailServiceImpl implements AsyncEmailService {
     private EmailService emailService;
 
     /**
-     * 寮傛鍙戦€佽瘎璁?鐣欒█鍥炲閫氱煡閭欢
+     * 异步发送评论/留言回复通知邮件
      */
     @Async("taskExecutor")
     public void sendReplyNotificationAsync(String toEmail, String parentNickname, String parentContent,
@@ -26,12 +27,12 @@ public class AsyncEmailServiceImpl implements AsyncEmailService {
             emailService.sendReplyNotification(toEmail, parentNickname, parentContent,
                     replyNickname, replyContent, type);
         } catch (Exception e) {
-            log.error("寮傛鍙戦€佸洖澶嶉€氱煡閭欢澶辫触: to={}, type={}, ex={}", toEmail, type, e.getMessage());
+            log.error("异步发送回复通知邮件失败: to={}, type={}, ex={}", toEmail, type, e.getMessage());
         }
     }
 
     /**
-     * 寮傛鍙戦€佹柊鏂囩珷閫氱煡閭欢
+     * 异步发送新文章通知邮件
      */
     @Async("taskExecutor")
     public void sendNewArticleNotificationAsync(String toEmail, String nickname, String articleTitle,
@@ -39,7 +40,7 @@ public class AsyncEmailServiceImpl implements AsyncEmailService {
         try {
             emailService.sendNewArticleNotification(toEmail, nickname, articleTitle, articleSummary, articleUrl);
         } catch (Exception e) {
-            log.error("寮傛鍙戦€佹柊鏂囩珷閫氱煡閭欢澶辫触: to={}, title={}, ex={}", toEmail, articleTitle, e.getMessage());
+            log.error("异步发送新文章通知邮件失败: to={}, title={}, ex={}", toEmail, articleTitle, e.getMessage());
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿package cc.leedaud.constant;
+package cc.leedaud.constant;
 
 /**
- * 鍏叡瀛楁鑷姩濉厖鐩稿叧甯搁噺
+ * 公共字段自动填充相关常量
  */
 public class AutoFillConstant {
     /**
-     * 瀹炰綋绫讳腑鐨勬柟娉曞悕绉?     */
+     * 实体类中的方法名称
+     */
     public static final String SET_CREATE_TIME = "setCreateTime";
     public static final String SET_UPDATE_TIME = "setUpdateTime";
 }

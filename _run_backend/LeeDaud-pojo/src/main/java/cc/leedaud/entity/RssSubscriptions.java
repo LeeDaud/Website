@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Rss璁㈤槄璁板綍
+ * Rss订阅记录
  */
 @Data
 @Builder
@@ -22,22 +22,23 @@ public class RssSubscriptions implements Serializable {
 
     private Long id;
 
-    // 璁垮ID
+    // 访客ID
     private Long visitorId;
 
-    // 鏄电О
+    // 昵称
     private String nickname;
 
-    // 閭
+    // 邮箱
     private String email;
 
-    // 鏄惁婵€娲伙紝0-鍚︼紝1-鏄?    private Integer isActive;
+    // 是否激活，0-否，1-是
+    private Integer isActive;
 
-    // 璁㈤槄鏃堕棿
+    // 订阅时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime subscribeTime;
 
-    // 鍙栨秷璁㈤槄鏃堕棿
+    // 取消订阅时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime unSubscribeTime;
 }

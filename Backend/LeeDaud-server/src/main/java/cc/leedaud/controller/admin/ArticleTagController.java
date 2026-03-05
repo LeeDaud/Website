@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.ArticleTagDTO;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔枃绔犳爣绛炬帴鍙? */
+ * 管理端文章标签接口
+ */
 @Slf4j
 @RestController("adminArticleTagController")
 @RequestMapping("/admin/article/tag")
@@ -24,7 +25,8 @@ public class ArticleTagController {
     private ArticleTagService articleTagService;
 
     /**
-     * 鑾峰彇鎵€鏈夋爣绛?     * @return
+     * 获取所有标签
+     * @return
      */
     @GetMapping
     public Result<List<ArticleTags>> listAll() {
@@ -33,40 +35,40 @@ public class ArticleTagController {
     }
 
     /**
-     * 娣诲姞鏍囩
+     * 添加标签
      * @param articleTagDTO
      * @return
      */
     @PostMapping
     @OperationLog(value = OperationType.INSERT, target = "articleTag")
     public Result addTag(@Valid @RequestBody ArticleTagDTO articleTagDTO) {
-        log.info("娣诲姞鏂囩珷鏍囩: {}", articleTagDTO);
+        log.info("添加文章标签: {}", articleTagDTO);
         articleTagService.addTag(articleTagDTO);
         return Result.success();
     }
 
     /**
-     * 淇敼鏍囩
+     * 修改标签
      * @param articleTagDTO
      * @return
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "articleTag", targetId = "#articleTagDTO.id")
     public Result updateTag(@Valid @RequestBody ArticleTagDTO articleTagDTO) {
-        log.info("淇敼鏂囩珷鏍囩: {}", articleTagDTO);
+        log.info("修改文章标签: {}", articleTagDTO);
         articleTagService.updateTag(articleTagDTO);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏍囩
+     * 批量删除标签
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "articleTag", targetId = "#ids")
     public Result batchDelete(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎鏂囩珷鏍囩: {}", ids);
+        log.info("批量删除文章标签: {}", ids);
         articleTagService.batchDelete(ids);
         return Result.success();
     }

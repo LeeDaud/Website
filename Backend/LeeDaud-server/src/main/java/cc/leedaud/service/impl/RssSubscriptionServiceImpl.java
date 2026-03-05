@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.dto.RssSubscriptionDTO;
@@ -25,23 +25,24 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     private RssSubscriptionMapper rssSubscriptionMapper;
 
     /**
-     * 娣诲姞RSS璁㈤槄
+     * 添加RSS订阅
      * @param rssSubscriptionDTO
      */
     public void addSubscription(RssSubscriptionDTO rssSubscriptionDTO) {
-        // 妫€鏌ラ偖绠辨槸鍚﹀凡瀛樺湪
+        // 检查邮箱是否已存在
         RssSubscriptions existingSubscription = rssSubscriptionMapper.getByEmail(rssSubscriptionDTO.getEmail());
         if (existingSubscription != null) {
-            // 濡傛灉宸插瓨鍦ㄤ笖婵€娲伙紝鎶涘嚭寮傚父
+            // 如果已存在且激活，抛出异常
             if (existingSubscription.getIsActive() == 1) {
                 throw new RssSubscriptionException(MessageConstant.RssAlreadyExists);
             }
-            // 濡傛灉宸插瓨鍦ㄤ絾鏈縺娲伙紝閲嶆柊婵€娲?            existingSubscription.setIsActive(1);
+            // 如果已存在但未激活，重新激活
+            existingSubscription.setIsActive(1);
             existingSubscription.setNickname(rssSubscriptionDTO.getNickname());
             existingSubscription.setUnSubscribeTime(null);
             rssSubscriptionMapper.update(existingSubscription);
         } else {
-            // 鏂板璁㈤槄
+            // 新增订阅
             RssSubscriptions rssSubscriptions = RssSubscriptions.builder()
                     .visitorId(rssSubscriptionDTO.getVisitorId())
                     .nickname(rssSubscriptionDTO.getNickname())
@@ -54,7 +55,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鍒嗛〉鏌ヨRSS璁㈤槄鍒楄〃
+     * 分页查询RSS订阅列表
      * @param rssSubscriptionPageQueryDTO
      * @return
      */
@@ -67,7 +68,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鏇存柊RSS璁㈤槄
+     * 更新RSS订阅
      * @param rssSubscriptions
      */
     public void updateSubscription(RssSubscriptions rssSubscriptions) {
@@ -75,7 +76,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎RSS璁㈤槄
+     * 批量删除RSS订阅
      * @param ids
      */
     public void batchDelete(List<Long> ids) {
@@ -83,7 +84,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鏍规嵁ID鏌ヨRSS璁㈤槄
+     * 根据ID查询RSS订阅
      * @param id
      * @return
      */
@@ -92,7 +93,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鑾峰彇鎵€鏈夋縺娲荤殑璁㈤槄
+     * 获取所有激活的订阅
      * @return
      */
     public List<RssSubscriptions> getAllActiveSubscriptions() {
@@ -100,7 +101,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鏍规嵁閭鍙栨秷璁㈤槄
+     * 根据邮箱取消订阅
      * @param email
      */
     public void unsubscribeByEmail(String email) {
@@ -117,7 +118,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 妫€鏌ヨ瀹㈡槸鍚﹀凡璁㈤槄
+     * 检查访客是否已订阅
      */
     public boolean hasSubscribed(Long visitorId) {
         if (visitorId == null) return false;
@@ -125,7 +126,7 @@ public class RssSubscriptionServiceImpl implements RssSubscriptionService {
     }
 
     /**
-     * 鑾峰彇璁垮璁㈤槄璇︽儏
+     * 获取访客订阅详情
      */
     public RssSubscriptionStatusVO getSubscriptionStatus(Long visitorId) {
         if (visitorId == null) {

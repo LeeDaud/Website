@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.RateLimit;
 import cc.leedaud.dto.*;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 绠＄悊绔鐞嗗憳鎺ュ彛
+ * 管理端管理员接口
  */
 @RestController
 @RequestMapping("/admin/admin")
@@ -23,30 +23,32 @@ public class AdminController {
     private AdminService adminService;
 
     /**
-     * 鍙戦€侀獙璇佺爜
+     * 发送验证码
      */
     @PostMapping("/sendCode")
     @RateLimit(type = RateLimit.Type.IP, tokens = 5, burstCapacity = 8,
-            timeWindow = 60, message = "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+            timeWindow = 60, message = "操作过于频繁，请稍后再试")
     public Result sendCode(@RequestBody SendCodeDTO sendCodeDTO) {
-        log.info("鍙戦€侀獙璇佺爜,{}", sendCodeDTO);
+        log.info("发送验证码,{}", sendCodeDTO);
         adminService.sendVerifyCode(sendCodeDTO.getUsername());
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樼櫥褰?     */
+     * 管理员登录
+     */
     @PostMapping("/login")
     @RateLimit(type = RateLimit.Type.IP, tokens = 5, burstCapacity = 8,
-            timeWindow = 60, message = "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+            timeWindow = 60, message = "操作过于频繁，请稍后再试")
     public Result<AdminLoginVO> AdminLogin(@Valid @RequestBody AdminLoginDTO adminLoginDTO) throws Exception {
-        log.info("绠＄悊鍛樼櫥褰曪細{}", adminLoginDTO);
+        log.info("管理员登录：{}", adminLoginDTO);
         AdminLoginVO adminLoginVO = adminService.login(adminLoginDTO);
         return Result.success(adminLoginVO);
     }
 
     /**
-     * 鑾峰彇绠＄悊鍛樹俊鎭?     */
+     * 获取管理员信息
+     */
     @GetMapping
     public Result<AdminVO> getAdminInfo() {
         AdminVO adminVO = adminService.getAdminById();
@@ -54,37 +56,41 @@ public class AdminController {
     }
 
     /**
-     * 绠＄悊鍛橀€€鍑虹櫥褰?     */
+     * 管理员退出登录
+     */
     @PostMapping("/logout")
     public Result logout(@RequestBody AdminLogoutDTO adminLogoutDTO) {
-        log.info("绠＄悊鍛橀€€鍑虹櫥褰曪細{}", adminLogoutDTO);
+        log.info("管理员退出登录：{}", adminLogoutDTO);
         adminService.logout(adminLogoutDTO);
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樹慨鏀瑰瘑鐮?     */
+     * 管理员修改密码
+     */
     @PutMapping("/changePassword")
     public Result changePassword(@Valid @RequestBody AdminChangePasswordDTO adminChangePasswordDTO) throws Exception {
-        log.info("绠＄悊鍛樹慨鏀瑰瘑鐮侊細{}", adminChangePasswordDTO);
+        log.info("管理员修改密码：{}", adminChangePasswordDTO);
         adminService.changePassword(adminChangePasswordDTO);
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樻洿鏀规樀绉?     */
+     * 管理员更改昵称
+     */
     @PutMapping("/changeNickname")
     public Result changeNickname(@Valid @RequestBody AdminChangeNicknameDTO adminChangeNicknameDTO) {
-        log.info("绠＄悊鍛樻洿鏀规樀绉帮細{}", adminChangeNicknameDTO);
+        log.info("管理员更改昵称：{}", adminChangeNicknameDTO);
         adminService.changeNickname(adminChangeNicknameDTO);
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樻崲缁戦偖绠?     */
+     * 管理员换绑邮箱
+     */
     @PutMapping("/changeEmail")
     public Result changeEmail(@Valid @RequestBody AdminChangeEmailDTO adminChangeEmailDTO) {
-        log.info("绠＄悊鍛樻崲缁戦偖绠憋細{}", adminChangeEmailDTO);
+        log.info("管理员换绑邮箱：{}", adminChangeEmailDTO);
         adminService.changeEmail(adminChangeEmailDTO);
         return Result.success();
     }

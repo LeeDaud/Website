@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.annotation.RateLimit;
 import cc.leedaud.dto.MessageDTO;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 鍗氬绔暀瑷€鎺ュ彛
+ * 博客端留言接口
  */
 @RestController("blogMessageController")
 @RequestMapping("/blog/message")
@@ -26,49 +26,50 @@ public class MessageController {
     private MessageService messageService;
 
     /**
-     * 璁垮鎻愪氦鐣欒█
+     * 访客提交留言
      * @param messageDTO
      * @param request
      * @return
      */
     @PostMapping
     @RateLimit(type = RateLimit.Type.IP, tokens = 5, burstCapacity = 8,
-              timeWindow = 60, message = "鐣欒█杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+              timeWindow = 60, message = "留言过于频繁，请稍后再试")
     public Result<String> submitMessage(@Valid @RequestBody MessageDTO messageDTO, HttpServletRequest request) {
-        log.info("璁垮鎻愪氦鐣欒█: {}", messageDTO);
+        log.info("访客提交留言: {}", messageDTO);
         messageService.submitMessage(messageDTO, request);
         return Result.success();
     }
 
     /**
-     * 鑾峰彇鐣欒█鍒楄〃锛堟爲褰㈢粨鏋勶紝鍚綋鍓嶈瀹㈢殑鏈鏍哥暀瑷€锛?     */
+     * 获取留言列表（树形结构，含当前访客的未审核留言）
+     */
     @GetMapping
     public Result<List<MessageVO>> getMessageTree(@RequestParam(required = false) Long visitorId) {
-        log.info("鍗氬绔幏鍙栫暀瑷€鏍? visitorId={}", visitorId);
+        log.info("博客端获取留言树: visitorId={}", visitorId);
         List<MessageVO> messageTree = messageService.getMessageTree(visitorId);
         return Result.success(messageTree);
     }
 
     /**
-     * 璁垮缂栬緫鐣欒█
+     * 访客编辑留言
      */
     @PutMapping("/edit")
     @RateLimit(type = RateLimit.Type.IP, tokens = 5, burstCapacity = 8,
-              timeWindow = 60, message = "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+              timeWindow = 60, message = "操作过于频繁，请稍后再试")
     public Result<String> editMessage(@Valid @RequestBody MessageEditDTO editDTO) {
-        log.info("璁垮缂栬緫鐣欒█: {}", editDTO);
+        log.info("访客编辑留言: {}", editDTO);
         messageService.editMessage(editDTO);
         return Result.success();
     }
 
     /**
-     * 璁垮鍒犻櫎鐣欒█
+     * 访客删除留言
      */
     @DeleteMapping("/{id}")
     @RateLimit(type = RateLimit.Type.IP, tokens = 5, burstCapacity = 8,
-              timeWindow = 60, message = "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+              timeWindow = 60, message = "操作过于频繁，请稍后再试")
     public Result<String> deleteMessage(@PathVariable Long id, @RequestParam Long visitorId) {
-        log.info("璁垮鍒犻櫎鐣欒█: id={}, visitorId={}", id, visitorId);
+        log.info("访客删除留言: id={}, visitorId={}", id, visitorId);
         messageService.visitorDeleteMessage(id, visitorId);
         return Result.success();
     }

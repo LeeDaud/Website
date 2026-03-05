@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.constant.StatusConstant;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * 鐣欒█鏈嶅姟瀹炵幇
+ * 留言服务实现
  */
 @Slf4j
 @Service
@@ -52,44 +52,45 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     private WebsiteProperties websiteProperties;
 
-    // 閭姝ｅ垯
+    // 邮箱正则
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
 
-    // QQ鍙锋鍒?(5-11浣嶆暟瀛?
+    // QQ号正则 (5-11位数字)
     private static final Pattern QQ_PATTERN = Pattern.compile("^[1-9][0-9]{4,10}$");
 
     /**
-     * 璁垮鎻愪氦鐣欒█
+     * 访客提交留言
      * @param messageDTO
      * @param request
      */
     public void submitMessage(MessageDTO messageDTO, HttpServletRequest request) {
-        // 1. 鏍￠獙閭鎴朡Q鍙?        validateEmailOrQq(messageDTO.getEmailOrQq());
+        // 1. 校验邮箱或QQ号
+        validateEmailOrQq(messageDTO.getEmailOrQq());
 
-        // 2. 鍒涘缓鐣欒█瀹炰綋
+        // 2. 创建留言实体
         Messages messages = new Messages();
         BeanUtils.copyProperties(messageDTO, messages);
 
-        // 3. 澶勭悊Markdown鍐呭
+        // 3. 处理Markdown内容
         if (messageDTO.getIsMarkdown() != null && messageDTO.getIsMarkdown() == 1) {
-            // 濡傛灉鏄疢arkdown锛岃浆鎹负HTML
+            // 如果是Markdown，转换为HTML
             String html = MarkdownUtil.toHtml(messageDTO.getContent());
             messages.setContentHtml(html);
         } else {
-            // 濡傛灉涓嶆槸Markdown锛岀洿鎺ヤ娇鐢ㄥ師鍐呭
+            // 如果不是Markdown，直接使用原内容
             messages.setContentHtml(messageDTO.getContent());
         }
 
-        // 4. 璁剧疆璁垮ID
+        // 4. 设置访客ID
         Long visitorId = messageDTO.getVisitorId();
         messages.setVisitorId(visitorId);
 
-        // 5. 鑾峰彇IP鍦板潃淇℃伅
+        // 5. 获取IP地址信息
         String clientIp = IpUtil.getClientIp(request);
         Map<String, String> geoInfo = IpUtil.getGeoInfo(clientIp);
-        // 鎷兼帴鍦板潃: 鐪佷唤-鍩庡競
+        // 拼接地址: 省份-城市
         String province = geoInfo.getOrDefault("province", "");
         String city = geoInfo.getOrDefault("city", "");
         String location = province.isEmpty() && city.isEmpty() ? null
@@ -99,30 +100,34 @@ public class MessageServiceImpl implements MessageService {
             messages.setLocation(location);
         }
 
-        // 6. 瑙ｆ瀽UserAgent
+        // 6. 解析UserAgent
         String userAgent = request.getHeader("User-Agent");
         String osName = userAgentService.getOsName(userAgent);
         String browserName = userAgentService.getBrowserName(userAgent);
         messages.setUserAgentOs(osName);
         messages.setUserAgentBrowser(browserName);
 
-        // 7. 璁剧疆榛樿鍊?        messages.setIsApproved(0); // 榛樿鏈鏍?        messages.setIsEdited(0);   // 榛樿鏈紪杈?        messages.setCreateTime(LocalDateTime.now());
+        // 7. 设置默认值
+        messages.setIsApproved(0); // 默认未审核
+        messages.setIsEdited(0);   // 默认未编辑
+        messages.setCreateTime(LocalDateTime.now());
         messages.setUpdateTime(LocalDateTime.now());
 
-        // 8. 淇濆瓨鍒版暟鎹簱
+        // 8. 保存到数据库
         messageMapper.save(messages);
 
-        // 9. 妫€鏌ョ埗鐣欒█鏄惁寮€鍚偖绠遍€氱煡
+        // 9. 检查父留言是否开启邮箱通知
         if (messageDTO.getParentId() != null) {
             notifyParentIfNeeded(messageDTO.getParentId(),
                     messageDTO.getNickname(), messageDTO.getContent(), "message");
         }
 
-        log.info("璁垮鎻愪氦鐣欒█鎴愬姛: {}", messages);
+        log.info("访客提交留言成功: {}", messages);
     }
 
     /**
-     * 鏍￠獙閭鎴朡Q鍙?     * @param emailOrQq
+     * 校验邮箱或QQ号
+     * @param emailOrQq
      */
     private void validateEmailOrQq(String emailOrQq) {
         if (emailOrQq == null || emailOrQq.trim().isEmpty()) {
@@ -131,15 +136,19 @@ public class MessageServiceImpl implements MessageService {
 
         emailOrQq = emailOrQq.trim();
 
-        // 鍏堝垽鏂槸鍚︽槸QQ鍙?        if (QQ_PATTERN.matcher(emailOrQq).matches()) {
-            return; // QQ鍙锋牸寮忔纭?        }
-
-        // 鍐嶅垽鏂槸鍚︽槸閭
-        if (EMAIL_PATTERN.matcher(emailOrQq).matches()) {
-            return; // 閭鏍煎紡姝ｇ‘
+        // 先判断是否是QQ号
+        if (QQ_PATTERN.matcher(emailOrQq).matches()) {
+            return; // QQ号格式正确
         }
 
-        // 閮戒笉鍖归厤锛屾姏鍑哄紓甯?        // 鍒ゆ柇鏇村儚QQ鍙疯繕鏄偖绠?        if (emailOrQq.matches("^[0-9]+$")) {
+        // 再判断是否是邮箱
+        if (EMAIL_PATTERN.matcher(emailOrQq).matches()) {
+            return; // 邮箱格式正确
+        }
+
+        // 都不匹配，抛出异常
+        // 判断更像QQ号还是邮箱
+        if (emailOrQq.matches("^[0-9]+$")) {
             throw new ValidationException(MessageConstant.INVALID_QQ_FORMAT);
         } else {
             throw new ValidationException(MessageConstant.INVALID_EMAIL_FORMAT);
@@ -147,7 +156,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * 鍒嗛〉鏌ヨ鐣欒█
+     * 分页查询留言
      * @param messagePageQueryDTO
      * @return
      */
@@ -158,7 +167,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * 鎵归噺瀹℃牳鐣欒█
+     * 批量审核留言
      * @param ids
      */
     public void batchApprove(List<Long> ids) {
@@ -166,12 +175,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鐣欒█
+     * 批量删除留言
      * @param ids
      */
     @Transactional
     public void batchDelete(List<Long> ids) {
-        // 濡傛灉鏄牴鐣欒█锛岀骇鑱斿垹闄ゆ墍鏈夊瓙鐣欒█
+        // 如果是根留言，级联删除所有子留言
         for (Long id : ids) {
             Messages message = messageMapper.getById(id);
             if (message != null && (message.getRootId() == null || message.getRootId() == 0)) {
@@ -185,15 +194,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * 绠＄悊鍛樺洖澶嶇暀瑷€
+     * 管理员回复留言
      * @param messageReplyDTO
      */
     public void adminReply(MessageReplyDTO messageReplyDTO, HttpServletRequest request) {
-        // 1. 鍒涘缓鐣欒█瀹炰綋
+        // 1. 创建留言实体
         Messages messages = new Messages();
         BeanUtils.copyProperties(messageReplyDTO, messages);
 
-        // 2. 澶勭悊Markdown鍐呭
+        // 2. 处理Markdown内容
         if (messageReplyDTO.getIsMarkdown() != null && messageReplyDTO.getIsMarkdown() == 1) {
             String html = MarkdownUtil.toHtml(messageReplyDTO.getContent());
             messages.setContentHtml(html);
@@ -201,14 +210,15 @@ public class MessageServiceImpl implements MessageService {
             messages.setContentHtml(messageReplyDTO.getContent());
         }
 
-        // 3. 璁剧疆绠＄悊鍛樺洖澶嶆爣璇?        messages.setIsAdminReply(StatusConstant.ENABLE);
-        messages.setIsApproved(StatusConstant.ENABLE); // 绠＄悊鍛樺洖澶嶈嚜鍔ㄥ鏍搁€氳繃
+        // 3. 设置管理员回复标识
+        messages.setIsAdminReply(StatusConstant.ENABLE);
+        messages.setIsApproved(StatusConstant.ENABLE); // 管理员回复自动审核通过
         messages.setIsEdited(StatusConstant.DISABLE);
         messages.setNickname(websiteProperties.getTitle());
         messages.setCreateTime(LocalDateTime.now());
         messages.setUpdateTime(LocalDateTime.now());
 
-        // 4. 鎹曡幏 IP / 鍦扮悊浣嶇疆 / UserAgent
+        // 4. 捕获 IP / 地理位置 / UserAgent
         if (request != null) {
             String clientIp = IpUtil.getClientIp(request);
             Map<String, String> geoInfo = IpUtil.getGeoInfo(clientIp);
@@ -225,21 +235,22 @@ public class MessageServiceImpl implements MessageService {
             messages.setUserAgentBrowser(userAgentService.getBrowserName(userAgent));
         }
 
-        // 5. 淇濆瓨鍒版暟鎹簱
+        // 5. 保存到数据库
         messageMapper.save(messages);
 
-        // 6. 妫€鏌ョ埗鐣欒█鏄惁寮€鍚偖绠遍€氱煡
+        // 6. 检查父留言是否开启邮箱通知
         notifyParentIfNeeded(messageReplyDTO.getParentId(), websiteProperties.getTitle(),
                 messageReplyDTO.getContent(), "message");
 
-        log.info("绠＄悊鍛樺洖澶嶇暀瑷€鎴愬姛: parentId={}, content={}", messageReplyDTO.getParentId(), messageReplyDTO.getContent());
+        log.info("管理员回复留言成功: parentId={}, content={}", messageReplyDTO.getParentId(), messageReplyDTO.getContent());
     }
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     public List<MessageVO> getMessageTree(Long visitorId) {
         List<MessageVO> allMessages = messageMapper.getApprovedList(visitorId);
-        // 鏋勫缓鏍戝舰缁撴瀯锛氭牴鐣欒█锛坮ootId涓簄ull鎴?锛変綔涓轰竴绾э紝鍏朵綑鎸傚埌鏍圭暀瑷€涓?        List<MessageVO> rootMessages = new ArrayList<>();
+        // 构建树形结构：根留言（rootId为null或0）作为一级，其余挂到根留言下
+        List<MessageVO> rootMessages = new ArrayList<>();
         Map<Long, MessageVO> messageMap = allMessages.stream()
                 .collect(Collectors.toMap(MessageVO::getId, m -> m));
 
@@ -261,15 +272,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * 璁垮缂栬緫鐣欒█
+     * 访客编辑留言
      */
     public void editMessage(MessageEditDTO editDTO) {
         Messages message = messageMapper.getById(editDTO.getId());
         if (message == null) {
-            throw new ValidationException("鐣欒█涓嶅瓨鍦?);
+            throw new ValidationException("留言不存在");
         }
         if (!message.getVisitorId().equals(editDTO.getVisitorId())) {
-            throw new ValidationException("鏃犳潈缂栬緫姝ょ暀瑷€");
+            throw new ValidationException("无权编辑此留言");
         }
 
         Messages updateMessage = new Messages();
@@ -283,23 +294,23 @@ public class MessageServiceImpl implements MessageService {
         }
 
         messageMapper.updateContent(updateMessage);
-        log.info("璁垮缂栬緫鐣欒█鎴愬姛: id={}, visitorId={}", editDTO.getId(), editDTO.getVisitorId());
+        log.info("访客编辑留言成功: id={}, visitorId={}", editDTO.getId(), editDTO.getVisitorId());
     }
 
     /**
-     * 璁垮鍒犻櫎鐣欒█
+     * 访客删除留言
      */
     @Transactional
     public void visitorDeleteMessage(Long id, Long visitorId) {
         Messages message = messageMapper.getById(id);
         if (message == null) {
-            throw new ValidationException("鐣欒█涓嶅瓨鍦?);
+            throw new ValidationException("留言不存在");
         }
         if (!message.getVisitorId().equals(visitorId)) {
-            throw new ValidationException("鏃犳潈鍒犻櫎姝ょ暀瑷€");
+            throw new ValidationException("无权删除此留言");
         }
 
-        // 濡傛灉鏄牴鐣欒█锛岀骇鑱斿垹闄ゆ墍鏈夊瓙鐣欒█
+        // 如果是根留言，级联删除所有子留言
         if (message.getRootId() == null || message.getRootId() == 0) {
             Integer childCount = messageMapper.countByRootId(id);
             if (childCount != null && childCount > 0) {
@@ -308,11 +319,11 @@ public class MessageServiceImpl implements MessageService {
         }
 
         messageMapper.deleteById(id);
-        log.info("璁垮鍒犻櫎鐣欒█鎴愬姛: id={}, visitorId={}", id, visitorId);
+        log.info("访客删除留言成功: id={}, visitorId={}", id, visitorId);
     }
 
     /**
-     * 妫€鏌ョ埗鐣欒█鏄惁寮€鍚偖绠遍€氱煡锛屽鏋滄槸鍒欏彂閫侀€氱煡閭欢
+     * 检查父留言是否开启邮箱通知，如果是则发送通知邮件
      */
     private void notifyParentIfNeeded(Long parentId, String replyNickname, String replyContent, String type) {
         if (parentId == null) {
@@ -327,12 +338,13 @@ public class MessageServiceImpl implements MessageService {
                 String emailOrQq = parentMessage.getEmailOrQq().trim();
                 String email;
                 if (emailOrQq.contains("@")) {
-                    // 鏈韩灏辨槸閭锛岀洿鎺ヤ娇鐢?                    email = emailOrQq;
+                    // 本身就是邮箱，直接使用
+                    email = emailOrQq;
                 } else if (emailOrQq.matches("^[1-9]\\d{4,10}$")) {
-                    // QQ 鍙凤紝鎷兼帴 @qq.com 鏋勯€犻偖绠卞湴鍧€
+                    // QQ 号，拼接 @qq.com 构造邮箱地址
                     email = emailOrQq + "@qq.com";
                 } else {
-                    return; // 鏍煎紡涓嶈瘎鍒紝璺宠繃
+                    return; // 格式不评别，跳过
                 }
                 asyncEmailService.sendReplyNotificationAsync(
                         email,
@@ -344,7 +356,7 @@ public class MessageServiceImpl implements MessageService {
                 );
             }
         } catch (Exception e) {
-            log.error("鍙戦€佺暀瑷€鍥炲閫氱煡閭欢寮傚父: parentId={}, ex={}", parentId, e.getMessage());
+            log.error("发送留言回复通知邮件异常: parentId={}, ex={}", parentId, e.getMessage());
         }
     }
 }

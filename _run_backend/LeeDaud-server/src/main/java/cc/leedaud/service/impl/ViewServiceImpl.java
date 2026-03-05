@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.ViewPageQueryDTO;
 import cc.leedaud.entity.Views;
@@ -19,7 +19,7 @@ public class ViewServiceImpl implements ViewService {
     private ViewMapper viewMapper;
 
     /**
-     * 鍒嗛〉鏌ヨ娴忚璁板綍
+     * 分页查询浏览记录
      * @param viewPageQueryDTO
      * @return
      */
@@ -32,7 +32,7 @@ public class ViewServiceImpl implements ViewService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎娴忚璁板綍
+     * 批量删除浏览记录
      * @param ids
      */
     public void batchDelete(List<Long> ids) {

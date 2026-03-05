@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,26 +16,28 @@ public class ExperienceVO implements Serializable {
 
     private Long id;
 
-    // 绫诲瀷锛?-鏁欒偛缁忓巻锛?-瀹炰範鍙婂伐浣滅粡鍘?2-椤圭洰缁忓巻
+    // 类型，0-教育经历，1-实习及工作经历,2-项目经历
     private Integer type;
 
-    // 鏍囬,鍏徃鍚?瀛︽牎鍚?椤圭洰鍚?    private String title;
+    // 标题,公司名/学校名/项目名
+    private String title;
 
-    // 鍓爣棰?鑱屼綅/涓撲笟/椤圭洰瑙掕壊
+    // 副标题,职位/专业/项目角色
     private String subtitle;
 
     // logo
     private String logoUrl;
 
-    // 鍐呭
+    // 内容
     private String content;
 
-    // 椤圭洰閾炬帴锛堜富瑕佺敤浜庨」鐩粡鍘嗭級
+    // 项目链接（主要用于项目经历）
     private String projectLink;
 
-    // 寮€濮嬫椂闂?    private LocalDate startDate;
+    // 开始时间
+    private LocalDate startDate;
 
-    // 缁撴潫鏃堕棿
+    // 结束时间
     private LocalDate endDate;
 }
 

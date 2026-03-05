@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,14 +15,16 @@ public class SkillVO implements Serializable {
 
     private Long id;
 
-    // 鎶€鑳藉悕绉?    private String name;
+    // 技能名称
+    private String name;
 
-    // 鎶€鑳芥弿杩?    private String description;
+    // 技能描述
+    private String description;
 
-    // 鍥炬爣url
+    // 图标url
     private String icon;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
 }

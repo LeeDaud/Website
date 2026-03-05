@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 绀句氦濯掍綋DTO
+ * 社交媒体DTO
  */
 @Data
 @Builder
@@ -20,23 +20,23 @@ public class SocialMediaDTO implements Serializable {
 
     private Long id;
 
-    // 鍚嶇О
-    @NotBlank(message = "鍚嶇О涓嶈兘涓虹┖")
-    @Size(max = 20, message = "鍚嶇О涓嶈兘瓒呰繃20瀛?)
+    // 名称
+    @NotBlank(message = "名称不能为空")
+    @Size(max = 20, message = "名称不能超过20字")
     private String name;
 
-    // 鍥炬爣绫诲悕
-    @Size(max = 50, message = "鍥炬爣绫诲悕涓嶈兘瓒呰繃50瀛?)
+    // 图标类名
+    @Size(max = 50, message = "图标类名不能超过50字")
     private String icon;
 
-    // 閾炬帴
-    @Size(max = 100, message = "閾炬帴涓嶈兘瓒呰繃100瀛?)
+    // 链接
+    @Size(max = 100, message = "链接不能超过100字")
     private String link;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 }
 

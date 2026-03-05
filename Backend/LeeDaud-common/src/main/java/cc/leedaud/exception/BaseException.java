@@ -1,7 +1,7 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 /**
- * 涓氬姟寮傚父
+ * 业务异常
  */
 public class BaseException extends RuntimeException {
 

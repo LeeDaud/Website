@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鎶€鑳? */
+ * 技能
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,24 +22,26 @@ public class Skills implements Serializable {
 
     private Long id;
 
-    // 鎶€鑳藉悕绉?    private String name;
+    // 技能名称
+    private String name;
 
-    // 鎶€鑳芥弿杩?    private String description;
+    // 技能描述
+    private String description;
 
-    // 鍥炬爣url
+    // 图标url
     private String icon;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

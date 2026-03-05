@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

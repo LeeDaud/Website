@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminChangeNicknameDTO {
 
-    @NotBlank(message = "鏄电О涓嶈兘涓虹┖")
-    @Size(max = 30, message = "鏄电О涓嶈兘瓒呰繃30瀛?)
+    @NotBlank(message = "昵称不能为空")
+    @Size(max = 30, message = "昵称不能超过30字")
     private String nickname;
 }
 

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.entity.FriendLinks;
@@ -14,27 +14,28 @@ import java.util.List;
 @Mapper
 public interface FriendLinkMapper {
     /**
-     * 鑾峰彇鎵€鏈夊弸鎯呴摼鎺?     * @return
+     * 获取所有友情链接
+     * @return
      */
     @Select("select * from friend_links order by sort asc, id asc")
     List<FriendLinks> getAllFriendLink();
 
     /**
-     * 娣诲姞鍙嬫儏閾炬帴
+     * 添加友情链接
      * @param friendLink
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(FriendLinks friendLink);
 
     /**
-     * 鍒犻櫎鍙嬫儏閾炬帴
+     * 删除友情链接
      * @param id
      */
     @Delete("delete from friend_links where id = #{id}")
     void delete(Long id);
 
     /**
-     * 鎵归噺鍒犻櫎鍙嬫儏閾炬帴
+     * 批量删除友情链接
      * @param ids
      */
     void batchDelete(List<Long> ids);
@@ -43,7 +44,7 @@ public interface FriendLinkMapper {
     void update(FriendLinks friendLink);
 
     /**
-     * 鑾峰彇鍙鍙嬫儏閾炬帴
+     * 获取可见友情链接
      * @return
      */
     @Select("select * from friend_links where is_visible = 1 order by sort asc, id asc")

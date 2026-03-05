@@ -1,18 +1,21 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * UserAgent瑙ｆ瀽鏈嶅姟
+ * UserAgent解析服务
  */
 public interface UserAgentService {
     
     /**
-     * 瑙ｆ瀽UserAgent鑾峰彇鎿嶄綔绯荤粺鍚嶇О
-     * @param userAgent UserAgent瀛楃涓?     * @return 鎿嶄綔绯荤粺鍚嶇О(棣栧瓧姣嶅ぇ鍐?
+     * 解析UserAgent获取操作系统名称
+     * @param userAgent UserAgent字符串
+     * @return 操作系统名称(首字母大写)
      */
     String getOsName(String userAgent);
     
     /**
-     * 瑙ｆ瀽UserAgent鑾峰彇娴忚鍣ㄥ悕绉?     * @param userAgent UserAgent瀛楃涓?     * @return 娴忚鍣ㄥ悕绉?棣栧瓧姣嶅ぇ鍐?
+     * 解析UserAgent获取浏览器名称
+     * @param userAgent UserAgent字符串
+     * @return 浏览器名称(首字母大写)
      */
     String getBrowserName(String userAgent);
 }

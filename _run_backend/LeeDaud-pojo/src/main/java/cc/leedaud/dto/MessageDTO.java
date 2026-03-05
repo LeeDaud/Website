@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 璁垮鎻愪氦鐣欒█DTO
+ * 访客提交留言DTO
  */
 @Data
 @Builder
@@ -19,38 +19,41 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MessageDTO implements Serializable {
 
-    // 鐣欒█鍐呭
-    @NotBlank(message = "鐣欒█鍐呭涓嶈兘涓虹┖")
-    @Size(max = 2000, message = "鐣欒█鍐呭涓嶈兘瓒呰繃2000瀛?)
+    // 留言内容
+    @NotBlank(message = "留言内容不能为空")
+    @Size(max = 2000, message = "留言内容不能超过2000字")
     private String content;
 
-    // 鏍圭暀瑷€ID,null鏄竴绾х暀瑷€
+    // 根留言ID,null是一级留言
     private Long rootId;
 
-    // 鐖剁暀瑷€ID,null鏄竴绾х暀瑷€
+    // 父留言ID,null是一级留言
     private Long parentId;
 
-    // 鐖剁暀瑷€鏄电О
-    @Size(max = 15, message = "鐖剁暀瑷€鏄电О涓嶈兘瓒呰繃15瀛?)
+    // 父留言昵称
+    @Size(max = 15, message = "父留言昵称不能超过15字")
     private String parentNickname;
 
-    // 璁垮ID
-    @NotNull(message = "璁垮ID涓嶈兘涓虹┖")
+    // 访客ID
+    @NotNull(message = "访客ID不能为空")
     private Long visitorId;
 
-    // 鏄电О
-    @NotBlank(message = "鏄电О涓嶈兘涓虹┖")
-    @Size(max = 15, message = "鏄电О涓嶈兘瓒呰繃15瀛?)
+    // 昵称
+    @NotBlank(message = "昵称不能为空")
+    @Size(max = 15, message = "昵称不能超过15字")
     private String nickname;
 
-    // 閭鎴杚q
-    @Size(max = 50, message = "閭鎴朡Q鍙蜂笉鑳借秴杩?0瀛?)
+    // 邮箱或qq
+    @Size(max = 50, message = "邮箱或QQ号不能超过50字")
     private String emailOrQq;
 
-    // 鏄惁浣跨敤markdown锛?-鍚︼紝1-鏄?    private Integer isMarkdown;
+    // 是否使用markdown，0-否，1-是
+    private Integer isMarkdown;
 
-    // 鏄惁鍖垮悕锛?-鍚︼紝1-鏄?    private Integer isSecret;
+    // 是否匿名，0-否，1-是
+    private Integer isSecret;
 
-    // 鏈夊洖澶嶆槸鍚﹂€氱煡锛?-鍚︼紝1-鏄?    private Integer isNotice;
+    // 有回复是否通知，0-否，1-是
+    private Integer isNotice;
 }
 

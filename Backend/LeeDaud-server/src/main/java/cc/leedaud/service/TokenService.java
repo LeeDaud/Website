@@ -1,26 +1,27 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * Token鏈嶅姟
+ * Token服务
  */
 public interface TokenService {
     
     /**
-     * 鍒涘缓骞朵繚瀛榯oken
+     * 创建并保存token
      */
     String createAndStoreToken(Long userId, Integer role);
     
     /**
-     * 楠岃瘉token鏈夋晥鎬?     */
+     * 验证token有效性
+     */
     boolean isValidToken(Long userId, String token);
     
     /**
-     * 閫€鍑虹櫥褰?- 鍒犻櫎token
+     * 退出登录 - 删除token
      */
     void logout(Long userId, String token);
     
     /**
-     * 閫€鍑虹櫥褰?- 鍒犻櫎鎵€鏈塼oken
+     * 退出登录 - 删除所有token
      */
     void logoutAll(Long userId);
 }

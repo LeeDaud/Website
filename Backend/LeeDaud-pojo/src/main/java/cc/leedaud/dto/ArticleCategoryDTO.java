@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 鏂囩珷鍒嗙被DTO
+ * 文章分类DTO
  */
 @Data
 @Builder
@@ -20,21 +20,21 @@ public class ArticleCategoryDTO implements Serializable {
 
     private Long id;
 
-    // 鍒嗙被鍚嶇О
-    @NotBlank(message = "鍒嗙被鍚嶇О涓嶈兘涓虹┖")
-    @Size(max = 20, message = "鍒嗙被鍚嶇О涓嶈兘瓒呰繃20瀛?)
+    // 分类名称
+    @NotBlank(message = "分类名称不能为空")
+    @Size(max = 20, message = "分类名称不能超过20字")
     private String name;
 
-    // URL鏍囪瘑
-    @NotBlank(message = "URL鏍囪瘑涓嶈兘涓虹┖")
-    @Size(max = 20, message = "URL鏍囪瘑涓嶈兘瓒呰繃20瀛?)
+    // URL标识
+    @NotBlank(message = "URL标识不能为空")
+    @Size(max = 20, message = "URL标识不能超过20字")
     private String slug;
 
-    // 鍒嗙被鎻忚堪
-    @Size(max = 100, message = "鍒嗙被鎻忚堪涓嶈兘瓒呰繃100瀛?)
+    // 分类描述
+    @Size(max = 100, message = "分类描述不能超过100字")
     private String description;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 }
 

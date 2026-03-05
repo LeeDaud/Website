@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.cv;
+package cc.leedaud.controller.cv;
 
 import cc.leedaud.annotation.RateLimit;
 import cc.leedaud.dto.VisitorRecordDTO;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 绠€鍘嗙璁垮鎺ュ彛
+ * 简历端访客接口
  */
 @RestController("cvVisitorController")
 @RequestMapping("/cv/visitor")
@@ -26,17 +26,17 @@ public class VisitorController {
     private VisitorService visitorService;
 
     /**
-     * 璁板綍璁垮璁块棶淇℃伅
+     * 记录访客访问信息
      * @param visitorRecordDTO
      * @param httpRequest
      * @return
      */
     @PostMapping("/record")
     @RateLimit(type = RateLimit.Type.IP, tokens = 10, burstCapacity = 15,
-            timeWindow = 60, message = "璇锋眰杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯")
+            timeWindow = 60, message = "请求过于频繁，请稍后再试")
     public Result<VisitorRecordVO> recordVisitorViewInfo(@Valid @RequestBody VisitorRecordDTO visitorRecordDTO,
                                                          HttpServletRequest httpRequest) {
-        log.info("璁板綍璁垮璁块棶淇℃伅锛歿}", visitorRecordDTO);
+        log.info("记录访客访问信息：{}", visitorRecordDTO);
         VisitorRecordVO visitorRecordVO = visitorService.recordVisitorViewInfo(visitorRecordDTO, httpRequest);
         return Result.success(visitorRecordVO);
     }

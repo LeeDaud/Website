@@ -1,49 +1,50 @@
-﻿package cc.leedaud.annotation;
+package cc.leedaud.annotation;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 闄愭祦娉ㄨВ
+ * 限流注解
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RateLimit {
     /**
-     * 闄愭祦绫诲瀷
+     * 限流类型
      */
     Type type() default Type.IP;
 
     /**
-     * 姣忕浠ょ墝鏁?     */
+     * 每秒令牌数
+     */
     double tokens() default 10.0;
 
     /**
-     * 绐佸彂瀹归噺
+     * 突发容量
      */
     int burstCapacity() default 20;
 
     /**
-     * 鏃堕棿绐楀彛
+     * 时间窗口
      */
     int timeWindow() default 1;
 
     /**
-     * 鏃堕棿鍗曚綅
+     * 时间单位
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     /**
-     * 闄愭祦鎻愮ず娑堟伅
+     * 限流提示消息
      */
-    String message() default "璇锋眰杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯";
+    String message() default "请求过于频繁，请稍后再试";
 
     enum Type {
-        IP,        // IP闄愭祦
-        USER,      // 鐢ㄦ埛闄愭祦
-        GLOBAL,    // 鍏ㄥ眬闄愭祦
-        ENDPOINT   // 鎺ュ彛闄愭祦
+        IP,        // IP限流
+        USER,      // 用户限流
+        GLOBAL,    // 全局限流
+        ENDPOINT   // 接口限流
     }
 }
 

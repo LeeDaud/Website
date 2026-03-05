@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 绀句氦濯掍綋
+ * 社交媒体
  */
 @Data
 @Builder
@@ -22,26 +22,26 @@ public class SocialMedia implements Serializable {
 
     private Long id;
 
-    // 鍚嶇О
+    // 名称
     private String name;
 
-    // 鍥炬爣绫诲悕
+    // 图标类名
     private String icon;
 
-    // 閾炬帴
+    // 链接
     private String link;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

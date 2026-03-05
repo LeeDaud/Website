@@ -1,4 +1,4 @@
-﻿package cc.leedaud.wesocket;
+package cc.leedaud.wesocket;
 
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
@@ -10,71 +10,74 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 鍦ㄧ嚎浜烘暟缁熻
+ * 在线人数统计
  */
 @Slf4j
 @Component
 @ServerEndpoint("/ws/online")
 public class OnlineCount {
 
-    // 瀛樻斁鎵€鏈夎繛鎺ョ殑浼氳瘽
+    // 存放所有连接的会话
     private static final ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
 
-    // 鍦ㄧ嚎浜烘暟璁℃暟鍣?    private static final AtomicInteger onlineCount = new AtomicInteger(0);
+    // 在线人数计数器
+    private static final AtomicInteger onlineCount = new AtomicInteger(0);
 
     /**
-     * 杩炴帴寤虹珛
+     * 连接建立
      */
     @OnOpen
     public void onOpen(Session session) {
         sessions.put(session.getId(), session);
         int count = onlineCount.incrementAndGet();
 
-        log.info("鏂拌繛鎺? {}, 褰撳墠鍦ㄧ嚎: {} 浜?, session.getId(), count);
+        log.info("新连接: {}, 当前在线: {} 人", session.getId(), count);
 
-        // 鍙戦€佸綋鍓嶅湪绾夸汉鏁扮粰鏂扮敤鎴?        sendMessage(session, String.valueOf(count));
+        // 发送当前在线人数给新用户
+        sendMessage(session, String.valueOf(count));
 
-        // 骞挎挱鏇存柊缁欐墍鏈夌敤鎴?        broadcastCount();
+        // 广播更新给所有用户
+        broadcastCount();
     }
 
     /**
-     * 鏀跺埌娑堟伅
+     * 收到消息
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        // 濡傛灉鏄績璺虫秷鎭紝鍥炲纭
+        // 如果是心跳消息，回复确认
         if ("ping".equals(message)) {
             sendMessage(session, "pong");
         }
     }
 
     /**
-     * 杩炴帴鍏抽棴
+     * 连接关闭
      */
     @OnClose
     public void onClose(Session session) {
-        // 鍙湁褰?session 纭疄鍦?map 涓椂鎵嶉€掑噺锛岄槻姝笌 @OnError 閲嶅鎵ｅ噺瀵艰嚧璐熸暟
+        // 只有当 session 确实在 map 中时才递减，防止与 @OnError 重复扣减导致负数
         if (sessions.remove(session.getId()) != null) {
             int count = onlineCount.decrementAndGet();
-            log.info("杩炴帴鍏抽棴: {}, 褰撳墠鍦ㄧ嚎: {} 浜?, session.getId(), count);
+            log.info("连接关闭: {}, 当前在线: {} 人", session.getId(), count);
             broadcastCount();
         }
     }
 
     /**
-     * 杩炴帴鍑洪敊
+     * 连接出错
      */
     @OnError
     public void onError(Session session, Throwable error) {
         if (sessions.remove(session.getId()) != null) {
             int count = onlineCount.decrementAndGet();
-            log.debug("WebSocket 杩炴帴寮傚父: {}, 褰撳墠鍦ㄧ嚎: {} 浜?, session.getId(), count);
+            log.debug("WebSocket 连接异常: {}, 当前在线: {} 人", session.getId(), count);
             broadcastCount();
         }
     }
 
     /**
-     * 鍙戦€佹秷鎭粰鍗曚釜鐢ㄦ埛锛堜娇鐢?getAsyncRemote 閬垮厤骞跺彂鍐欏啿绐侊級
+     * 发送消息给单个用户（使用 getAsyncRemote 避免并发写冲突）
      */
     private void sendMessage(Session session, String message) {
         try {
@@ -82,12 +85,13 @@ public class OnlineCount {
                 session.getAsyncRemote().sendText(message);
             }
         } catch (Exception e) {
-            log.debug("鍙戦€佹秷鎭け璐? {}", session.getId());
+            log.debug("发送消息失败: {}", session.getId());
         }
     }
 
     /**
-     * 骞挎挱鍦ㄧ嚎浜烘暟缁欐墍鏈夌敤鎴?     */
+     * 广播在线人数给所有用户
+     */
     private void broadcastCount() {
         String message = String.valueOf(onlineCount.get());
 
@@ -97,7 +101,7 @@ public class OnlineCount {
                     session.getAsyncRemote().sendText(message);
                 }
             } catch (Exception e) {
-                log.debug("骞挎挱娑堟伅澶辫触: {}", id);
+                log.debug("广播消息失败: {}", id);
             }
         });
     }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -13,25 +13,26 @@ import java.time.LocalDateTime;
 @Builder
 public class OperationLogPageQueryDTO {
 
-    // 椤电爜
+    // 页码
     private int page;
 
-    // 姣忛〉鏄剧ず鏁伴噺
+    // 每页显示数量
     private int pageSize;
 
-    // 绠＄悊鍛業D
+    // 管理员ID
     private Long adminId;
 
-    // 鎿嶄綔绫诲瀷
+    // 操作类型
     private String operationType;
 
-    // 鎿嶄綔瀵硅薄
+    // 操作对象
     private String operationTarget;
 
-    // 寮€濮嬫椂闂?    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    // 开始时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
-    // 缁撴潫鏃堕棿
+    // 结束时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 }

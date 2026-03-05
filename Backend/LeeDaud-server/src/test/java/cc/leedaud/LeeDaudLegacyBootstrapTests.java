@@ -1,4 +1,4 @@
-﻿package cc.leedaud;
+package cc.leedaud;
 
 class LegacyBootstrapTestsPlaceholder {
 }

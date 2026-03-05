@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.home;
+package cc.leedaud.controller.home;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.service.SocialMediaService;
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- *  棣栭〉绔ぞ浜ゅ獟浣撴帴鍙? */
+ *  首页端社交媒体接口
+ */
 @RestController("homeSocialMediaController")
 @RequestMapping("/home/socialMedia")
 public class SocialMediaController {
@@ -20,7 +21,7 @@ public class SocialMediaController {
     private SocialMediaService socialMediaService;
 
     /**
-     * 鑾峰彇鍙绀句氦濯掍綋淇℃伅
+     * 获取可见社交媒体信息
      */
     @GetMapping
     public Result<List<SocialMediaVO>> getSocialVisibleMedia() {

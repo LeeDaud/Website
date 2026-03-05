@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 鎶€鑳紻TO
+ * 技能DTO
  */
 @Data
 @Builder
@@ -20,20 +20,22 @@ public class SkillDTO implements Serializable {
 
     private Long id;
 
-    // 鎶€鑳藉悕绉?    @NotBlank(message = "鎶€鑳藉悕绉颁笉鑳戒负绌?)
-    @Size(max = 20, message = "鎶€鑳藉悕绉颁笉鑳借秴杩?0瀛?)
+    // 技能名称
+    @NotBlank(message = "技能名称不能为空")
+    @Size(max = 20, message = "技能名称不能超过20字")
     private String name;
 
-    // 鎶€鑳芥弿杩?    @Size(max = 255, message = "鎶€鑳芥弿杩颁笉鑳借秴杩?55瀛?)
+    // 技能描述
+    @Size(max = 255, message = "技能描述不能超过255字")
     private String description;
 
-    // 鍥炬爣url
+    // 图标url
     private String icon;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 }
 

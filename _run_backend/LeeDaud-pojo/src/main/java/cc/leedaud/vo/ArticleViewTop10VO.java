@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 鏂囩珷璁块棶閲忔帓琛屽墠鍗乂O
+ * 文章访问量排行前十VO
  */
 @Data
 @AllArgsConstructor
@@ -16,10 +16,10 @@ import java.util.List;
 @Builder
 public class ArticleViewTop10VO {
 
-    // 鏂囩珷鏍囬鍒楄〃
+    // 文章标题列表
     private List<String> titleList;
 
-    // 瀵瑰簲鏂囩珷鐨勬祻瑙堥噺鍒楄〃
+    // 对应文章的浏览量列表
     private List<Integer> viewCountList;
 }
 

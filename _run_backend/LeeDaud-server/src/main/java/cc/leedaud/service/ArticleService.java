@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.ArticleDTO;
 import cc.leedaud.dto.ArticlePageQueryDTO;
@@ -10,57 +10,58 @@ import cc.leedaud.vo.BlogArticleDetailVO;
 import java.util.List;
 
 /**
- * 鏂囩珷鏈嶅姟
+ * 文章服务
  */
 public interface ArticleService {
 
     /**
-     * 鍒涘缓鏂囩珷
+     * 创建文章
      * @param articleDTO
      */
     void createArticle(ArticleDTO articleDTO);
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ鏂囩珷鍒楄〃锛堝惈鑽夌锛?     * @param articlePageQueryDTO
+     * 分页条件查询文章列表（含草稿）
+     * @param articlePageQueryDTO
      * @return
      */
     PageResult pageQuery(ArticlePageQueryDTO articlePageQueryDTO);
 
     /**
-     * 鏍规嵁ID鑾峰彇鏂囩珷璇︽儏
+     * 根据ID获取文章详情
      * @param id
      * @return
      */
     Articles getById(Long id);
 
     /**
-     * 鏇存柊鏂囩珷
+     * 更新文章
      * @param articleDTO
      */
     void updateArticle(ArticleDTO articleDTO);
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷
+     * 批量删除文章
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鍙戝竷/鍙栨秷鍙戝竷鏂囩珷
+     * 发布/取消发布文章
      * @param id
      * @param isPublished
      */
     void publishOrCancel(Long id, Integer isPublished);
 
     /**
-     * 缃《/鍙栨秷缃《鏂囩珷
+     * 置顶/取消置顶文章
      * @param id
      * @param isTop
      */
     void toggleTop(Long id, Integer isTop);
 
     /**
-     * 鏂囩珷鎼滅储锛堟爣棰樸€佸唴瀹癸級
+     * 文章搜索（标题、内容）
      * @param keyword
      * @param page
      * @param pageSize
@@ -68,34 +69,41 @@ public interface ArticleService {
      */
     PageResult search(String keyword, int page, int pageSize);
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鑾峰彇宸插彂甯冩枃绔犲垪琛紙鍒嗛〉锛?     */
+     * 获取已发布文章列表（分页）
+     */
     PageResult getPublishedPage(int page, int pageSize);
 
     /**
-     * 鏍规嵁slug鑾峰彇鏂囩珷璇︽儏锛堟祻瑙堥噺+1锛?     */
+     * 根据slug获取文章详情（浏览量+1）
+     */
     BlogArticleDetailVO getBySlug(String slug);
 
     /**
-     * 鏂囩珷娴忚閲?1锛堝啓鍏edis锛屽熀浜庢枃绔營D锛?     */
+     * 文章浏览量+1（写入Redis，基于文章ID）
+     */
     void incrementViewCount(Long articleId);
 
     /**
-     * 鏍规嵁鍒嗙被ID鑾峰彇宸插彂甯冩枃绔犲垪琛紙鍒嗛〉锛?     */
+     * 根据分类ID获取已发布文章列表（分页）
+     */
     PageResult getPublishedByCategoryId(Long categoryId, int page, int pageSize);
 
     /**
-     * 鑾峰彇鏂囩珷褰掓。锛堟寜骞存湀鍒嗙粍锛?     */
+     * 获取文章归档（按年月分组）
+     */
     List<ArticleArchiveVO> getArchive();
 
     /**
-     * 鍗氬绔枃绔犳悳绱紙浠呭凡鍙戝竷锛?     */
+     * 博客端文章搜索（仅已发布）
+     */
     PageResult searchPublished(String keyword, int page, int pageSize);
 
     /**
-     * 鏍规嵁鏍囩ID鑾峰彇宸插彂甯冩枃绔犲垪琛?     */
+     * 根据标签ID获取已发布文章列表
+     */
     PageResult getPublishedByTagId(Long tagId, int page, int pageSize);
 }
 

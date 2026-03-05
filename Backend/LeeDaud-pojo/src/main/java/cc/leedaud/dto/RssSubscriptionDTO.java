@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * RSS璁㈤槄DTO
+ * RSS订阅DTO
  */
 @Data
 @AllArgsConstructor
@@ -18,17 +18,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RssSubscriptionDTO {
 
-    // 璁垮ID
-    @NotNull(message = "璁垮ID涓嶈兘涓虹┖")
+    // 访客ID
+    @NotNull(message = "访客ID不能为空")
     private Long visitorId;
 
-    // 鏄电О
-    @Size(max = 15, message = "鏄电О涓嶈兘瓒呰繃15瀛?)
+    // 昵称
+    @Size(max = 15, message = "昵称不能超过15字")
     private String nickname;
 
-    // 閭
-    @NotBlank(message = "閭涓嶈兘涓虹┖")
-    @Email(message = "閭鏍煎紡涓嶆纭?)
+    // 邮箱
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
     private String email;
 }
 

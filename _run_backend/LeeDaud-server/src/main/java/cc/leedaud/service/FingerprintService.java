@@ -1,15 +1,15 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.VisitorRecordDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * 璁垮鎸囩汗鏈嶅姟
+ * 访客指纹服务
  */
 public interface FingerprintService {
     
     /**
-     * 鐢熸垚璁垮鎸囩汗
+     * 生成访客指纹
      * @param dto
      * @param request
      * @return

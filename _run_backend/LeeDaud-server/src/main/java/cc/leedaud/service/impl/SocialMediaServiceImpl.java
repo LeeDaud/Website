@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.SocialMediaDTO;
 import cc.leedaud.entity.SocialMedia;
@@ -21,13 +21,14 @@ public class SocialMediaServiceImpl implements SocialMediaService {
     private SocialMediaMapper socialMediaMapper;
 
     /**
-     * 鑾峰彇鍙绀句氦濯掍綋淇℃伅
+     * 获取可见社交媒体信息
      * @return
      */
     @Cacheable(value = "socialMedia", key = "'visible'")
     public List<SocialMediaVO> getVisibleSocialMedia() {
-        // 鑾峰彇鏁版嵁搴撴暟鎹?        List<SocialMedia> socialMediaList = socialMediaMapper.getVisibleSocialMedia();
-        // 杞崲涓篤O
+        // 获取数据库数据
+        List<SocialMedia> socialMediaList = socialMediaMapper.getVisibleSocialMedia();
+        // 转换为VO
         if (socialMediaList != null && socialMediaList.size() > 0) {
             return socialMediaList.stream().map(socialMedia -> SocialMediaVO.builder()
                     .id(socialMedia.getId())
@@ -41,11 +42,13 @@ public class SocialMediaServiceImpl implements SocialMediaService {
     }
 
     /**
-     * 鑾峰彇鎵€鏈夌ぞ浜ゅ獟浣撲俊鎭?     * @return
+     * 获取所有社交媒体信息
+     * @return
      */
     @Cacheable(value = "socialMedia", key = "'all'")
     public List<SocialMedia> getAllSocialMedia() {
-        // 鑾峰彇鏁版嵁搴撴暟鎹?        List<SocialMedia> socialMediaList = socialMediaMapper.getAllSocialMedia();
+        // 获取数据库数据
+        List<SocialMedia> socialMediaList = socialMediaMapper.getAllSocialMedia();
         if (socialMediaList != null && socialMediaList.size() > 0) {
             return socialMediaList;
         }
@@ -53,19 +56,19 @@ public class SocialMediaServiceImpl implements SocialMediaService {
     }
 
     /**
-     * 娣诲姞绀句氦濯掍綋
+     * 添加社交媒体
      * @param socialMediaDTO
      */
     @CacheEvict(value = "socialMedia", allEntries = true)
     public void addSocialMedia(SocialMediaDTO socialMediaDTO) {
         SocialMedia socialMedia = new SocialMedia();
         BeanUtils.copyProperties(socialMediaDTO, socialMedia);
-        // 娣诲姞鍒版暟鎹簱
+        // 添加到数据库
         socialMediaMapper.insert(socialMedia);
     }
 
     /**
-     * 鎵归噺鍒犻櫎绀句氦濯掍綋
+     * 批量删除社交媒体
      * @param ids
      */
     @CacheEvict(value = "socialMedia", allEntries = true)
@@ -74,14 +77,14 @@ public class SocialMediaServiceImpl implements SocialMediaService {
     }
 
     /**
-     * 淇敼绀句氦濯掍綋
+     * 修改社交媒体
      * @param socialMedia
      */
     @CacheEvict(value = "socialMedia", allEntries = true)
     public void updateSocialMedia(SocialMediaDTO socialMediaDTO) {
         SocialMedia socialMedia = new SocialMedia();
         BeanUtils.copyProperties(socialMediaDTO, socialMedia);
-        // 鏇存柊鍒版暟鎹簱
+        // 更新到数据库
         socialMediaMapper.updateById(socialMedia);
     }
 }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.properties;
+package cc.leedaud.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class AliOssProperties {
     /**
-     * 闃块噷浜?Endpoint
+     * 阿里云 Endpoint
      */
     private String endpoint;
     private String accessKeyId;

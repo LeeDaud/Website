@@ -1,4 +1,4 @@
-﻿package cc.leedaud.handler;
+package cc.leedaud.handler;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.exception.BaseException;
@@ -20,53 +20,54 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.stream.Collectors;
 
 /**
- * 鍏ㄥ眬寮傚父澶勭悊鍣紝澶勭悊椤圭洰涓姏鍑虹殑涓氬姟寮傚父
+ * 全局异常处理器，处理项目中抛出的业务异常
  */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /**
-     * 鎹曡幏涓氬姟寮傚父
+     * 捕获业务异常
      * @param ex
      * @return
      */
     @ExceptionHandler
     public Result exceptionHandler(BaseException ex){
-        log.error("涓氬姟寮傚父锛歿}", ex.getMessage());
+        log.error("业务异常：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result exceptionHandler(TokenException ex){
-        log.error("浠ょ墝寮傚父锛歿}", ex.getMessage());
+        log.error("令牌异常：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result exceptionHandler(BlockedException ex){
-        log.error("灏佺寮傚父锛歿}", ex.getMessage());
+        log.error("封禁异常：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result exceptionHandler(GuestReadOnlyException ex){
-        log.error("娓稿鍙寮傚父锛歿}", ex.getMessage());
+        log.error("游客只读异常：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 
     /**
-     * 鎹曡幏鍙傛暟鏍￠獙寮傚父锛園Valid鏍￠獙澶辫触锛?     */
+     * 捕获参数校验异常（@Valid校验失败）
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result exceptionHandler(MethodArgumentNotValidException ex){
         String errorMsg = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining("; "));
-        log.error("鍙傛暟鏍￠獙寮傚父锛歿}", errorMsg);
+        log.error("参数校验异常：{}", errorMsg);
         return Result.error(errorMsg);
     }
 
@@ -84,41 +85,42 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 璇锋眰鏂规硶涓嶆敮鎸佸紓甯?     */
+     * 请求方法不支持异常
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public Result exceptionHandler(HttpRequestMethodNotSupportedException ex){
-        log.error("璇锋眰鏂规硶涓嶆敮鎸侊細{}", ex.getMessage());
-        return Result.error("涓嶆敮鎸佺殑璇锋眰鏂规硶锛? + ex.getMethod());
+        log.error("请求方法不支持：{}", ex.getMessage());
+        return Result.error("不支持的请求方法：" + ex.getMethod());
     }
 
     /**
-     * 缂哄皯璇锋眰鍙傛暟寮傚父
+     * 缺少请求参数异常
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result exceptionHandler(MissingServletRequestParameterException ex){
-        log.error("缂哄皯璇锋眰鍙傛暟锛歿}", ex.getMessage());
-        return Result.error("缂哄皯蹇呰鍙傛暟锛? + ex.getParameterName());
+        log.error("缺少请求参数：{}", ex.getMessage());
+        return Result.error("缺少必要参数：" + ex.getParameterName());
     }
 
     /**
-     * 鏂囦欢涓婁紶澶у皬瓒呴檺寮傚父
+     * 文件上传大小超限异常
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result exceptionHandler(MaxUploadSizeExceededException ex){
-        log.error("鏂囦欢涓婁紶澶у皬瓒呴檺锛歿}", ex.getMessage());
-        return Result.error("涓婁紶鏂囦欢澶у皬瓒呰繃闄愬埗");
+        log.error("文件上传大小超限：{}", ex.getMessage());
+        return Result.error("上传文件大小超过限制");
     }
 
     /**
-     * 鍏滃簳寮傚父澶勭悊
+     * 兜底异常处理
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result exceptionHandler(Exception ex){
-        log.error("鏈煡寮傚父锛?, ex);
+        log.error("未知异常：", ex);
         return Result.error(MessageConstant.UNKNOWN_ERROR);
     }
 

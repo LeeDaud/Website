@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.service.EncryptPasswordService;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import java.security.MessageDigest;
 public class EncryptPasswordServiceImpl implements EncryptPasswordService {
 
     /**
-     * 瀵嗙爜鍔犲瘑
+     * 密码加密
      * @param password
      * @param salt
      * @return
@@ -22,7 +22,8 @@ public class EncryptPasswordServiceImpl implements EncryptPasswordService {
         return bytesToHex(hash);
     }
 
-    //灏嗗瓧鑺傛暟缁勮浆鎹负鍗佸叚杩涘埗瀛楃涓?    private String bytesToHex(byte[] bytes) {
+    //将字节数组转换为十六进制字符串
+    private String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
             String hex = Integer.toHexString(0xff & b);

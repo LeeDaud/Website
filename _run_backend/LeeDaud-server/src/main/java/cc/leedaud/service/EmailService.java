@@ -1,32 +1,36 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * 閭欢鏈嶅姟
+ * 邮件服务
  */
 public interface EmailService {
     
     /**
-     * 鍙戦€侀獙璇佺爜閭欢
+     * 发送验证码邮件
      * @param toEmail
      * @param code
      */
     void sendVerifyCode(String toEmail, String code);
 
     /**
-     * 鍙戦€佽瘎璁?鐣欒█鍥炲閫氱煡閭欢
-     * @param toEmail 鏀朵欢浜洪偖绠?     * @param parentNickname 琚洖澶嶄汉鏄电О
-     * @param parentContent 琚洖澶嶇殑鍐呭
-     * @param replyNickname 鍥炲浜烘樀绉?     * @param replyContent 鍥炲鍐呭
-     * @param type 绫诲瀷锛歮essage-鐣欒█ / comment-鏂囩珷璇勮
+     * 发送评论/留言回复通知邮件
+     * @param toEmail 收件人邮箱
+     * @param parentNickname 被回复人昵称
+     * @param parentContent 被回复的内容
+     * @param replyNickname 回复人昵称
+     * @param replyContent 回复内容
+     * @param type 类型：message-留言 / comment-文章评论
      */
     void sendReplyNotification(String toEmail, String parentNickname, String parentContent,
                                String replyNickname, String replyContent, String type);
 
     /**
-     * 鍙戦€佹柊鏂囩珷閫氱煡閭欢
-     * @param toEmail 鏀朵欢浜洪偖绠?     * @param nickname 璁㈤槄鑰呮樀绉?     * @param articleTitle 鏂囩珷鏍囬
-     * @param articleSummary 鏂囩珷鎽樿
-     * @param articleUrl 鏂囩珷閾炬帴
+     * 发送新文章通知邮件
+     * @param toEmail 收件人邮箱
+     * @param nickname 订阅者昵称
+     * @param articleTitle 文章标题
+     * @param articleSummary 文章摘要
+     * @param articleUrl 文章链接
      */
     void sendNewArticleNotification(String toEmail, String nickname, String articleTitle,
                                     String articleSummary, String articleUrl);

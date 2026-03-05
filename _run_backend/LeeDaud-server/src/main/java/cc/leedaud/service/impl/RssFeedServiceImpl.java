@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.properties.WebsiteProperties;
 import cc.leedaud.result.PageResult;
@@ -30,17 +30,17 @@ public class RssFeedServiceImpl implements RssFeedService {
             DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss '+0800'", java.util.Locale.ENGLISH);
 
     /**
-     * 鐢熸垚 RSS 2.0 Feed XML
+     * 生成 RSS 2.0 Feed XML
      */
     public String generateRssFeed() {
         String BLOG_BASE_URL = websiteProperties.getBlog();
 
-        // 鑾峰彇涓汉淇℃伅浣滀负绔欑偣淇℃伅
+        // 获取个人信息作为站点信息
         PersonalInfoVO info = personalInfoService.getPersonalInfo();
-        String siteName = info != null && info.getNickname() != null ? info.getNickname() + "鐨勫崥瀹? : "LeeDaud Blog";
-        String siteDescription = info != null && info.getDescription() != null ? info.getDescription() : "涓汉鍗氬";
+        String siteName = info != null && info.getNickname() != null ? info.getNickname() + "的博客" : "LeeDaud Blog";
+        String siteDescription = info != null && info.getDescription() != null ? info.getDescription() : "个人博客";
 
-        // 鑾峰彇鏈€鏂?0绡囧凡鍙戝竷鏂囩珷
+        // 获取最新20篇已发布文章
         PageResult pageResult = articleService.getPublishedPage(1, 20);
         @SuppressWarnings("unchecked")
         List<BlogArticleVO> articles = (List<BlogArticleVO>) pageResult.getRecords();
@@ -81,7 +81,7 @@ public class RssFeedServiceImpl implements RssFeedService {
     };
 
     /**
-     * XML鐗规畩瀛楃杞箟
+     * XML特殊字符转义
      */
     private String escapeXml(String text) {
         if (text == null) return "";

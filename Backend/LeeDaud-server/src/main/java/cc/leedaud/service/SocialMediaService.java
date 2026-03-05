@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.SocialMediaDTO;
 import cc.leedaud.entity.SocialMedia;
@@ -8,30 +8,31 @@ import java.util.List;
 
 public interface SocialMediaService {
     /**
-     * 鑾峰彇鍙绀句氦濯掍綋淇℃伅
+     * 获取可见社交媒体信息
      * @return
      */
     List<SocialMediaVO> getVisibleSocialMedia();
 
     /**
-     * 鑾峰彇鎵€鏈夌ぞ浜ゅ獟浣撲俊鎭?     * @return
+     * 获取所有社交媒体信息
+     * @return
      */
     List<SocialMedia> getAllSocialMedia();
 
     /**
-     * 娣诲姞绀句氦濯掍綋淇℃伅
+     * 添加社交媒体信息
      * @param socialMediaDTO
      */
     void addSocialMedia(SocialMediaDTO socialMediaDTO);
 
     /**
-     * 鎵归噺鍒犻櫎绀句氦濯掍綋
+     * 批量删除社交媒体
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 淇敼绀句氦濯掍綋淇℃伅
+     * 修改社交媒体信息
      * @param socialMediaDTO
      */
     void updateSocialMedia(SocialMediaDTO socialMediaDTO);

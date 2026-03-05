@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鏂囩珷鍒楄〃VO锛堜笉鍚鏂囧唴瀹癸級
+ * 文章列表VO（不含正文内容）
  */
 @Data
 @Builder
@@ -22,53 +22,54 @@ public class ArticleVO implements Serializable {
 
     private Long id;
 
-    // 鏂囩珷鏍囬
+    // 文章标题
     private String title;
 
-    // URL鏍囪瘑
+    // URL标识
     private String slug;
 
-    // 鏂囩珷鎽樿
+    // 文章摘要
     private String summary;
 
-    // 灏侀潰鍥剧墖url
+    // 封面图片url
     private String coverImage;
 
-    // 鍒嗙被ID
+    // 分类ID
     private Long categoryId;
 
-    // 鍒嗙被鍚嶇О
+    // 分类名称
     private String categoryName;
 
-    // 娴忚娆℃暟
+    // 浏览次数
     private Long viewCount;
 
-    // 鐐硅禐娆℃暟
+    // 点赞次数
     private Long likeCount;
 
-    // 璇勮鏁?    private Long commentCount;
+    // 评论数
+    private Long commentCount;
 
-    // 瀛楁暟缁熻
+    // 字数统计
     private Long wordCount;
 
-    // 棰勮闃呰鏃堕棿锛堝垎閽燂級
+    // 预计阅读时间（分钟）
     private Long readingTime;
 
-    // 鏄惁鍙戝竷
+    // 是否发布
     private Integer isPublished;
 
-    // 鏄惁缃《
+    // 是否置顶
     private Integer isTop;
 
-    // 鍙戝竷鏃堕棿
+    // 发布时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

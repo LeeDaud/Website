@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.PersonalInfoDTO;
@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 绠＄悊绔釜浜轰俊鎭帴鍙? */
+ * 管理端个人信息接口
+ */
 @RestController("adminPersonalInfoController")
 @RequestMapping("/admin/personalInfo")
 @Slf4j
@@ -23,7 +24,7 @@ public class PersonalInfoController {
     private PersonalInfoService personalInfoService;
 
     /**
-     * 鑾峰彇涓汉淇℃伅
+     * 获取个人信息
      */
     @GetMapping
     public Result<PersonalInfo> getPersonalInfo() {
@@ -32,12 +33,12 @@ public class PersonalInfoController {
     }
 
     /**
-     * 鏇存柊涓汉淇℃伅
+     * 更新个人信息
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "personalInfo", targetId = "#personalInfoDTO.id")
     public Result updatePersonalInfo(@Valid @RequestBody PersonalInfoDTO personalInfoDTO) {
-        log.info("鏇存柊涓汉淇℃伅: {}", personalInfoDTO);
+        log.info("更新个人信息: {}", personalInfoDTO);
         personalInfoService.updatePersonalInfo(personalInfoDTO);
         return Result.success();
     }

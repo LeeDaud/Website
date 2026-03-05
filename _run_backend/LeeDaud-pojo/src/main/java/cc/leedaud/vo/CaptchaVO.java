@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 楠岃瘉鐮乂O
+ * 验证码VO
  */
 @Data
 @Builder
@@ -17,13 +17,13 @@ import java.io.Serializable;
 public class CaptchaVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /** 楠岃瘉鐮両D */
+    /** 验证码ID */
     private String captchaId;
 
-    /** 绠楁湳棰樼洰锛屽 "3 + 5 = ?" */
+    /** 算术题目，如 "3 + 5 = ?" */
     private String question;
 
-    /** 姝ｇ‘绛旀 */
+    /** 正确答案 */
     private int result;
 }
 

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鎿嶄綔鏃ュ織
+ * 操作日志
  */
 @Data
 @Builder
@@ -22,28 +22,28 @@ public class OperationLogs implements Serializable {
 
     private Long id;
 
-    // 绠＄悊鍛業D
+    // 管理员ID
     private Long adminId;
 
-    // 鎿嶄綔绫诲瀷
+    // 操作类型
     private String operationType;
 
-    // 鎿嶄綔鐩爣
+    // 操作目标
     private String operationTarget;
 
-    // 鐩爣ID
+    // 目标ID
     private Integer targetId;
 
-    // 鎿嶄綔鏁版嵁
+    // 操作数据
     private String operateData;
 
-    // 鎿嶄綔缁撴灉锛?-澶辫触锛?-鎴愬姛
+    // 操作结果，0-失败，1-成功
     private Integer result;
 
-    // 閿欒淇℃伅
+    // 错误信息
     private String errorMessage;
 
-    // 鎿嶄綔鏃堕棿
+    // 操作时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime operationTime;
 }

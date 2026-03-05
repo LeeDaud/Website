@@ -47,3 +47,4 @@ package-lock.json
 **/application-*.yml
 !**/application.yml.template
 !**/application-*.yml.template
+deploy/windows/deploy.local.psd1

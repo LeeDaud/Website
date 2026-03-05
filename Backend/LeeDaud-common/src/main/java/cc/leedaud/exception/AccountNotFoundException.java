@@ -1,9 +1,10 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 import cc.leedaud.exception.BaseException;
 
 /**
- * 璐﹀彿涓嶅瓨鍦ㄥ紓甯? */
+ * 账号不存在异常
+ */
 public class AccountNotFoundException extends BaseException {
 
     public AccountNotFoundException() {

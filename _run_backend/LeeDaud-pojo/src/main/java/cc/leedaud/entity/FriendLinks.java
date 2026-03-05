@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鍙嬫儏閾炬帴
+ * 友情链接
  */
 @Data
 @Builder
@@ -22,29 +22,29 @@ public class FriendLinks implements Serializable {
 
     private Long id;
 
-    // 缃戠珯鍚嶇О
+    // 网站名称
     private String name;
 
-    // 缃戠珯鍦板潃
+    // 网站地址
     private String url;
 
-    // 澶村儚url
+    // 头像url
     private String avatarUrl;
 
-    // 缃戠珯鎻忚堪
+    // 网站描述
     private String description;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

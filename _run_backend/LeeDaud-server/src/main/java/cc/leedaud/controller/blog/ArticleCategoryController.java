@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.entity.ArticleCategories;
 import cc.leedaud.result.Result;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 鍗氬绔枃绔犲垎绫绘帴鍙? */
+ * 博客端文章分类接口
+ */
 @RestController("blogArticleCategoryController")
 @RequestMapping("/blog/articleCategory")
 @Slf4j
@@ -22,11 +23,11 @@ public class ArticleCategoryController {
     private ArticleCategoryService articleCategoryService;
 
     /**
-     * 鑾峰彇鎵€鏈夊彲瑙佹枃绔犲垎绫伙紙鏈夊凡鍙戝竷鏂囩珷鐨勫垎绫伙級
+     * 获取所有可见文章分类（有已发布文章的分类）
      */
     @GetMapping
     public Result<List<ArticleCategories>> getVisibleCategories() {
-        log.info("鍗氬绔幏鍙栧彲瑙佹枃绔犲垎绫?);
+        log.info("博客端获取可见文章分类");
         List<ArticleCategories> categoryList = articleCategoryService.getVisibleCategories();
         return Result.success(categoryList);
     }

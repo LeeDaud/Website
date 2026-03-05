@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.RssSubscriptionPageQueryDTO;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔疪SS璁㈤槄鎺ュ彛
+ * 管理端RSS订阅接口
  */
 @Slf4j
 @RestController("adminRssSubscriptionController")
@@ -25,19 +25,19 @@ public class RssSubscriptionController {
     private RssSubscriptionService rssSubscriptionService;
 
     /**
-     * 鍒嗛〉鏌ヨRSS璁㈤槄鍒楄〃
+     * 分页查询RSS订阅列表
      * @param rssSubscriptionPageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> getSubscriptionList(RssSubscriptionPageQueryDTO rssSubscriptionPageQueryDTO) {
-        log.info("鑾峰彇RSS璁㈤槄鍒楄〃,{}", rssSubscriptionPageQueryDTO);
+        log.info("获取RSS订阅列表,{}", rssSubscriptionPageQueryDTO);
         PageResult pageResult = rssSubscriptionService.pageQuery(rssSubscriptionPageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 鑾峰彇鎵€鏈夋縺娲荤殑璁㈤槄
+     * 获取所有激活的订阅
      * @return
      */
     @GetMapping
@@ -47,39 +47,39 @@ public class RssSubscriptionController {
     }
 
     /**
-     * 鏍规嵁ID鏌ヨRSS璁㈤槄
+     * 根据ID查询RSS订阅
      * @param id
      * @return
      */
     @GetMapping("/{id}")
     public Result<RssSubscriptions> getById(@PathVariable Long id) {
-        log.info("鏍规嵁ID鏌ヨRSS璁㈤槄,{}", id);
+        log.info("根据ID查询RSS订阅,{}", id);
         RssSubscriptions rssSubscriptions = rssSubscriptionService.getById(id);
         return Result.success(rssSubscriptions);
     }
 
     /**
-     * 鏇存柊RSS璁㈤槄
+     * 更新RSS订阅
      * @param rssSubscriptions
      * @return
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "rssSubscription", targetId = "#rssSubscriptions.id")
     public Result updateSubscription(@RequestBody RssSubscriptions rssSubscriptions) {
-        log.info("鏇存柊RSS璁㈤槄,{}", rssSubscriptions);
+        log.info("更新RSS订阅,{}", rssSubscriptions);
         rssSubscriptionService.updateSubscription(rssSubscriptions);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎RSS璁㈤槄
+     * 批量删除RSS订阅
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "rssSubscription", targetId = "#ids")
     public Result deleteSubscription(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎RSS璁㈤槄,{}", ids);
+        log.info("批量删除RSS订阅,{}", ids);
         rssSubscriptionService.batchDelete(ids);
         return Result.success();
     }

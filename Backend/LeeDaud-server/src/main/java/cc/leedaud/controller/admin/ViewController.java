@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.dto.ViewPageQueryDTO;
 import cc.leedaud.result.PageResult;
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔祻瑙堣褰曟帴鍙? */
+ * 管理端浏览记录接口
+ */
 @Slf4j
 @RestController("adminViewController")
 @RequestMapping("/admin/view")
@@ -21,25 +22,25 @@ public class ViewController {
     private ViewService viewService;
 
     /**
-     * 鑾峰彇娴忚璁板綍鍒楄〃
+     * 获取浏览记录列表
      * @param viewPageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> getViewList(ViewPageQueryDTO viewPageQueryDTO) {
-        log.info("鑾峰彇娴忚璁板綍鍒楄〃,{}", viewPageQueryDTO);
+        log.info("获取浏览记录列表,{}", viewPageQueryDTO);
         PageResult pageResult = viewService.pageQuery(viewPageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 鎵归噺鍒犻櫎娴忚璁板綍
+     * 批量删除浏览记录
      * @param ids
      * @return
      */
     @DeleteMapping
     public Result batchDelete(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎娴忚璁板綍,{}", ids);
+        log.info("批量删除浏览记录,{}", ids);
         viewService.batchDelete(ids);
         return Result.success();
     }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 鐣欒█VO锛堟爲褰㈢粨鏋勶級
+ * 留言VO（树形结构）
  */
 @Data
 @Builder
@@ -38,7 +38,7 @@ public class MessageVO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     /**
-     * 瀛愮暀瑷€鍒楄〃锛堜粎鏍圭暀瑷€鏈夊€硷級
+     * 子留言列表（仅根留言有值）
      */
     private List<MessageVO> children;
 }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 public class SocialMediaVO {
     private Long id;
 
-    // 鍚嶇О
+    // 名称
     private String name;
 
-    // 鍥炬爣绫诲悕
+    // 图标类名
     private String icon;
 
-    // 閾炬帴
+    // 链接
     private String link;
 
-    // 鎺掑簭锛岃秺灏忚秺闈犲墠
+    // 排序，越小越靠前
     private Integer sort;
 }
 

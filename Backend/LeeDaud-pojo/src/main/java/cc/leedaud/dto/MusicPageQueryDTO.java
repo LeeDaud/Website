@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,18 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MusicPageQueryDTO {
 
-    // 椤电爜
+    // 页码
     private int page;
 
-    // 姣忛〉鏄剧ず鏁伴噺
+    // 每页显示数量
     private int pageSize;
 
-    // 闊充箰鏍囬
+    // 音乐标题
     private String title;
 
-    // 浣滆€?    private String artist;
+    // 作者
+    private String artist;
 
-    // 鏄惁鍙
+    // 是否可见
     private Integer isVisible;
 }
 

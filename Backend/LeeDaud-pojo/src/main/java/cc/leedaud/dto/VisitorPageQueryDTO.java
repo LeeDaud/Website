@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,22 +11,22 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VisitorPageQueryDTO {
 
-    // 椤电爜
+    // 页码
     private int page;
 
-    // 姣忛〉鏄剧ず鏁伴噺
+    // 每页显示数量
     private int pageSize;
 
-    // 鍥藉
+    // 国家
     private String country;
 
-    // 鐪佷唤
+    // 省份
     private String province;
 
-    // 鍩庡競
+    // 城市
     private String city;
 
-    // 鐘舵€?鏄惁琚皝绂?0姝ｅ父 1灏佺
+    // 状态,是否被封禁 0正常 1封禁
     private Integer status;
 }
 

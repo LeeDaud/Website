@@ -1,4 +1,4 @@
-﻿package cc.leedaud.annotation;
+package cc.leedaud.annotation;
 
 import cc.leedaud.enumeration.OperationType;
 
@@ -8,12 +8,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /*
- * 鑷畾涔夋敞瑙ｏ紝鐢ㄤ簬鏍囪瘑鏂规硶闇€瑕佽繘琛屽姛鑳藉瓧娈电殑鑷姩濉厖
+ * 自定义注解，用于标识方法需要进行功能字段的自动填充
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoFill {
-    // 鏁版嵁搴撴搷浣滅被鍨? INSERT, UPDATE
+    // 数据库操作类型: INSERT, UPDATE
     OperationType value();
 }
 

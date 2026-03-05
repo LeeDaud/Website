@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.FriendLinkDTO;
 import cc.leedaud.entity.FriendLinks;
@@ -8,28 +8,32 @@ import java.util.List;
 
 public interface FriendLinkService {
     /**
-     * 绠＄悊绔幏鍙栨墍鏈夊弸鎯呴摼鎺?     * @return
+     * 管理端获取所有友情链接
+     * @return
      */
     List<FriendLinks> getAllFriendLink();
 
     /**
-     * 绠＄悊绔坊鍔犲弸鎯呴摼鎺?     * @param friendLinkDTO
+     * 管理端添加友情链接
+     * @param friendLinkDTO
      */
     void addFriendLink(FriendLinkDTO friendLinkDTO);
 
     /**
-     * 鎵归噺鍒犻櫎鍙嬫儏閾炬帴
+     * 批量删除友情链接
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 绠＄悊绔慨鏀瑰弸鎯呴摼鎺?     * @param friendLinkDTO
+     * 管理端修改友情链接
+     * @param friendLinkDTO
      */
     void updateFriendLink(FriendLinkDTO friendLinkDTO);
 
     /**
-     * 鍗氬绔幏鍙栧彲瑙佸弸鎯呴摼鎺?     * @return
+     * 博客端获取可见友情链接
+     * @return
      */
     List<FriendLinkVO> getVisibleFriendLink();
 }

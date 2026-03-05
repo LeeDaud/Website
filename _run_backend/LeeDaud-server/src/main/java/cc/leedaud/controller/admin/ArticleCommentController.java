@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.ArticleCommentPageQueryDTO;
@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔枃绔犺瘎璁烘帴鍙? */
+ * 管理端文章评论接口
+ */
 @Slf4j
 @RestController("adminArticleCommentController")
 @RequestMapping("/admin/article/comment")
@@ -27,64 +28,65 @@ public class ArticleCommentController {
     private ArticleCommentService articleCommentService;
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ璇勮锛堟椂闂淬€佹槸鍚﹀鏍革級
+     * 分页条件查询评论（时间、是否审核）
      * @param articleCommentPageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> pageQuery(ArticleCommentPageQueryDTO articleCommentPageQueryDTO) {
-        log.info("鍒嗛〉鏉′欢鏌ヨ鏂囩珷璇勮: {}", articleCommentPageQueryDTO);
+        log.info("分页条件查询文章评论: {}", articleCommentPageQueryDTO);
         PageResult pageResult = articleCommentService.pageQuery(articleCommentPageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 鏍规嵁鏂囩珷ID鏌ヨ璇勮
+     * 根据文章ID查询评论
      * @param articleId
      * @return
      */
     @GetMapping("/{articleId}")
     public Result<List<ArticleComments>> getByArticleId(@PathVariable Long articleId) {
-        log.info("鏍规嵁鏂囩珷ID鏌ヨ璇勮: articleId={}", articleId);
+        log.info("根据文章ID查询评论: articleId={}", articleId);
         List<ArticleComments> comments = articleCommentService.getByArticleId(articleId);
         return Result.success(comments);
     }
 
     /**
-     * 鎵归噺瀹℃牳閫氳繃璇勮
+     * 批量审核通过评论
      * @param ids
      * @return
      */
     @PutMapping("/approve")
     @OperationLog(value = OperationType.UPDATE, target = "articleComment", targetId = "#ids")
     public Result<String> batchApprove(@RequestParam List<Long> ids) {
-        log.info("鎵归噺瀹℃牳閫氳繃鏂囩珷璇勮: {}", ids);
+        log.info("批量审核通过文章评论: {}", ids);
         articleCommentService.batchApprove(ids);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎璇勮
+     * 批量删除评论
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "articleComment", targetId = "#ids")
     public Result<String> batchDelete(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎鏂囩珷璇勮: {}", ids);
+        log.info("批量删除文章评论: {}", ids);
         articleCommentService.batchDelete(ids);
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樺洖澶嶈瘎璁?     * @param articleCommentReplyDTO
+     * 管理员回复评论
+     * @param articleCommentReplyDTO
      * @return
      */
     @PostMapping("/reply")
     @OperationLog(value = OperationType.INSERT, target = "articleComment", targetId = "#articleCommentReplyDTO.parentId")
     public Result<String> adminReply(@Valid @RequestBody ArticleCommentReplyDTO articleCommentReplyDTO,
                                      HttpServletRequest request) {
-        log.info("绠＄悊鍛樺洖澶嶆枃绔犺瘎璁? {}", articleCommentReplyDTO);
+        log.info("管理员回复文章评论: {}", articleCommentReplyDTO);
         articleCommentService.adminReply(articleCommentReplyDTO, request);
         return Result.success();
     }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.vo.CaptchaVO;
@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Random;
 
 /**
- * 鍗氬绔叕鍏辨帴鍙? */
+ * 博客端公共接口
+ */
 @RestController("blogCommonController")
 @RequestMapping("/blog/common")
 public class CommonController {
@@ -17,16 +18,17 @@ public class CommonController {
     private final Random random = new Random();
 
     /**
-     * 鐢熸垚绠楁湳楠岃瘉鐮?     */
+     * 生成算术验证码
+     */
     @GetMapping("/captcha/generate")
     public Result<CaptchaVO> generateCaptcha() {
         int num1 = random.nextInt(9) + 1;
         int num2 = random.nextInt(9) + 1;
 
-        String[] operators = {"+", "-", "脳"};
+        String[] operators = {"+", "-", "×"};
         String operator = operators[random.nextInt(operators.length)];
 
-        // 纭繚鍑忔硶涓嶄細浜х敓璐熸暟
+        // 确保减法不会产生负数
         if ("-".equals(operator) && num1 < num2) {
             int temp = num1; num1 = num2; num2 = temp;
         }
@@ -35,7 +37,7 @@ public class CommonController {
         switch (operator) {
             case "+": result = num1 + num2; break;
             case "-": result = num1 - num2; break;
-            case "脳": result = num1 * num2; break;
+            case "×": result = num1 * num2; break;
             default: result = num1 + num2;
         }
 

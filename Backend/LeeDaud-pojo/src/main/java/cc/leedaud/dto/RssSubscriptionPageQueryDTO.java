@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,16 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RssSubscriptionPageQueryDTO {
 
-    // 椤电爜
+    // 页码
     private int page;
 
-    // 姣忛〉鏄剧ず鏁伴噺
+    // 每页显示数量
     private int pageSize;
 
-    // 閭
+    // 邮箱
     private String email;
 
-    // 鏄惁婵€娲伙紝0-鍚︼紝1-鏄?    private Integer isActive;
+    // 是否激活，0-否，1-是
+    private Integer isActive;
 }
 

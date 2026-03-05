@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.dto.ArticlePageQueryDTO;
@@ -21,20 +21,21 @@ import java.util.List;
 public interface ArticleMapper {
 
     /**
-     * 鎻掑叆鏂囩珷
+     * 插入文章
      * @param articles
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Articles articles);
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ鏂囩珷锛堝惈鍒嗙被鍚嶇О锛?     * @param articlePageQueryDTO
+     * 分页条件查询文章（含分类名称）
+     * @param articlePageQueryDTO
      * @return
      */
     Page<ArticleVO> pageQuery(ArticlePageQueryDTO articlePageQueryDTO);
 
     /**
-     * 鏍规嵁ID鏌ヨ鏂囩珷
+     * 根据ID查询文章
      * @param id
      * @return
      */
@@ -42,101 +43,107 @@ public interface ArticleMapper {
     Articles getById(Long id);
 
     /**
-     * 鏇存柊鏂囩珷
+     * 更新文章
      * @param articles
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Articles articles);
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷
+     * 批量删除文章
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鍏ㄦ枃鎼滅储鏂囩珷锛堟爣棰樸€佸唴瀹癸級
+     * 全文搜索文章（标题、内容）
      * @param keyword
      * @return
      */
     Page<ArticleVO> search(String keyword);
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鑾峰彇宸插彂甯冩枃绔犲垪琛紙鍒嗛〉锛?     */
+     * 获取已发布文章列表（分页）
+     */
     Page<BlogArticleVO> getPublishedPage();
 
     /**
-     * 鏍规嵁slug鑾峰彇鏂囩珷璇︽儏
+     * 根据slug获取文章详情
      */
     BlogArticleDetailVO getBySlug(String slug);
 
     /**
-     * 鏍规嵁鍒嗙被ID鑾峰彇宸插彂甯冩枃绔犲垪琛紙鍒嗛〉锛?     */
+     * 根据分类ID获取已发布文章列表（分页）
+     */
     Page<BlogArticleVO> getPublishedByCategoryId(Long categoryId);
 
     /**
-     * 鑾峰彇鏂囩珷褰掓。鍒楄〃
+     * 获取文章归档列表
      */
     List<ArticleArchiveItemVO> getArchiveList();
 
     /**
-     * 鍗氬绔枃绔犳悳绱紙浠呭凡鍙戝竷锛?     */
+     * 博客端文章搜索（仅已发布）
+     */
     Page<BlogArticleVO> searchPublished(String keyword);
 
     /**
-     * 娴忚閲?1
+     * 浏览量+1
      */
     @Update("update articles set view_count = view_count + 1 where id = #{id}")
     void incrementViewCount(Long id);
 
     /**
-     * 娴忚閲忔壒閲忕疮鍔狅紙瀹氭椂鍚屾Redis澧為噺锛?     */
+     * 浏览量批量累加（定时同步Redis增量）
+     */
     @Update("update articles set view_count = view_count + #{increment} where id = #{id}")
     void addViewCount(@Param("id") Long id, @Param("increment") int increment);
 
     /**
-     * 鐐硅禐鏁?1
+     * 点赞数+1
      */
     @Update("update articles set like_count = like_count + 1 where id = #{id}")
     void incrementLikeCount(Long id);
 
     /**
-     * 鐐硅禐鏁?1
+     * 点赞数-1
      */
     @Update("update articles set like_count = case when like_count > 0 then like_count - 1 else 0 end where id = #{id}")
     void decrementLikeCount(Long id);
 
     /**
-     * 缁熻宸插彂甯冩枃绔犳暟
+     * 统计已发布文章数
      */
     @Select("select count(*) from articles where is_published = 1")
     Integer countPublished();
 
     /**
-     * 鏍规嵁鍒嗙被ID缁熻鏂囩珷鏁?     */
+     * 根据分类ID统计文章数
+     */
     @Select("select count(*) from articles where category_id = #{categoryId}")
     Integer countByCategoryId(Long categoryId);
 
     List<ArticleTitleViewCountDTO> getViewTop10();
 
     /**
-     * 鏍规嵁鏍囩ID鑾峰彇宸插彂甯冩枃绔犲垪琛紙鍒嗛〉锛?     */
+     * 根据标签ID获取已发布文章列表（分页）
+     */
     Page<BlogArticleVO> getPublishedByTagId(Long tagId);
 
     /**
-     * 鑾峰彇褰撳墠鏂囩珷鐨勪笂涓€绡?鎸夊彂甯冩椂闂?
+     * 获取当前文章的上一篇(按发布时间)
      */
     BlogArticleVO getPrevArticle(Long id);
 
     /**
-     * 鑾峰彇褰撳墠鏂囩珷鐨勪笅涓€绡?鎸夊彂甯冩椂闂?
+     * 获取当前文章的下一篇(按发布时间)
      */
     BlogArticleVO getNextArticle(Long id);
 
     /**
-     * 鑾峰彇鐩稿叧鏂囩珷(鍚屽垎绫?鎺掗櫎褰撳墠鏂囩珷,鏈€澶?绡?
+     * 获取相关文章(同分类,排除当前文章,最多6篇)
      */
     List<BlogArticleVO> getRelatedArticles(Long articleId, Long categoryId);
 }

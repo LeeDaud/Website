@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.OperationLogPageQueryDTO;
 import cc.leedaud.entity.OperationLogs;
@@ -19,7 +19,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     private OperationLogMapper operationLogMapper;
 
     /**
-     * 淇濆瓨鎿嶄綔鏃ュ織
+     * 保存操作日志
      * @param operationLogs
      */
     public void save(OperationLogs operationLogs) {
@@ -27,7 +27,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     }
 
     /**
-     * 鍒嗛〉鏌ヨ鎿嶄綔鏃ュ織
+     * 分页查询操作日志
      * @param operationLogPageQueryDTO
      * @return
      */
@@ -40,7 +40,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鎿嶄綔鏃ュ織
+     * 批量删除操作日志
      * @param ids
      */
     public void batchDelete(List<Long> ids) {

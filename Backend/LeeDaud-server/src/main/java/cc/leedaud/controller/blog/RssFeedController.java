@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.properties.WebsiteProperties;
 import cc.leedaud.result.Result;
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * 鍗氬绔?RSS Feed 鎺ュ彛
+ * 博客端 RSS Feed 接口
  */
 @Slf4j
 @RestController("blogRssFeedController")
@@ -32,7 +32,7 @@ public class RssFeedController {
     private RssFeedService rssFeedService;
 
     /**
-     * 鐢熸垚 RSS 2.0 Feed XML
+     * 生成 RSS 2.0 Feed XML
      */
     @GetMapping(value = "/rss", produces = "application/xml; charset=UTF-8")
     @Cacheable(value = "rssFeed", key = "'xml'")

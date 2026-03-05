@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.VisitorRecordDTO;
 import cc.leedaud.service.FingerprintService;
@@ -13,21 +13,23 @@ import org.springframework.util.StringUtils;
 public class FingerprintServiceImpl implements FingerprintService {
     
     /**
-     * 鐢熸垚璁垮鎸囩汗
+     * 生成访客指纹
      * @param dto
      * @param request
      * @return
      */
     public String generateVisitorFingerprint(VisitorRecordDTO dto, HttpServletRequest request) {
-        // 鎻愬彇鏇寸ǔ瀹氱殑鐗瑰緛
+        // 提取更稳定的特征
         String userAgent = request.getHeader("User-Agent");
 
-        // 绠€鍖栧钩鍙颁俊鎭?        String simplifiedPlatform = simplifyPlatform(dto.getPlatform());
+        // 简化平台信息
+        String simplifiedPlatform = simplifyPlatform(dto.getPlatform());
 
-        // 瀵瑰睆骞曞垎杈ㄧ巼杩涜鍒嗙粍
+        // 对屏幕分辨率进行分组
         String screenGroup = groupScreenResolution(dto.getScreen());
 
-        // 澶勭悊鍙兘涓簄ull鐨勫€?        Integer hardwareConcurrency = dto.getHardwareConcurrency() != null ?
+        // 处理可能为null的值
+        Integer hardwareConcurrency = dto.getHardwareConcurrency() != null ?
                 dto.getHardwareConcurrency() : 0;
         Integer deviceMemory = dto.getDeviceMemory() != null ?
                 dto.getDeviceMemory() : 0;
@@ -46,7 +48,11 @@ public class FingerprintServiceImpl implements FingerprintService {
     }
 
     /**
-     * 鎻愬彇娴忚鍣ㄦ牳蹇冧俊鎭?     * 浠嶶ser-Agent涓彁鍙栨祻瑙堝櫒绫诲瀷鍜屼富鐗堟湰鍙?     * @param userAgent User-Agent瀛楃涓?     * @return 娴忚鍣ㄦ牳蹇冧俊鎭?     */
+     * 提取浏览器核心信息
+     * 从User-Agent中提取浏览器类型和主版本号
+     * @param userAgent User-Agent字符串
+     * @return 浏览器核心信息
+     */
     private String extractBrowserInfo(String userAgent) {
         if (userAgent == null) {
             return "unknown";
@@ -54,13 +60,14 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         String lowerUserAgent = userAgent.toLowerCase();
 
-        // 妫€娴嬫祻瑙堝櫒绫诲瀷
+        // 检测浏览器类型
         String browser = "Other";
         String version = "";
 
         if (lowerUserAgent.contains("chrome") && !lowerUserAgent.contains("edg")) {
             browser = "Chrome";
-            // 鎻愬彇Chrome鐗堟湰鍙?            int chromeIndex = lowerUserAgent.indexOf("chrome/");
+            // 提取Chrome版本号
+            int chromeIndex = lowerUserAgent.indexOf("chrome/");
             if (chromeIndex > 0) {
                 int endIndex = Math.min(chromeIndex + 12, userAgent.length());
                 version = userAgent.substring(chromeIndex + 7, endIndex).split("\\.")[0];
@@ -99,8 +106,10 @@ public class FingerprintServiceImpl implements FingerprintService {
     }
 
     /**
-     * 绠€鍖栧钩鍙颁俊鎭?     * @param platform 骞冲彴淇℃伅
-     * @return 绠€鍖栧悗鐨勫钩鍙颁俊鎭?     */
+     * 简化平台信息
+     * @param platform 平台信息
+     * @return 简化后的平台信息
+     */
     private String simplifyPlatform(String platform) {
         if (platform == null) return "unknown";
         if (platform.contains("Win")) return "Windows";
@@ -112,7 +121,8 @@ public class FingerprintServiceImpl implements FingerprintService {
     }
 
     /**
-     * 鍒嗙粍灞忓箷鍒嗚鲸鐜?     * @param screen
+     * 分组屏幕分辨率
+     * @param screen
      * @return
      */
     private String groupScreenResolution(String screen) {
@@ -123,7 +133,7 @@ public class FingerprintServiceImpl implements FingerprintService {
                 int width = Integer.parseInt(parts[0]);
                 int height = Integer.parseInt(parts[1]);
 
-                // 鎸夊父瑙佸垎杈ㄧ巼鍒嗙粍
+                // 按常见分辨率分组
                 if (width >= 3840) return "4K";
                 if (width >= 2560) return "2K";
                 if (width >= 1920) return "FHD";

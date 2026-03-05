@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.PersonalInfoDTO;
 import cc.leedaud.entity.PersonalInfo;
@@ -6,19 +6,20 @@ import cc.leedaud.vo.PersonalInfoVO;
 
 public interface PersonalInfoService {
     /**
-     * 鑾峰彇涓汉淇℃伅
+     * 获取个人信息
      * @return
      */
     PersonalInfo getAllPersonalInfo();
 
     /**
-     * 鏇存柊涓汉淇℃伅
+     * 更新个人信息
      * @param personalInfoDTO
      */
     void updatePersonalInfo(PersonalInfoDTO personalInfoDTO);
 
     /**
-     * 鍏朵粬绔幏鍙栦釜浜轰俊鎭?     * @return
+     * 其他端获取个人信息
+     * @return
      */
     PersonalInfoVO getPersonalInfo();
 }

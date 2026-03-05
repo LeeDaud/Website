@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.SystemConfigDTO;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔郴缁熼厤缃帴鍙? */
+ * 管理端系统配置接口
+ */
 @Slf4j
 @RestController("adminSystemConfigController")
 @RequestMapping("/admin/systemConfig")
@@ -24,7 +25,8 @@ public class SystemConfigController {
     private SystemConfigService systemConfigService;
 
     /**
-     * 鑾峰彇鎵€鏈夌郴缁熼厤缃?     * @return
+     * 获取所有系统配置
+     * @return
      */
     @GetMapping
     public Result<List<SystemConfig>> listAll() {
@@ -33,63 +35,64 @@ public class SystemConfigController {
     }
 
     /**
-     * 鏍规嵁閰嶇疆閿幏鍙栭厤缃?     * @param configKey
+     * 根据配置键获取配置
+     * @param configKey
      * @return
      */
     @GetMapping("/key/{configKey}")
     public Result<SystemConfig> getByKey(@PathVariable String configKey) {
-        log.info("鏍规嵁閰嶇疆閿幏鍙栭厤缃?{}", configKey);
+        log.info("根据配置键获取配置,{}", configKey);
         SystemConfig systemConfig = systemConfigService.getByKey(configKey);
         return Result.success(systemConfig);
     }
 
     /**
-     * 鏍规嵁ID鑾峰彇閰嶇疆
+     * 根据ID获取配置
      * @param id
      * @return
      */
     @GetMapping("/{id}")
     public Result<SystemConfig> getById(@PathVariable Long id) {
-        log.info("鏍规嵁ID鑾峰彇閰嶇疆,{}", id);
+        log.info("根据ID获取配置,{}", id);
         SystemConfig systemConfig = systemConfigService.getById(id);
         return Result.success(systemConfig);
     }
 
     /**
-     * 娣诲姞绯荤粺閰嶇疆
+     * 添加系统配置
      * @param systemConfigDTO
      * @return
      */
     @PostMapping
     @OperationLog(value = OperationType.INSERT, target = "systemConfig")
     public Result addConfig(@Valid @RequestBody SystemConfigDTO systemConfigDTO) {
-        log.info("娣诲姞绯荤粺閰嶇疆,{}", systemConfigDTO);
+        log.info("添加系统配置,{}", systemConfigDTO);
         systemConfigService.addConfig(systemConfigDTO);
         return Result.success();
     }
 
     /**
-     * 鏇存柊绯荤粺閰嶇疆
+     * 更新系统配置
      * @param systemConfigDTO
      * @return
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "systemConfig", targetId = "#systemConfigDTO.id")
     public Result updateConfig(@Valid @RequestBody SystemConfigDTO systemConfigDTO) {
-        log.info("鏇存柊绯荤粺閰嶇疆,{}", systemConfigDTO);
+        log.info("更新系统配置,{}", systemConfigDTO);
         systemConfigService.updateConfig(systemConfigDTO);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎绯荤粺閰嶇疆
+     * 批量删除系统配置
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "systemConfig", targetId = "#ids")
     public Result deleteConfig(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎绯荤粺閰嶇疆,{}", ids);
+        log.info("批量删除系统配置,{}", ids);
         systemConfigService.batchDelete(ids);
         return Result.success();
     }

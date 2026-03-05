@@ -1,4 +1,4 @@
-﻿package cc.leedaud.properties;
+package cc.leedaud.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

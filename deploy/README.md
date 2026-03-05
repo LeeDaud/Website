@@ -28,6 +28,8 @@ DNS `A` records should point to:
 - `deploy/windows/invoke-remote-deploy.ps1`: local PowerShell remote deploy trigger.
 - `deploy/windows/push-and-deploy.ps1`: push current branch then trigger remote deploy.
 - `deploy/windows/deploy-server.ps1`: one-click wrapper (pre-filled for `66.63.173.143` + `/root/website`).
+- `deploy/windows/one-click-deploy.ps1`: local one-click pipeline (`git add/commit/push` + remote deploy).
+- `deploy/windows/deploy.local.example.psd1`: local deploy config template.
 
 ## Server First-Time Setup
 
@@ -107,6 +109,46 @@ tail -n 50 /var/log/leedaud-backup-cron.log
 ```
 
 ## One-Click Deploy (Run on Local Windows)
+
+1) Create local deploy config (only once):
+
+```powershell
+copy .\deploy\windows\deploy.local.example.psd1 .\deploy\windows\deploy.local.psd1
+```
+
+2) One command from local:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1
+```
+
+This will do:
+- `git add -A`
+- auto `git commit` (if there are changes)
+- `git push origin <branch>`
+- SSH trigger remote `deploy-all.sh`
+
+`deploy-server.ps1` now wraps the same one-click flow:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1
+```
+
+Optional examples:
+
+```powershell
+# custom commit message
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -CommitMessage "feat: update homepage links"
+
+# only deploy server (skip local commit/push)
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -SkipCommit -SkipPush
+```
+
+---
+
+Legacy split mode remains available:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\push-and-deploy.ps1 `

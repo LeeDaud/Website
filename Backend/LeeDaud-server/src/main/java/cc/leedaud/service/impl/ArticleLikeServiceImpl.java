@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.entity.ArticleLikes;
 import cc.leedaud.mapper.ArticleLikeMapper;
@@ -23,30 +23,32 @@ public class ArticleLikeServiceImpl implements ArticleLikeService {
 
     @Transactional
     public void likeArticle(Long articleId, Long visitorId) {
-        // 妫€鏌ユ槸鍚﹀凡缁忕偣璧?        int count = articleLikeMapper.countByArticleIdAndVisitorId(articleId, visitorId);
+        // 检查是否已经点赞
+        int count = articleLikeMapper.countByArticleIdAndVisitorId(articleId, visitorId);
         if (count > 0) {
             return;
         }
-        // 鎻掑叆鐐硅禐璁板綍
+        // 插入点赞记录
         ArticleLikes articleLikes = ArticleLikes.builder()
                 .articleId(articleId)
                 .visitorId(visitorId)
                 .likeTime(LocalDateTime.now())
                 .build();
         articleLikeMapper.insert(articleLikes);
-        // 鏂囩珷鐐硅禐鏁?1
+        // 文章点赞数+1
         articleMapper.incrementLikeCount(articleId);
     }
 
     @Transactional
     public void unlikeArticle(Long articleId, Long visitorId) {
-        // 妫€鏌ユ槸鍚﹀凡缁忕偣璧?        int count = articleLikeMapper.countByArticleIdAndVisitorId(articleId, visitorId);
+        // 检查是否已经点赞
+        int count = articleLikeMapper.countByArticleIdAndVisitorId(articleId, visitorId);
         if (count == 0) {
             return;
         }
-        // 鍒犻櫎鐐硅禐璁板綍
+        // 删除点赞记录
         articleLikeMapper.deleteByArticleIdAndVisitorId(articleId, visitorId);
-        // 鏂囩珷鐐硅禐鏁?1
+        // 文章点赞数-1
         articleMapper.decrementLikeCount(articleId);
     }
 

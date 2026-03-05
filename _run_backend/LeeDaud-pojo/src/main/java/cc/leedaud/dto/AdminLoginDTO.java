@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class AdminLoginDTO implements Serializable {
 
-    @NotBlank(message = "鐢ㄦ埛鍚嶄笉鑳戒负绌?)
+    @NotBlank(message = "用户名不能为空")
     private String username;
 
-    @NotBlank(message = "瀵嗙爜涓嶈兘涓虹┖")
+    @NotBlank(message = "密码不能为空")
     private String password;
 
-    @NotBlank(message = "楠岃瘉鐮佷笉鑳戒负绌?)
+    @NotBlank(message = "验证码不能为空")
     private String code;
 }
 

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * 姣忔棩娴忚閲忕粺璁TO
+ * 每日浏览量统计DTO
  */
 @Data
 @AllArgsConstructor
@@ -16,9 +16,10 @@ import java.time.LocalDate;
 @Builder
 public class DailyViewCountDTO {
 
-    // 鏃ユ湡
+    // 日期
     private LocalDate date;
 
-    // 褰撴棩娴忚閲?    private Integer count;
+    // 当日浏览量
+    private Integer count;
 }
 

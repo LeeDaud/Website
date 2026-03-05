@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 鏂囩珷-鏍囩鍏宠仈
+ * 文章-标签关联
  */
 @Data
 @Builder
@@ -20,10 +20,10 @@ public class ArticleTagRelations implements Serializable {
 
     private Long id;
 
-    // 鏂囩珷ID
+    // 文章ID
     private Long articleId;
 
-    // 鏍囩ID
+    // 标签ID
     private Long tagId;
 }
 

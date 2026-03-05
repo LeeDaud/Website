@@ -1,7 +1,7 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 /**
- * 娓稿鍙寮傚父 - 娓稿璐﹀彿灏濊瘯鎵ц鍐欐搷浣滄椂鎶涘嚭
+ * 游客只读异常 - 游客账号尝试执行写操作时抛出
  */
 public class GuestReadOnlyException extends RuntimeException {
     public GuestReadOnlyException() {

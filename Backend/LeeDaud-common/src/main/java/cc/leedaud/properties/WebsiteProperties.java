@@ -1,4 +1,4 @@
-﻿package cc.leedaud.properties;
+package cc.leedaud.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "leedaud.website")
 @Data
 public class WebsiteProperties {
-    // 缃戠珯鏍囬
+    // 网站标题
     private String title;
-    // 涓婚〉鍦板潃
+    // 主页地址
     private String home;
-    // 绠＄悊绔湴鍧€
+    // 管理端地址
     private String admin;
-    // 绠€鍘嗗湴鍧€
+    // 简历地址
     private String cv;
-    // 鍗氬鍦板潃
+    // 博客地址
     private String blog;
 }
 

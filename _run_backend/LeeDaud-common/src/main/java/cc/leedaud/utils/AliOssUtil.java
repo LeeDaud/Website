@@ -1,4 +1,4 @@
-﻿package cc.leedaud.utils;
+package cc.leedaud.utils;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
@@ -21,19 +21,22 @@ public class AliOssUtil {
     private String bucketName;
 
     /**
-     * 鏂囦欢涓婁紶
-     * @param bytes 鏂囦欢瀛楄妭鏁扮粍
-     * @param extension 鏂囦欢鍚庣紑
-     * @param fileName 鏂囦欢鍚?     * @return
+     * 文件上传
+     * @param bytes 文件字节数组
+     * @param extension 文件后缀
+     * @param fileName 文件名
+     * @return
      */
     public String upload(byte[] bytes, String extension, String fileName) {
 
         String objectName = getFileCategory(extension) + "/" + fileName;
 
-        // 鍒涘缓OSSClient瀹炰緥銆?        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        // 创建OSSClient实例。
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
         try {
-            // 鍒涘缓PutObject璇锋眰銆?            ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(bytes));
+            // 创建PutObject请求。
+            ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(bytes));
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");
@@ -52,7 +55,7 @@ public class AliOssUtil {
             }
         }
 
-        //鏂囦欢璁块棶璺緞瑙勫垯 https://BucketName.Endpoint/ObjectName
+        //文件访问路径规则 https://BucketName.Endpoint/ObjectName
         StringBuilder stringBuilder = new StringBuilder("https://");
         stringBuilder
                 .append(bucketName)
@@ -61,19 +64,19 @@ public class AliOssUtil {
                 .append("/")
                 .append(objectName);
 
-        log.info("鏂囦欢涓婁紶鍒?{}", stringBuilder.toString());
+        log.info("文件上传到:{}", stringBuilder.toString());
 
         return stringBuilder.toString();
     }
 
     /**
-     * 鑾峰彇鏂囦欢鍒嗙被
+     * 获取文件分类
      * @param extension
      * @return
      */
     public String getFileCategory(String extension) {
         switch (extension){
-            // 鍥剧墖
+            // 图片
             case "jpg":
             case "png":
             case "gif":
@@ -85,7 +88,7 @@ public class AliOssUtil {
             case "tiff":
                 return "image";
 
-            // 瑙嗛
+            // 视频
             case "mp4":
             case "avi":
             case "mov":
@@ -97,7 +100,7 @@ public class AliOssUtil {
             case "3gp":
                 return "video";
 
-            // 闊抽
+            // 音频
             case "mp3":
             case "wav":
             case "wma":
@@ -110,7 +113,7 @@ public class AliOssUtil {
             case "midi":
                 return "audio";
 
-            // 姝岃瘝
+            // 歌词
             case "lrc":
             case "lrcx":
             case "krc":
@@ -119,7 +122,7 @@ public class AliOssUtil {
             case "ksc":
                 return "lyric";
 
-            // 鏂囨。
+            // 文档
             case "txt":
             case "md":
             case "rtf":
@@ -140,7 +143,7 @@ public class AliOssUtil {
             case "xltx":
                 return "excel";
 
-            // 鍘嬬缉鏂囦欢
+            // 压缩文件
             case "zip":
             case "rar":
             case "7z":
@@ -149,7 +152,7 @@ public class AliOssUtil {
             case "bz2":
                 return "archive";
 
-            // 瀛椾綋
+            // 字体
             case "ttf":
             case "otf":
             case "woff":

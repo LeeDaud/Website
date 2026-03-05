@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 鐪佷唤璁垮鏁伴噺DTO
+ * 省份访客数量DTO
  */
 @Data
 @AllArgsConstructor
@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProvinceCountDTO {
 
-    // 鐪佷唤
+    // 省份
     private String province;
 
-    // 璁垮鏁伴噺
+    // 访客数量
     private Integer count;
 }
 

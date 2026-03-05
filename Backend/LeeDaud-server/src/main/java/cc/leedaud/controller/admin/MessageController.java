@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.MessagePageQueryDTO;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔暀瑷€鎺ュ彛
+ * 管理端留言接口
  */
 @Slf4j
 @RestController("adminMessageController")
@@ -27,45 +27,45 @@ public class MessageController {
     private MessageService messageService;
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ鐣欒█
+     * 分页条件查询留言
      * @param messagePageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> pageQuery(MessagePageQueryDTO messagePageQueryDTO) {
-        log.info("鍒嗛〉鏉′欢鏌ヨ鐣欒█: {}", messagePageQueryDTO);
+        log.info("分页条件查询留言: {}", messagePageQueryDTO);
         PageResult pageResult = messageService.pageQuery(messagePageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 鎵归噺瀹℃牳閫氳繃鐣欒█
+     * 批量审核通过留言
      * @param ids
      * @return
      */
     @PutMapping("/approve")
     @OperationLog(value = OperationType.UPDATE, target = "message", targetId = "#ids")
     public Result<String> batchApprove(@RequestParam List<Long> ids) {
-        log.info("鎵归噺瀹℃牳閫氳繃鐣欒█: {}", ids);
+        log.info("批量审核通过留言: {}", ids);
         messageService.batchApprove(ids);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎鐣欒█
+     * 批量删除留言
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "message", targetId = "#ids")
     public Result<String> batchDelete(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎鐣欒█: {}", ids);
+        log.info("批量删除留言: {}", ids);
         messageService.batchDelete(ids);
         return Result.success();
     }
 
     /**
-     * 绠＄悊鍛樺洖澶嶇暀瑷€
+     * 管理员回复留言
      * @param messageReplyDTO
      * @return
      */
@@ -73,7 +73,7 @@ public class MessageController {
     @OperationLog(value = OperationType.INSERT, target = "message", targetId = "#messageReplyDTO.parentId")
     public Result<String> adminReply(@Valid @RequestBody MessageReplyDTO messageReplyDTO,
                                      HttpServletRequest request) {
-        log.info("绠＄悊鍛樺洖澶嶇暀瑷€: {}", messageReplyDTO);
+        log.info("管理员回复留言: {}", messageReplyDTO);
         messageService.adminReply(messageReplyDTO, request);
         return Result.success();
     }

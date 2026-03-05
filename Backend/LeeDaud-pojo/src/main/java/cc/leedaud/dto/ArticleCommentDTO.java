@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 鍗氬绔瀹㈡彁浜ゆ枃绔犺瘎璁篋TO
+ * 博客端访客提交文章评论DTO
  */
 @Data
 @Builder
@@ -19,27 +19,27 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ArticleCommentDTO implements Serializable {
 
-    @NotNull(message = "鏂囩珷ID涓嶈兘涓虹┖")
+    @NotNull(message = "文章ID不能为空")
     private Long articleId;
 
     private Long rootId;
     private Long parentId;
 
-    @Size(max = 15, message = "鐖惰瘎璁烘樀绉颁笉鑳借秴杩?5瀛?)
+    @Size(max = 15, message = "父评论昵称不能超过15字")
     private String parentNickname;
 
-    @NotBlank(message = "璇勮鍐呭涓嶈兘涓虹┖")
-    @Size(max = 2000, message = "璇勮鍐呭涓嶈兘瓒呰繃2000瀛?)
+    @NotBlank(message = "评论内容不能为空")
+    @Size(max = 2000, message = "评论内容不能超过2000字")
     private String content;
 
-    @NotNull(message = "璁垮ID涓嶈兘涓虹┖")
+    @NotNull(message = "访客ID不能为空")
     private Long visitorId;
 
-    @NotBlank(message = "鏄电О涓嶈兘涓虹┖")
-    @Size(max = 15, message = "鏄电О涓嶈兘瓒呰繃15瀛?)
+    @NotBlank(message = "昵称不能为空")
+    @Size(max = 15, message = "昵称不能超过15字")
     private String nickname;
 
-    @Size(max = 50, message = "閭鎴朡Q鍙蜂笉鑳借秴杩?0瀛?)
+    @Size(max = 50, message = "邮箱或QQ号不能超过50字")
     private String emailOrQq;
 
     private Integer isMarkdown;

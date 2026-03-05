@@ -1,4 +1,4 @@
-﻿package cc.leedaud.config;
+package cc.leedaud.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 public class VirtualThreadConfiguration implements WebMvcConfigurer {
 
     /**
-     * 閰嶇疆Tomcat浣跨敤铏氭嫙绾跨▼
+     * 配置Tomcat使用虚拟线程
      */
     @Bean
     public TomcatProtocolHandlerCustomizer<?> tomcatVirtualThreadExecutor() {
@@ -30,7 +30,7 @@ public class VirtualThreadConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 閰嶇疆Spring寮傛浠诲姟浣跨敤铏氭嫙绾跨▼
+     * 配置Spring异步任务使用虚拟线程
      */
     @Bean(name = "taskExecutor")
     public AsyncTaskExecutor taskExecutor() {
@@ -38,24 +38,26 @@ public class VirtualThreadConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 閰嶇疆閭欢鍙戦€佺殑寮傛鎵ц鍣?     */
+     * 配置邮件发送的异步执行器
+     */
     @Bean(name = "mailTaskExecutor")
     public AsyncTaskExecutor mailTaskExecutor() {
         return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
     }
 
     /**
-     * 閰嶇疆MVC寮傛璇锋眰鏀寔
+     * 配置MVC异步请求支持
      */
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         configurer.setTaskExecutor(new TaskExecutorAdapter(
                 Executors.newVirtualThreadPerTaskExecutor()
         ));
-        configurer.setDefaultTimeout(30000L);  // 30绉掕秴鏃?    }
+        configurer.setDefaultTimeout(30000L);  // 30秒超时
+    }
 
     /**
-     * 閰嶇疆鏁版嵁搴撹繛鎺ユ睜铏氭嫙绾跨▼鏀寔
+     * 配置数据库连接池虚拟线程支持
      */
     @Bean
     @Qualifier("dataSourceExecutor")

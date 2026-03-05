@@ -1,4 +1,4 @@
-﻿package cc.leedaud.utils;
+package cc.leedaud.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -9,26 +9,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * IP鍦板潃宸ュ叿绫? */
+ * IP地址工具类
+ */
 @Slf4j
 public class IpUtil {
-    // IP鍦板潃鏌ヨ鎺ュ彛
+    // IP地址查询接口
     public static final String IP_API = "http://ip-api.com/json/";
     public static final String LANGUAGE = "zh-CN";
 
-    // 鑾峰彇鐪熷疄IP鍦板潃锛堝吋瀹笴DN/鍙嶅悜浠ｇ悊锛?    public static String getClientIp(HttpServletRequest request) {
-        // CDN涓撶敤澶达紙浼樺厛绾ф渶楂橈級
+    // 获取真实IP地址（兼容CDN/反向代理）
+    public static String getClientIp(HttpServletRequest request) {
+        // CDN专用头（优先级最高）
         String ip = request.getHeader("CF-Connecting-IP");      // Cloudflare
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("True-Client-IP");            // Cloudflare Enterprise / Akamai
         }
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Ali-CDN-Real-IP");           // 闃块噷浜慍DN
+            ip = request.getHeader("Ali-CDN-Real-IP");           // 阿里云CDN
         }
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Real-IP");                 // Nginx / 閫氱敤CDN
+            ip = request.getHeader("X-Real-IP");                 // Nginx / 通用CDN
         }
-        // 鏍囧噯浠ｇ悊澶?        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+        // 标准代理头
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Forwarded-For");
         }
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
@@ -41,28 +44,29 @@ public class IpUtil {
             ip = request.getRemoteAddr();
         }
 
-        // 澶氱骇浠ｇ悊鏃讹紝鍙栫涓€涓狪P锛堝嵆鐪熷疄瀹㈡埛绔疘P锛?        if (ip != null && ip.contains(",")) {
+        // 多级代理时，取第一个IP（即真实客户端IP）
+        if (ip != null && ip.contains(",")) {
             ip = ip.split(",")[0].trim();
         }
 
         return ip;
     }
 
-    // 鑾峰彇IP鍦板潃淇℃伅
+    // 获取IP地址信息
     public static Map<String, String> getGeoInfo(String ip){
         Map<String,String> params = new HashMap<>();
         params.put("lang",LANGUAGE);
         String doneGet = HttpClientUtil.doGet(IP_API + ip, params);
-        log.info("IP鍦板潃淇℃伅鏌ヨ缁撴灉锛歿}",doneGet);
-        // 灏佽杩斿洖缁撴灉
+        log.info("IP地址信息查询结果：{}",doneGet);
+        // 封装返回结果
         Map<String, String> geoInfo = new HashMap<>();
 
         try {
-            // 浣跨敤Jackson ObjectMapper瑙ｆ瀽JSON
+            // 使用Jackson ObjectMapper解析JSON
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> jsonMap = mapper.readValue(doneGet, Map.class);
 
-            // 鎻愬彇闇€瑕佺殑淇℃伅
+            // 提取需要的信息
             geoInfo.put("country", (String) jsonMap.getOrDefault("country", ""));
             geoInfo.put("province", stripAdminSuffix((String) jsonMap.getOrDefault("regionName", "")));
             geoInfo.put("city", stripAdminSuffix((String) jsonMap.getOrDefault("city", "")));
@@ -70,20 +74,21 @@ public class IpUtil {
             geoInfo.put("longitude", String.valueOf(jsonMap.getOrDefault("lon", "")));
 
         } catch (Exception e) {
-            log.error("瑙ｆ瀽IP鍦板潃淇℃伅澶辫触", e);
+            log.error("解析IP地址信息失败", e);
         }
         return geoInfo;
     }
 
     /**
-     * 鍘绘帀琛屾斂鍖哄垝鍚庣紑锛堢渷銆佸競銆佽嚜娌诲尯銆佺壒鍒鏀垮尯锛?     * 姣忎釜瀛楁閮界嫭绔嬫牎楠?鐪?鍜?甯?鍚庣紑
+     * 去掉行政区划后缀（省、市、自治区、特别行政区）
+     * 每个字段都独立校验"省"和"市"后缀
      */
     private static String stripAdminSuffix(String name) {
         if (name == null || name.isEmpty()) return name;
-        // 鍏堝幓闄ゅ鏉傜殑琛屾斂鍖哄垝鍚庣紑
-        name = name.replaceAll("澹棌鑷不鍖簗缁村惥灏旇嚜娌诲尯|鍥炴棌鑷不鍖簗鑷不鍖簗鐗瑰埆琛屾斂鍖?, "");
-        // 鍐嶅幓闄ゆ湯灏剧殑"鐪?鎴?甯?锛堜繚璇佸幓闄ゅ悗鑷冲皯淇濈暀 1 涓瓧绗︼級
-        if (name.length() > 1 && (name.endsWith("鐪?) || name.endsWith("甯?))) {
+        // 先去除复杂的行政区划后缀
+        name = name.replaceAll("壮族自治区|维吾尔自治区|回族自治区|自治区|特别行政区", "");
+        // 再去除末尾的"省"或"市"（保证去除后至少保留 1 个字符）
+        if (name.length() > 1 && (name.endsWith("省") || name.endsWith("市"))) {
             name = name.substring(0, name.length() - 1);
         }
         return name;

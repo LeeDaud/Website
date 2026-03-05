@@ -1,4 +1,4 @@
-﻿package cc.leedaud.properties;
+package cc.leedaud.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class JwtProperties {
     /**
-     * jwt浠ょ墝鐩稿叧閰嶇疆
+     * jwt令牌相关配置
      */
     private String secretKey;
     private Long ttl;

@@ -1,17 +1,19 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * 灏佺鏈嶅姟
+ * 封禁服务
  */
 public interface BlockService {
     
     /**
-     * 妫€鏌ョ紦瀛樻槸鍚︽湁琚皝绂佽褰?     * @param fingerprint
+     * 检查缓存是否有被封禁记录
+     * @param fingerprint
      */
     void checkIfBlocked(String fingerprint);
     
     /**
-     * 妫€鏌ヨ姹傞鐜?     * @param fingerprint
+     * 检查请求频率
+     * @param fingerprint
      * @param ip
      */
     void checkRateLimit(String fingerprint, String ip);

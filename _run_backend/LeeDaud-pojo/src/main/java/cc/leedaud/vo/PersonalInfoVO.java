@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,27 +15,28 @@ public class PersonalInfoVO implements Serializable {
 
     private Long id;
 
-    // 鏄电О
+    // 昵称
     private String nickname;
 
-    // 鏍囩
+    // 标签
     private String tag;
 
-    // 涓汉绠€浠?    private String description;
+    // 个人简介
+    private String description;
 
-    // 澶村儚url
+    // 头像url
     private String avatar;
 
-    // 涓汉缃戠珯
+    // 个人网站
     private String website;
 
-    // 鐢靛瓙閭
+    // 电子邮箱
     private String email;
 
     // GitHub
     private String github;
 
-    // 鎵€鍦ㄥ湴
+    // 所在地
     private String location;
 }
 

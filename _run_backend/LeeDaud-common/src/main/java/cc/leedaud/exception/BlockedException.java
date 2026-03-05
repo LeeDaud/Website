@@ -1,4 +1,4 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 public class BlockedException extends RuntimeException {
     public BlockedException() {

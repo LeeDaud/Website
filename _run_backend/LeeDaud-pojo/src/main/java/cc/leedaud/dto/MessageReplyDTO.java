@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 绠＄悊鍛樺洖澶嶇暀瑷€DTO
+ * 管理员回复留言DTO
  */
 @Data
 @Builder
@@ -19,22 +19,23 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MessageReplyDTO implements Serializable {
 
-    // 鐖剁暀瑷€ID
-    @NotNull(message = "鐖剁暀瑷€ID涓嶈兘涓虹┖")
+    // 父留言ID
+    @NotNull(message = "父留言ID不能为空")
     private Long parentId;
 
-    // 鏍圭暀瑷€ID
+    // 根留言ID
     private Long rootId;
 
-    // 鐖剁暀瑷€鏄电О
-    @Size(max = 30, message = "鐖剁暀瑷€鏄电О涓嶈兘瓒呰繃30瀛?)
+    // 父留言昵称
+    @Size(max = 30, message = "父留言昵称不能超过30字")
     private String parentNickname;
 
-    // 鍥炲鍐呭
-    @NotBlank(message = "鍥炲鍐呭涓嶈兘涓虹┖")
-    @Size(max = 2000, message = "鍥炲鍐呭涓嶈兘瓒呰繃2000瀛?)
+    // 回复内容
+    @NotBlank(message = "回复内容不能为空")
+    @Size(max = 2000, message = "回复内容不能超过2000字")
     private String content;
 
-    // 鏄惁浣跨敤markdown锛?-鍚︼紝1-鏄?    private Integer isMarkdown;
+    // 是否使用markdown，0-否，1-是
+    private Integer isMarkdown;
 }
 

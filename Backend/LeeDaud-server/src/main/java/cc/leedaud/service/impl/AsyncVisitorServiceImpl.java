@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.entity.Views;
 import cc.leedaud.entity.Visitors;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
- * 寮傛璁垮鏈嶅姟瀹炵幇锛堝湴鐞嗕綅缃煡璇㈠拰娴忚璁板綍鍐欏叆寮傛鍖栵級
+ * 异步访客服务实现（地理位置查询和浏览记录写入异步化）
  */
 @Service
 @Slf4j
@@ -27,28 +27,32 @@ public class AsyncVisitorServiceImpl implements AsyncVisitorService {
     private ViewMapper viewMapper;
 
     /**
-     * 寮傛澶勭悊锛欼P鍦扮悊浣嶇疆鏌ヨ + 璁垮鍦扮悊淇℃伅鏇存柊 + 娴忚璁板綍鍐欏叆
-     * 鎺ユ敹 visitorId 鑰岄潪 Visitors 瀵硅薄寮曠敤锛岄伩鍏嶄富绾跨▼涓庡紓姝ョ嚎绋嬪叡浜彲鍙樺璞″鑷寸珵鎬佹潯浠?     */
+     * 异步处理：IP地理位置查询 + 访客地理信息更新 + 浏览记录写入
+     * 接收 visitorId 而非 Visitors 对象引用，避免主线程与异步线程共享可变对象导致竞态条件
+     */
     @Async("taskExecutor")
     public void processGeoAndRecordViewAsync(Long visitorId, String ip, String userAgent,
                                               String pagePath, String referer, String pageTitle) {
         try {
-            // 鑰楁椂鎿嶄綔锛欼P鍦扮悊浣嶇疆鏌ヨ
+            // 耗时操作：IP地理位置查询
             Map<String, String> geoInfo = IpUtil.getGeoInfo(ip);
 
             String country = geoInfo.get("country");
             String province = geoInfo.get("province");
             String city = geoInfo.get("city");
 
-            // 浠呭湪鍦扮悊浣嶇疆鏈夋晥鏃舵洿鏂?            if (country != null && !country.isEmpty()) {
-                // 浠庢暟鎹簱閲嶆柊璇诲彇璁垮璁板綍锛岀‘淇濇嬁鍒版渶鏂版暟鎹?                Visitors current = visitorMapper.findById(visitorId);
+            // 仅在地理位置有效时更新
+            if (country != null && !country.isEmpty()) {
+                // 从数据库重新读取访客记录，确保拿到最新数据
+                Visitors current = visitorMapper.findById(visitorId);
                 if (current != null) {
                     boolean geoChanged = !equalsNullSafe(current.getCountry(), country)
                             || !equalsNullSafe(current.getProvince(), province)
                             || !equalsNullSafe(current.getCity(), city);
 
                     if (geoChanged) {
-                        // 浠呮洿鏂板湴鐞嗕綅缃瓧娈碉紝閬垮厤涓庝富绾跨▼鐨勮闂鏁颁骇鐢熺珵鎬?                        Visitors geoUpdate = Visitors.builder()
+                        // 仅更新地理位置字段，避免与主线程的访问计数产生竞态
+                        Visitors geoUpdate = Visitors.builder()
                                 .id(visitorId)
                                 .country(country)
                                 .province(province)
@@ -61,7 +65,7 @@ public class AsyncVisitorServiceImpl implements AsyncVisitorService {
                 }
             }
 
-            // 鍐欏叆娴忚璁板綍
+            // 写入浏览记录
             Views view = Views.builder()
                     .visitorId(visitorId)
                     .pagePath(pagePath)
@@ -73,9 +77,9 @@ public class AsyncVisitorServiceImpl implements AsyncVisitorService {
                     .build();
             viewMapper.insert(view);
 
-            log.debug("寮傛澶勭悊璁垮璁板綍瀹屾垚: visitorId={}, ip={}", visitorId, ip);
+            log.debug("异步处理访客记录完成: visitorId={}, ip={}", visitorId, ip);
         } catch (Exception e) {
-            log.error("寮傛澶勭悊璁垮璁板綍澶辫触: visitorId={}, ip={}, ex={}", visitorId, ip, e.getMessage());
+            log.error("异步处理访客记录失败: visitorId={}, ip={}, ex={}", visitorId, ip, e.getMessage());
         }
     }
 

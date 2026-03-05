@@ -1,4 +1,4 @@
-﻿package cc.leedaud.annotation;
+package cc.leedaud.annotation;
 
 import cc.leedaud.enumeration.OperationType;
 
@@ -8,27 +8,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 鎿嶄綔鏃ュ織娉ㄨВ锛屾爣璇嗙鐞嗗憳鐨勫鍒犳敼鎿嶄綔
+ * 操作日志注解，标识管理员的增删改操作
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OperationLog {
 
     /**
-     * 鎿嶄綔绫诲瀷锛圛NSERT, UPDATE, DELETE锛?     */
+     * 操作类型（INSERT, UPDATE, DELETE）
+     */
     OperationType value();
 
     /**
-     * 鎿嶄綔鐩爣/妯″潡锛坥peration_target锛?     */
+     * 操作目标/模块（operation_target）
+     */
     String target() default "";
 
     /**
-     * 鐩爣ID鐨勮〃杈惧紡锛圫pEL琛ㄨ揪寮忥紝浠庡弬鏁颁腑鎻愬彇锛?     * 渚嬪: "#request.id" 鎴?"#id"
+     * 目标ID的表达式（SpEL表达式，从参数中提取）
+     * 例如: "#request.id" 或 "#id"
      */
     String targetId() default "";
 
     /**
-     * 鏄惁璁板綍鎿嶄綔鏁版嵁
+     * 是否记录操作数据
      */
     boolean saveData() default true;
 }

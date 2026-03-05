@@ -1,21 +1,22 @@
-﻿package cc.leedaud.enumeration;
+package cc.leedaud.enumeration;
 
 /**
- * 鏁版嵁搴撴搷浣滅被鍨? */
+ * 数据库操作类型
+ */
 public enum OperationType {
 
     /**
-     * 鏇存柊鎿嶄綔
+     * 更新操作
      */
     UPDATE,
 
     /**
-     * 鎻掑叆鎿嶄綔
+     * 插入操作
      */
     INSERT,
 
     /**
-     * 鍒犻櫎鎿嶄綔
+     * 删除操作
      */
     DELETE,
 

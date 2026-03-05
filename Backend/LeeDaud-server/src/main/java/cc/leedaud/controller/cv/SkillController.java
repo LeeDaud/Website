@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.cv;
+package cc.leedaud.controller.cv;
 
 import cc.leedaud.entity.Skills;
 import cc.leedaud.result.Result;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 绠€鍘嗙鎶€鑳芥帴鍙? */
+ * 简历端技能接口
+ */
 @RestController("cvSkillController")
 @RequestMapping("/cv/skill")
 public class SkillController {
@@ -21,7 +22,8 @@ public class SkillController {
     private SkillService skillService;
 
     /**
-     * 鑾峰彇鎶€鑳戒俊鎭?     */
+     * 获取技能信息
+     */
     @GetMapping
     public Result<List<SkillVO>> getSkill() {
         List<SkillVO> skillList = skillService.getSkillVO();

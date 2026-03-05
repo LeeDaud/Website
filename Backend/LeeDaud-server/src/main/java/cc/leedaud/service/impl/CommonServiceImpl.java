@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.exception.UploadFileErrorException;
@@ -24,7 +24,7 @@ public class CommonServiceImpl implements CommonService {
     private ImageProperties imageProperties;
 
     /**
-     * 鏂囦欢涓婁紶
+     * 文件上传
      * @param file
      */
     public String uploadFile(MultipartFile file) {
@@ -32,20 +32,22 @@ public class CommonServiceImpl implements CommonService {
             throw new UploadFileErrorException(MessageConstant.FILE_EMPTY);
         }
         try {
-            // 鑾峰彇鏂囦欢鍚?            String fileName = file.getOriginalFilename();
-            // 鑾峰彇鏂囦欢鍚庣紑
+            // 获取文件名
+            String fileName = file.getOriginalFilename();
+            // 获取文件后缀
             String extension = fileName.substring(fileName.lastIndexOf(".")+1);
-            // 鑾峰彇鏂囦欢瀛楄妭鏁扮粍
+            // 获取文件字节数组
             byte[] bytes = file.getBytes();
 
-            // 濡傛灉鏄浘鐗囷紝鍏堝帇缂╁啀涓婁紶
+            // 如果是图片，先压缩再上传
             if(aliOssUtil.getFileCategory(extension).equals("image")){
                 bytes = imageCompressUtil.compress(file);
                 extension = imageProperties.getOutPutFormat();
             }
 
-            // 鑾峰彇uuid鏂囦欢鍚?            String uuidFileName = UUID.randomUUID()+"."+extension;
-            // 涓婁紶鏂囦欢
+            // 获取uuid文件名
+            String uuidFileName = UUID.randomUUID()+"."+extension;
+            // 上传文件
             String fileUrl =aliOssUtil.upload(bytes,extension,uuidFileName);
 
             return fileUrl;

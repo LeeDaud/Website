@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.entity.Experiences;
@@ -12,36 +12,36 @@ import java.util.List;
 @Mapper
 public interface ExperienceMapper {
     /**
-     * 鏍规嵁绫诲瀷鑾峰彇缁忓巻淇℃伅
+     * 根据类型获取经历信息
      */
     List<Experiences> getExperienceByType(Integer type);
 
     /**
-     * 娣诲姞缁忓巻淇℃伅
+     * 添加经历信息
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Experiences experiences);
 
     /**
-     * 淇敼缁忓巻淇℃伅
+     * 修改经历信息
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Experiences experiences);
 
     /**
-     * 鍒犻櫎缁忓巻淇℃伅
+     * 删除经历信息
      */
     @Delete("delete from experiences where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 鎵归噺鍒犻櫎缁忓巻
+     * 批量删除经历
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鑾峰彇鍏ㄩ儴缁忓巻淇℃伅
+     * 获取全部经历信息
      */
     @Select("select * from experiences where is_visible = 1 order by start_date desc")
     List<Experiences> getAllExperience();

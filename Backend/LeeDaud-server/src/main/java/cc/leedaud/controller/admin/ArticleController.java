@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.ArticleDTO;
@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 绠＄悊绔枃绔犳帴鍙? */
+ * 管理端文章接口
+ */
 @Slf4j
 @RestController("adminArticleController")
 @RequestMapping("/admin/article")
@@ -26,98 +27,98 @@ public class ArticleController {
     private ArticleService articleService;
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ鏂囩珷鍒楄〃
+     * 分页条件查询文章列表
      * @param articlePageQueryDTO
      * @return
      */
     @GetMapping("/page")
     public Result<PageResult> pageQuery(ArticlePageQueryDTO articlePageQueryDTO) {
-        log.info("鍒嗛〉鏉′欢鏌ヨ鏂囩珷鍒楄〃: {}", articlePageQueryDTO);
+        log.info("分页条件查询文章列表: {}", articlePageQueryDTO);
         PageResult pageResult = articleService.pageQuery(articlePageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
-     * 鏍规嵁ID鑾峰彇鏂囩珷璇︽儏
+     * 根据ID获取文章详情
      * @param id
      * @return
      */
     @GetMapping("/{id}")
     public Result<Articles> getById(@PathVariable Long id) {
-        log.info("鏍规嵁ID鑾峰彇鏂囩珷璇︽儏: {}", id);
+        log.info("根据ID获取文章详情: {}", id);
         Articles articles = articleService.getById(id);
         return Result.success(articles);
     }
 
     /**
-     * 鍒涘缓鏂囩珷
+     * 创建文章
      * @param articleDTO
      * @return
      */
     @PostMapping
     @OperationLog(value = OperationType.INSERT, target = "article")
     public Result createArticle(@Valid @RequestBody ArticleDTO articleDTO) {
-        log.info("鍒涘缓鏂囩珷: {}", articleDTO);
+        log.info("创建文章: {}", articleDTO);
         articleService.createArticle(articleDTO);
         return Result.success();
     }
 
     /**
-     * 鏇存柊鏂囩珷
+     * 更新文章
      * @param articleDTO
      * @return
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "article", targetId = "#articleDTO.id")
     public Result updateArticle(@Valid @RequestBody ArticleDTO articleDTO) {
-        log.info("鏇存柊鏂囩珷: {}", articleDTO);
+        log.info("更新文章: {}", articleDTO);
         articleService.updateArticle(articleDTO);
         return Result.success();
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷
+     * 批量删除文章
      * @param ids
      * @return
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "article", targetId = "#ids")
     public Result batchDelete(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎鏂囩珷: {}", ids);
+        log.info("批量删除文章: {}", ids);
         articleService.batchDelete(ids);
         return Result.success();
     }
 
     /**
-     * 鍙戝竷/鍙栨秷鍙戝竷鏂囩珷
+     * 发布/取消发布文章
      * @param id
-     * @param isPublished 0-鍙栨秷鍙戝竷锛?-鍙戝竷
+     * @param isPublished 0-取消发布，1-发布
      * @return
      */
     @PutMapping("/publish/{id}")
     @OperationLog(value = OperationType.UPDATE, target = "article", targetId = "#id")
     public Result publishOrCancel(@PathVariable Long id, @RequestParam Integer isPublished) {
-        log.info("鍙戝竷/鍙栨秷鍙戝竷鏂囩珷: id={}, isPublished={}", id, isPublished);
+        log.info("发布/取消发布文章: id={}, isPublished={}", id, isPublished);
         articleService.publishOrCancel(id, isPublished);
         return Result.success();
     }
 
     /**
-     * 缃《/鍙栨秷缃《鏂囩珷
+     * 置顶/取消置顶文章
      * @param id
-     * @param isTop 0-鍙栨秷缃《锛?-缃《
+     * @param isTop 0-取消置顶，1-置顶
      * @return
      */
     @PutMapping("/top/{id}")
     @OperationLog(value = OperationType.UPDATE, target = "article", targetId = "#id")
     public Result toggleTop(@PathVariable Long id, @RequestParam Integer isTop) {
-        log.info("缃《/鍙栨秷缃《鏂囩珷: id={}, isTop={}", id, isTop);
+        log.info("置顶/取消置顶文章: id={}, isTop={}", id, isTop);
         articleService.toggleTop(id, isTop);
         return Result.success();
     }
 
     /**
-     * 鏂囩珷鎼滅储锛堟爣棰樸€佸唴瀹癸級
+     * 文章搜索（标题、内容）
      * @param keyword
      * @param page
      * @param pageSize
@@ -127,7 +128,7 @@ public class ArticleController {
     public Result<PageResult> search(@RequestParam String keyword,
                                      @RequestParam(defaultValue = "1") int page,
                                      @RequestParam(defaultValue = "10") int pageSize) {
-        log.info("鏂囩珷鎼滅储: keyword={}", keyword);
+        log.info("文章搜索: keyword={}", keyword);
         PageResult pageResult = articleService.search(keyword, page, pageSize);
         return Result.success(pageResult);
     }

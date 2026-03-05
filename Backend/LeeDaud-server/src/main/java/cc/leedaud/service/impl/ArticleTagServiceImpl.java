@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.ArticleTagDTO;
 import cc.leedaud.entity.ArticleTags;
@@ -22,7 +22,8 @@ public class ArticleTagServiceImpl implements ArticleTagService {
     private ArticleTagMapper articleTagMapper;
 
     /**
-     * 鑾峰彇鎵€鏈夋爣绛?     * @return
+     * 获取所有标签
+     * @return
      */
     @Cacheable(value = "articleTags", key = "'all'")
     public List<ArticleTags> listAll() {
@@ -31,7 +32,7 @@ public class ArticleTagServiceImpl implements ArticleTagService {
     }
 
     /**
-     * 娣诲姞鏍囩
+     * 添加标签
      * @param articleTagDTO
      */
     @Caching(evict = {
@@ -45,7 +46,7 @@ public class ArticleTagServiceImpl implements ArticleTagService {
     }
 
     /**
-     * 淇敼鏍囩
+     * 修改标签
      * @param articleTagDTO
      */
     @Caching(evict = {
@@ -59,7 +60,7 @@ public class ArticleTagServiceImpl implements ArticleTagService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏍囩
+     * 批量删除标签
      * @param ids
      */
     @Caching(evict = {
@@ -68,11 +69,12 @@ public class ArticleTagServiceImpl implements ArticleTagService {
     })
     @Transactional
     public void batchDelete(List<Long> ids) {
-        // 鍏堝垹闄ゅ叧鑱斿叧绯讳腑娑夊強杩欎簺鏍囩鐨勮褰?        articleTagMapper.batchDelete(ids);
+        // 先删除关联关系中涉及这些标签的记录
+        articleTagMapper.batchDelete(ids);
     }
 
     /**
-     * 鑾峰彇鏍囩
+     * 获取标签
      * @return
      */
     @Cacheable(value = "articleTags", key = "'visible'")

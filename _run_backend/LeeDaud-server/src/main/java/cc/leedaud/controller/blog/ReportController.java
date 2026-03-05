@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.service.ReportService;
@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 鍗氬绔粺璁＄浉鍏虫帴鍙? */
+ * 博客端统计相关接口
+ */
 @Slf4j
 @RestController("blogReportController")
 @RequestMapping("/blog/report")
@@ -20,11 +21,11 @@ public class ReportController {
     private ReportService reportService;
 
     /**
-     * 鑾峰彇鍗氬缁熻鏁版嵁
+     * 获取博客统计数据
      */
     @GetMapping
     public Result<BlogReportVO> getBlogReport() {
-        log.info("鍗氬绔幏鍙栫粺璁℃暟鎹?);
+        log.info("博客端获取统计数据");
         BlogReportVO blogReportVO = reportService.getBlogReport();
         return Result.success(blogReportVO);
     }

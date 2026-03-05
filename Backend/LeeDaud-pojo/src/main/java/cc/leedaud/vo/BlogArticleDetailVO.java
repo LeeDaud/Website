@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 鍗氬绔枃绔犺鎯匳O锛堝惈HTML鍐呭锛? */
+ * 博客端文章详情VO（含HTML内容）
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -37,13 +38,14 @@ public class BlogArticleDetailVO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
-    // 鏂囩珷鏍囩鍚嶇О鍒楄〃
+    // 文章标签名称列表
     private List<String> tagNames;
 
-    // 涓婁竴绡?涓嬩竴绡囧鑸?    private BlogArticleVO prevArticle;
+    // 上一篇/下一篇导航
+    private BlogArticleVO prevArticle;
     private BlogArticleVO nextArticle;
 
-    // 鐩稿叧鏂囩珷鎺ㄨ崘
+    // 相关文章推荐
     private List<BlogArticleVO> relatedArticles;
 }
 

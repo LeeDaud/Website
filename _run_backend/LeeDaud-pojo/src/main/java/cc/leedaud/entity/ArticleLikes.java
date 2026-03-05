@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鏂囩珷鐐硅禐
+ * 文章点赞
  */
 @Data
 @Builder
@@ -22,13 +22,13 @@ public class ArticleLikes implements Serializable {
 
     private Long id;
 
-    // 鏂囩珷ID
+    // 文章ID
     private Long articleId;
 
-    // 璁垮ID
+    // 访客ID
     private Long visitorId;
 
-    // 鐐硅禐鏃堕棿
+    // 点赞时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime likeTime;
 }

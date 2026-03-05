@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.vo.*;
 
@@ -7,30 +7,32 @@ import java.time.LocalDate;
 public interface ReportService {
 
     /**
-     * 鑾峰彇鍗氬缁熻鏁版嵁
+     * 获取博客统计数据
      */
     BlogReportVO getBlogReport();
 
     /**
-     * 娴忚閲忕粺璁?     */
+     * 浏览量统计
+     */
     ViewReportVO getViewStatistics(LocalDate begin, LocalDate end);
 
     /**
-     * 璁垮缁熻
+     * 访客统计
      */
     VisitorReportVO getVisitorStatistics(LocalDate begin, LocalDate end);
 
     /**
-     * 璁垮鐪佷唤鍒嗗竷缁熻
+     * 访客省份分布统计
      */
     ProvinceVisitorVO getProvinceDistribution();
 
     /**
-     * 鏂囩珷璁块棶閲忔帓琛屽墠鍗?     */
+     * 文章访问量排行前十
+     */
     ArticleViewTop10VO getArticleViewTop10();
 
     /**
-     * 鑾峰彇绠＄悊绔€昏鏁版嵁
+     * 获取管理端总览数据
      */
     AdminOverviewVO getAdminOverview();
 }

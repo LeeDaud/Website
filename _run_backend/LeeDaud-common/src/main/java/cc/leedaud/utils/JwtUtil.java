@@ -1,4 +1,4 @@
-﻿package cc.leedaud.utils;
+package cc.leedaud.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -12,43 +12,49 @@ import java.util.Map;
 
 public class JwtUtil {
     /**
-     * 鐢熸垚jwt
-     * 绉佸寵浣跨敤鍥哄畾瀵嗛挜
+     * 生成jwt
+     * 私匙使用固定密钥
      *
-     * @param secretKey jwt绉橀挜
-     * @param ttlMillis jwt杩囨湡鏃堕棿(姣)
-     * @param claims    璁剧疆鐨勪俊鎭?     * @return
+     * @param secretKey jwt秘钥
+     * @param ttlMillis jwt过期时间(毫秒)
+     * @param claims    设置的信息
+     * @return
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
-        // 鎸囧畾绛惧悕鐨勬椂鍊欎娇鐢ㄧ殑绛惧悕绠楁硶锛屼篃灏辨槸header閭ｉ儴鍒?        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        // 指定签名的时候使用的签名算法，也就是header那部分
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
-        // 鐢熸垚JWT鐨勬椂闂?        long expMillis = System.currentTimeMillis() + ttlMillis;
+        // 生成JWT的时间
+        long expMillis = System.currentTimeMillis() + ttlMillis;
         Date exp = new Date(expMillis);
 
-        // 璁剧疆jwt鐨刡ody
+        // 设置jwt的body
         JwtBuilder builder = Jwts.builder()
-                // 濡傛灉鏈夌鏈夊０鏄庯紝涓€瀹氳鍏堣缃繖涓嚜宸卞垱寤虹殑绉佹湁鐨勫０鏄庯紝杩欎釜鏄粰builder鐨刢laim璧嬪€硷紝涓€鏃﹀啓鍦ㄦ爣鍑嗙殑澹版槑璧嬪€间箣鍚庯紝灏辨槸瑕嗙洊浜嗛偅浜涙爣鍑嗙殑澹版槑鐨?                .claims(claims)
-                // 璁剧疆绛惧悕浣跨敤鐨勭鍚嶇畻娉曞拰绛惧悕浣跨敤鐨勭閽?                .signWith(key)
-                // 璁剧疆杩囨湡鏃堕棿
+                // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
+                .claims(claims)
+                // 设置签名使用的签名算法和签名使用的秘钥
+                .signWith(key)
+                // 设置过期时间
                 .expiration(exp);
 
         return builder.compact();
     }
 
     /**
-     * Token瑙ｅ瘑
+     * Token解密
      *
-     * @param secretKey jwt绉橀挜 姝ょ閽ヤ竴瀹氳淇濈暀濂藉湪鏈嶅姟绔? 涓嶈兘鏆撮湶鍑哄幓, 鍚﹀垯sign灏卞彲浠ヨ浼€? 濡傛灉瀵规帴澶氫釜瀹㈡埛绔缓璁敼閫犳垚澶氫釜
-     * @param token     鍔犲瘑鍚庣殑token
+     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
+     * @param token     加密后的token
      * @return
      */
     public static Claims parseJWT(String secretKey, String token) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         Claims claims = Jwts.parser()
-                            // 璁剧疆绛惧悕鐨勭閽?                            .verifyWith(key)
+                            // 设置签名的秘钥
+                            .verifyWith(key)
                             .build()
-                            // 璁剧疆闇€瑕佽В鏋愮殑jwt
+                            // 设置需要解析的jwt
                             .parseSignedClaims(token)
                             .getPayload();
         return claims;

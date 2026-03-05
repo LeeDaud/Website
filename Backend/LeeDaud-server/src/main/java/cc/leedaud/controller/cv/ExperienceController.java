@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.cv;
+package cc.leedaud.controller.cv;
 
 import cc.leedaud.entity.Experiences;
 import cc.leedaud.result.Result;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 绠€鍘嗙缁忓巻鎺ュ彛
+ * 简历端经历接口
  */
 @RestController("cvExperienceController")
 @RequestMapping("/cv/experience")
@@ -22,7 +22,7 @@ public class ExperienceController {
     private ExperienceService experienceService;
 
     /**
-     * 鑾峰彇鍏ㄩ儴缁忓巻淇℃伅
+     * 获取全部经历信息
      */
     @GetMapping
     public Result<List<ExperienceVO>> getAllExperience() {

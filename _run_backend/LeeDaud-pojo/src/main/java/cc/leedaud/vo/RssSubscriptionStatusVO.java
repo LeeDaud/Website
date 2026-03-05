@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * RSS璁㈤槄鐘舵€乂O锛堣繑鍥炵粰鍗氬鍓嶇锛? */
+ * RSS订阅状态VO（返回给博客前端）
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,13 +17,13 @@ import java.io.Serializable;
 public class RssSubscriptionStatusVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /** 鏄惁宸茶闃?*/
+    /** 是否已订阅 */
     private boolean subscribed;
 
-    /** 璁㈤槄鏃朵娇鐢ㄧ殑鏄电О */
+    /** 订阅时使用的昵称 */
     private String nickname;
 
-    /** 璁㈤槄鏃朵娇鐢ㄧ殑閭 */
+    /** 订阅时使用的邮箱 */
     private String email;
 }
 

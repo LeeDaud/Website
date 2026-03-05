@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.dto.ArticleCommentPageQueryDTO;
@@ -14,99 +14,102 @@ import java.util.List;
 public interface ArticleCommentMapper {
 
     /**
-     * 淇濆瓨璇勮
+     * 保存评论
      * @param articleComments
      */
     @AutoFill(value = OperationType.INSERT)
     void save(ArticleComments articleComments);
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ璇勮
+     * 分页条件查询评论
      * @param articleCommentPageQueryDTO
      * @return
      */
     List<ArticleComments> pageQuery(ArticleCommentPageQueryDTO articleCommentPageQueryDTO);
 
     /**
-     * 鏍规嵁鏂囩珷ID鏌ヨ璇勮
+     * 根据文章ID查询评论
      * @param articleId
      * @return
      */
     List<ArticleComments> getByArticleId(Long articleId);
 
     /**
-     * 鎵归噺瀹℃牳閫氳繃璇勮
+     * 批量审核通过评论
      * @param ids
      */
     @AutoFill(value = OperationType.UPDATE)
     void batchApprove(List<Long> ids);
 
     /**
-     * 鎵归噺鍒犻櫎璇勮
+     * 批量删除评论
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鏍规嵁鏂囩珷ID鑾峰彇璇勮鍒楄〃锛堝凡瀹℃牳 + 鎸囧畾璁垮鐨勬湭瀹℃牳璇勮锛?     */
+     * 根据文章ID获取评论列表（已审核 + 指定访客的未审核评论）
+     */
     List<ArticleCommentVO> getApprovedByArticleId(@Param("articleId") Long articleId, @Param("visitorId") Long visitorId);
 
     /**
-     * 璇勮鏁?1
+     * 评论数+1
      */
     @Update("update articles set comment_count = comment_count + 1 where id = #{articleId}")
     void incrementCommentCount(Long articleId);
 
     /**
-     * 璇勮鏁?1锛堟渶灏忎负0锛?     */
+     * 评论数-1（最小为0）
+     */
     @Update("update articles set comment_count = case when comment_count > 0 then comment_count - 1 else 0 end where id = #{articleId}")
     void decrementCommentCount(Long articleId);
 
     /**
-     * 鏍规嵁ID鏌ヨ璇勮
+     * 根据ID查询评论
      */
     @Select("select * from article_comments where id = #{id}")
     ArticleComments getById(Long id);
 
     /**
-     * 鏇存柊璇勮鍐呭锛堣瀹㈢紪杈戯級
+     * 更新评论内容（访客编辑）
      */
     void updateContent(ArticleComments articleComments);
 
     /**
-     * 鍒犻櫎鍗曟潯璇勮
+     * 删除单条评论
      */
     @Delete("delete from article_comments where id = #{id}")
     void deleteById(Long id);
 
     /**
-     * 缁熻鎬昏瘎璁烘暟
+     * 统计总评论数
      */
     @Select("select count(*) from article_comments")
     Integer countTotal();
 
     /**
-     * 缁熻寰呭鏍歌瘎璁烘暟
+     * 统计待审核评论数
      */
     @Select("select count(*) from article_comments where is_approved = 0")
     Integer countPending();
 
     /**
-     * 鏍规嵁鏍硅瘎璁篒D鍒犻櫎鎵€鏈夊瓙璇勮
+     * 根据根评论ID删除所有子评论
      */
     @Delete("delete from article_comments where root_id = #{rootId}")
     void deleteByRootId(Long rootId);
 
     /**
-     * 缁熻鏌愭牴璇勮涓嬬殑瀛愯瘎璁烘暟
+     * 统计某根评论下的子评论数
      */
     @Select("select count(*) from article_comments where root_id = #{rootId}")
     Integer countByRootId(Long rootId);
 
     /**
-     * 缁熻鏌愭牴璇勮涓嬪凡瀹℃牳鐨勫瓙璇勮鏁?     */
+     * 统计某根评论下已审核的子评论数
+     */
     @Select("select count(*) from article_comments where root_id = #{rootId} and is_approved = 1")
     Integer countApprovedByRootId(Long rootId);
 }

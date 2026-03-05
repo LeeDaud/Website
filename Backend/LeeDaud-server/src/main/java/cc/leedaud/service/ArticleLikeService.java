@@ -1,19 +1,19 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 public interface ArticleLikeService {
 
     /**
-     * 鐐硅禐鏂囩珷
+     * 点赞文章
      */
     void likeArticle(Long articleId, Long visitorId);
 
     /**
-     * 鍙栨秷鐐硅禐
+     * 取消点赞
      */
     void unlikeArticle(Long articleId, Long visitorId);
 
     /**
-     * 妫€鏌ユ槸鍚﹀凡鐐硅禐
+     * 检查是否已点赞
      */
     boolean hasLiked(Long articleId, Long visitorId);
 }

@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.SkillDTO;
 import cc.leedaud.entity.Skills;
@@ -23,7 +23,8 @@ public class SkillServiceImpl implements SkillService {
     private SkillMapper skillMapper;
 
     /**
-     * 鑾峰彇鎵€鏈夋妧鑳戒俊鎭?     * @return
+     * 获取所有技能信息
+     * @return
      */
     @Cacheable(value = "skills", key = "'all'")
     public List<Skills> getAllSkill() {
@@ -32,7 +33,8 @@ public class SkillServiceImpl implements SkillService {
     }
 
     /**
-     * 娣诲姞鎶€鑳戒俊鎭?     * @param skills
+     * 添加技能信息
+     * @param skills
      */
     @CacheEvict(value = "skills", allEntries = true)
     public void addSkill(SkillDTO skillDTO) {
@@ -42,7 +44,8 @@ public class SkillServiceImpl implements SkillService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鎶€鑳戒俊鎭?     * @param ids
+     * 批量删除技能信息
+     * @param ids
      */
     @CacheEvict(value = "skills", allEntries = true)
     public void batchDelete(List<Long> ids) {
@@ -50,7 +53,8 @@ public class SkillServiceImpl implements SkillService {
     }
 
     /**
-     * 淇敼鎶€鑳戒俊鎭?     * @param skills
+     * 修改技能信息
+     * @param skills
      */
     @CacheEvict(value = "skills", allEntries = true)
     public void updateSkill(SkillDTO skillDTO) {
@@ -60,7 +64,8 @@ public class SkillServiceImpl implements SkillService {
     }
 
     /**
-     * 绠€鍘嗙鑾峰彇鎶€鑳戒俊鎭?     * @return
+     * 简历端获取技能信息
+     * @return
      */
     @Cacheable(value = "skills", key = "'visible'")
     public List<SkillVO> getSkillVO() {

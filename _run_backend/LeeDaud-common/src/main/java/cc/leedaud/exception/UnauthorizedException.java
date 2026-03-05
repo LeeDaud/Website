@@ -1,4 +1,4 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 import cc.leedaud.constant.MessageConstant;
 

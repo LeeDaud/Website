@@ -1,4 +1,4 @@
-﻿package cc.leedaud;
+package cc.leedaud;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,14 +9,15 @@ class LeeDaudBackendApplicationTests {
 
     @Test
     public void testPassword() throws Exception {
-        String password = "123456"; // 鏇挎崲涓轰綘闇€瑕佺殑瀵嗙爜
-        String salt = "123456";    //  鏇挎崲涓轰綘闇€瑕佺殑鐩愬€硷紝鍙互鏄换鎰忓瓧绗︿覆
+        String password = "123456"; // 替换为你需要的密码
+        String salt = "123456";    //  替换为你需要的盐值，可以是任意字符串
 
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         String combined = password + salt;
         byte[] hash = md.digest(combined.getBytes(StandardCharsets.UTF_8));
 
-        // 杞崲涓哄崄鍏繘鍒?        StringBuilder hexString = new StringBuilder();
+        // 转换为十六进制
+        StringBuilder hexString = new StringBuilder();
         for (byte b : hash) {
             String hex = Integer.toHexString(0xff & b);
             if (hex.length() == 1) {

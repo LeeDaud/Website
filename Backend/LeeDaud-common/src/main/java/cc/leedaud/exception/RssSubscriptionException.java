@@ -1,4 +1,4 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 public class RssSubscriptionException extends BaseException{
     public RssSubscriptionException() {

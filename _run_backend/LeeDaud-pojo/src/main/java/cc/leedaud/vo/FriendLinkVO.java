@@ -1,4 +1,4 @@
-﻿package cc.leedaud.vo;
+package cc.leedaud.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,19 +14,19 @@ import java.io.Serializable;
 public class FriendLinkVO implements Serializable {
     private Long id;
 
-    // 缃戠珯鍚嶇О
+    // 网站名称
     private String name;
 
-    // 缃戠珯鍦板潃
+    // 网站地址
     private String url;
 
-    // 澶村儚url
+    // 头像url
     private String avatarUrl;
 
-    // 缃戠珯鎻忚堪
+    // 网站描述
     private String description;
 
-    // 鎺掑簭
+    // 排序
     private Integer sort;
 }
 

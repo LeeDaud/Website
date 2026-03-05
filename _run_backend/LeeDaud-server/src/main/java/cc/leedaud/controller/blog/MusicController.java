@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.service.MusicService;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 鍗氬绔煶涔愭帴鍙? */
+ * 博客端音乐接口
+ */
 @Slf4j
 @RestController("blogMusicController")
 @RequestMapping("/blog/music")
@@ -22,7 +23,7 @@ public class MusicController {
     private MusicService musicService;
 
     /**
-     * 鑾峰彇鎵€鏈夊彲瑙佺殑闊充箰
+     * 获取所有可见的音乐
      * @return
      */
     @GetMapping

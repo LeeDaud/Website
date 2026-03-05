@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.ArticleCommentDTO;
 import cc.leedaud.dto.ArticleCommentPageQueryDTO;
@@ -11,60 +11,62 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * 鏂囩珷璇勮鏈嶅姟
+ * 文章评论服务
  */
 public interface ArticleCommentService {
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ璇勮锛堟椂闂淬€佹槸鍚﹀鏍革級
+     * 分页条件查询评论（时间、是否审核）
      * @param articleCommentPageQueryDTO
      * @return
      */
     PageResult pageQuery(ArticleCommentPageQueryDTO articleCommentPageQueryDTO);
 
     /**
-     * 鏍规嵁鏂囩珷ID鏌ヨ璇勮
+     * 根据文章ID查询评论
      * @param articleId
      * @return
      */
     List<ArticleComments> getByArticleId(Long articleId);
 
     /**
-     * 鎵归噺瀹℃牳閫氳繃璇勮
+     * 批量审核通过评论
      * @param ids
      */
     void batchApprove(List<Long> ids);
 
     /**
-     * 鎵归噺鍒犻櫎璇勮
+     * 批量删除评论
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 绠＄悊鍛樺洖澶嶈瘎璁?     * @param articleCommentReplyDTO
+     * 管理员回复评论
+     * @param articleCommentReplyDTO
      * @param request
      */
     void adminReply(ArticleCommentReplyDTO articleCommentReplyDTO, HttpServletRequest request);
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     /**
-     * 鏍规嵁鏂囩珷ID鑾峰彇璇勮鍒楄〃锛堟爲褰㈢粨鏋勶紝宸插鏍?+ 褰撳墠璁垮鐨勬湭瀹℃牳锛?     */
+     * 根据文章ID获取评论列表（树形结构，已审核 + 当前访客的未审核）
+     */
     List<ArticleCommentVO> getCommentTree(Long articleId, Long visitorId);
 
     /**
-     * 璁垮鎻愪氦璇勮
+     * 访客提交评论
      */
     void submitComment(ArticleCommentDTO articleCommentDTO, HttpServletRequest request);
 
     /**
-     * 璁垮缂栬緫璇勮
+     * 访客编辑评论
      */
     void editComment(cc.leedaud.dto.ArticleCommentEditDTO editDTO);
 
     /**
-     * 璁垮鍒犻櫎璇勮
+     * 访客删除评论
      */
     void visitorDeleteComment(Long id, Long visitorId);
 }

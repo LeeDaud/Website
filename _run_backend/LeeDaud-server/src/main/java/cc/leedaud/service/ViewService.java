@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.ViewPageQueryDTO;
 import cc.leedaud.result.PageResult;
@@ -7,14 +7,14 @@ import java.util.List;
 
 public interface ViewService {
     /**
-     * 鍒嗛〉鏌ヨ娴忚璁板綍
+     * 分页查询浏览记录
      * @param viewPageQueryDTO
      * @return
      */
     PageResult pageQuery(ViewPageQueryDTO viewPageQueryDTO);
 
     /**
-     * 鎵归噺鍒犻櫎娴忚璁板綍
+     * 批量删除浏览记录
      * @param ids
      */
     void batchDelete(List<Long> ids);

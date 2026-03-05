@@ -1,4 +1,4 @@
-﻿package cc.leedaud.dto;
+package cc.leedaud.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,19 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ViewPageQueryDTO {
 
-    // 椤电爜
+    // 页码
     private int page;
 
-    // 姣忛〉鏄剧ず鏁伴噺
+    // 每页显示数量
     private int pageSize;
 
-    // 椤甸潰璺緞
+    // 页面路径
     private String pagePath;
 
-    // 鏉ユ簮URL
+    // 来源URL
     private String referer;
 
-    // 璁垮ID
+    // 访客ID
     private Long visitorId;
 }
 

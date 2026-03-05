@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 绠＄悊鍛? */
+ * 管理员
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,27 +22,29 @@ public class Admin implements Serializable {
 
     private Long id;
 
-    // 鐢ㄦ埛鍚?    private String username;
+    // 用户名
+    private String username;
 
-    // 鍔犲瘑鍚庣殑瀵嗙爜
+    // 加密后的密码
     private String password;
 
-    // 鐩愬€?    private String salt;
+    // 盐值
+    private String salt;
 
-    // 鏄电О
+    // 昵称
     private String nickname;
 
-    // 鐢靛瓙閭
+    // 电子邮箱
     private String email;
 
-    // 瑙掕壊 1-绠＄悊鍛?0-娓稿
+    // 角色 1-管理员 0-游客
     private Integer role;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

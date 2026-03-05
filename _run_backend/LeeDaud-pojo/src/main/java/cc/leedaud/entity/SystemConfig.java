@@ -1,4 +1,4 @@
-﻿package cc.leedaud.entity;
+package cc.leedaud.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 绯荤粺閰嶇疆
+ * 系统配置
  */
 @Data
 @Builder
@@ -22,21 +22,23 @@ public class SystemConfig implements Serializable {
 
     private Long id;
 
-    // 閰嶇疆閿?    private String configKey;
+    // 配置键
+    private String configKey;
 
-    // 閰嶇疆鍊?    private String configValue;
+    // 配置值
+    private String configValue;
 
-    // 閰嶇疆绫诲瀷
+    // 配置类型
     private String configType;
 
-    // 閰嶇疆鎻忚堪
+    // 配置描述
     private String description;
 
-    // 鍒涘缓鏃堕棿
+    // 创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 鏇存柊鏃堕棿
+    // 更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

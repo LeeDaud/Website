@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.dto.ExperienceDTO;
 import cc.leedaud.entity.Experiences;
@@ -21,7 +21,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     private ExperienceMapper experienceMapper;
 
     /**
-     * 鑾峰彇缁忓巻淇℃伅
+     * 获取经历信息
      * @param type
      * @return
      */
@@ -32,7 +32,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     /**
-     * 娣诲姞缁忓巻淇℃伅
+     * 添加经历信息
      * @param experiences
      */
     @CacheEvict(value = "experiences", allEntries = true)
@@ -43,7 +43,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     /**
-     * 淇敼缁忓巻淇℃伅
+     * 修改经历信息
      * @param experiences
      */
     @CacheEvict(value = "experiences", allEntries = true)
@@ -54,7 +54,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎缁忓巻淇℃伅
+     * 批量删除经历信息
      * @param ids
      */
     @CacheEvict(value = "experiences", allEntries = true)
@@ -63,13 +63,14 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     /**
-     * cv绔幏鍙栧叏閮ㄧ粡鍘嗕俊鎭?     * @return
+     * cv端获取全部经历信息
+     * @return
      */
     @Cacheable(value = "experiences", key = "'all'")
     public List<ExperienceVO> getAllExperience() {
         List<Experiences> experienceList = experienceMapper.getAllExperience();
         if(experienceList != null && !experienceList.isEmpty()) {
-            // 杞崲涓篤O
+            // 转换为VO
             List<ExperienceVO> experienceVOList = experienceList.stream().map(experiences -> ExperienceVO.builder()
                     .id(experiences.getId())
                     .type(experiences.getType())

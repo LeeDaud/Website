@@ -1,11 +1,11 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public interface CommonService {
     /**
-     * 鏂囦欢涓婁紶
-     * @param file 鏂囦欢
+     * 文件上传
+     * @param file 文件
      */
     String uploadFile(MultipartFile file);
 }

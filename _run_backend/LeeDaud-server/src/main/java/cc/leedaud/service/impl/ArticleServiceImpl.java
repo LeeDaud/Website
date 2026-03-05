@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.constant.StatusConstant;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 鏂囩珷鏈嶅姟瀹炵幇
+ * 文章服务实现
  */
 @Slf4j
 @Service
@@ -67,7 +67,7 @@ public class ArticleServiceImpl implements ArticleService {
     private static final String VIEW_COUNT_KEY = "article:viewCount";
 
     /**
-     * 鍒涘缓鏂囩珷
+     * 创建文章
      * @param articleDTO
      */
     @Transactional
@@ -81,7 +81,8 @@ public class ArticleServiceImpl implements ArticleService {
         Articles articles = new Articles();
         BeanUtils.copyProperties(articleDTO, articles);
 
-        // 浼樺厛浣跨敤鍓嶇缂栬緫鍣ㄦ覆鏌撶殑HTML锛屽惁鍒欏悗绔浆鎹?        if (articleDTO.getContentHtml() != null && !articleDTO.getContentHtml().isBlank()) {
+        // 优先使用前端编辑器渲染的HTML，否则后端转换
+        if (articleDTO.getContentHtml() != null && !articleDTO.getContentHtml().isBlank()) {
             articles.setContentHtml(articleDTO.getContentHtml());
         } else {
             String rawContent = articleDTO.getContentMarkdown();
@@ -91,17 +92,20 @@ public class ArticleServiceImpl implements ArticleService {
             articles.setContentHtml(contentHtml);
         }
 
-        // 璁＄畻瀛楁暟鍜岄槄璇绘椂闂?        String plainText = articleDTO.getContentMarkdown();
+        // 计算字数和阅读时间
+        String plainText = articleDTO.getContentMarkdown();
         long wordCount = countWords(plainText);
-        long readingTime = Math.max(1, wordCount / 300); // 鎸夋瘡鍒嗛挓300瀛椾及绠?        articles.setWordCount(wordCount);
+        long readingTime = Math.max(1, wordCount / 300); // 按每分钟300字估算
+        articles.setWordCount(wordCount);
         articles.setReadingTime(readingTime);
 
-        // 璁剧疆鍙戝竷淇℃伅
+        // 设置发布信息
         if (articleDTO.getIsPublished() != null && articleDTO.getIsPublished().equals(StatusConstant.ENABLE)) {
             articles.setPublishTime(LocalDateTime.now());
         }
 
-        // 鍒濆鍖栫粺璁″瓧娈靛拰榛樿鐘舵€?        articles.setViewCount(0L);
+        // 初始化统计字段和默认状态
+        articles.setViewCount(0L);
         articles.setLikeCount(0L);
         articles.setCommentCount(0L);
         if (articles.getIsTop() == null) {
@@ -110,14 +114,15 @@ public class ArticleServiceImpl implements ArticleService {
 
         articleMapper.insert(articles);
 
-        // 淇濆瓨鏂囩珷-鏍囩鍏宠仈
+        // 保存文章-标签关联
         if (articleDTO.getTagIds() != null && !articleDTO.getTagIds().isEmpty()) {
             articleTagMapper.batchInsertRelations(articles.getId(), articleDTO.getTagIds());
         }
     }
 
     /**
-     * 鍒嗛〉鏉′欢鏌ヨ鏂囩珷鍒楄〃锛堝惈鑽夌锛?     * @param articlePageQueryDTO
+     * 分页条件查询文章列表（含草稿）
+     * @param articlePageQueryDTO
      * @return
      */
     public PageResult pageQuery(ArticlePageQueryDTO articlePageQueryDTO) {
@@ -127,7 +132,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 鏍规嵁ID鑾峰彇鏂囩珷璇︽儏
+     * 根据ID获取文章详情
      * @param id
      * @return
      */
@@ -136,13 +141,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (articles == null) {
             throw new ArticleException(MessageConstant.ARTICLE_NOT_FOUND);
         }
-        // 濉厖鏍囩ID鍒楄〃锛岀敤浜庣鐞嗙缂栬緫鏃跺洖鏄?        List<Long> tagIds = articleTagMapper.getTagIdsByArticleId(id);
+        // 填充标签ID列表，用于管理端编辑时回显
+        List<Long> tagIds = articleTagMapper.getTagIdsByArticleId(id);
         articles.setTagIds(tagIds);
         return articles;
     }
 
     /**
-     * 鏇存柊鏂囩珷
+     * 更新文章
      * @param articleDTO
      */
     @Transactional
@@ -160,14 +166,16 @@ public class ArticleServiceImpl implements ArticleService {
 
         BeanUtils.copyProperties(articleDTO, articles);
 
-        // 濡傛灉浠庤崏绋垮垏鎹㈠埌鍙戝竷鐘舵€佷笖灏氭棤鍙戝竷鏃堕棿锛岃缃彂甯冩椂闂?        if (articleDTO.getIsPublished() != null
+        // 如果从草稿切换到发布状态且尚无发布时间，设置发布时间
+        if (articleDTO.getIsPublished() != null
                 && articleDTO.getIsPublished().equals(StatusConstant.ENABLE)
                 && articles.getPublishTime() == null) {
             articles.setPublishTime(LocalDateTime.now());
         }
 
-        // 濡傛灉Markdown鍐呭鏈夋洿鏂帮紝閲嶆柊鐢熸垚HTML骞惰绠楀瓧鏁?        if (articleDTO.getContentMarkdown() != null) {
-            // 浼樺厛浣跨敤鍓嶇缂栬緫鍣ㄦ覆鏌撶殑HTML
+        // 如果Markdown内容有更新，重新生成HTML并计算字数
+        if (articleDTO.getContentMarkdown() != null) {
+            // 优先使用前端编辑器渲染的HTML
             if (articleDTO.getContentHtml() != null && !articleDTO.getContentHtml().isBlank()) {
                 articles.setContentHtml(articleDTO.getContentHtml());
             } else {
@@ -186,7 +194,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         articleMapper.update(articles);
 
-        // 鏇存柊鏂囩珷-鏍囩鍏宠仈
+        // 更新文章-标签关联
         if (articleDTO.getTagIds() != null) {
             articleTagMapper.deleteRelationsByArticleId(articleDTO.getId());
             if (!articleDTO.getTagIds().isEmpty()) {
@@ -196,7 +204,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎鏂囩珷
+     * 批量删除文章
      * @param ids
      */
     @Transactional
@@ -212,7 +220,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 鍙戝竷/鍙栨秷鍙戝竷鏂囩珷
+     * 发布/取消发布文章
      * @param id
      * @param isPublished
      */
@@ -233,20 +241,21 @@ public class ArticleServiceImpl implements ArticleService {
                 .isPublished(isPublished)
                 .build();
 
-        // 鍙戝竷鏃惰缃彂甯冩椂闂达紙浠呴娆″彂甯冭缃級
+        // 发布时设置发布时间（仅首次发布设置）
         if (isPublished.equals(StatusConstant.ENABLE) && articles.getPublishTime() == null) {
             updateArticle.setPublishTime(LocalDateTime.now());
         }
 
         articleMapper.update(updateArticle);
 
-        // 鍙戝竷鏃堕€氱煡RSS璁㈤槄鑰?        if (isPublished.equals(StatusConstant.ENABLE)) {
+        // 发布时通知RSS订阅者
+        if (isPublished.equals(StatusConstant.ENABLE)) {
             notifyRssSubscribers(articles);
         }
     }
 
     /**
-     * 缃《/鍙栨秷缃《鏂囩珷
+     * 置顶/取消置顶文章
      * @param id
      * @param isTop
      */
@@ -269,7 +278,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 閫氱煡RSS璁㈤槄鑰呮柊鏂囩珷鍙戝竷
+     * 通知RSS订阅者新文章发布
      */
     private void notifyRssSubscribers(Articles article) {
         try {
@@ -281,20 +290,20 @@ public class ArticleServiceImpl implements ArticleService {
             for (RssSubscriptions subscriber : subscribers) {
                 asyncEmailService.sendNewArticleNotificationAsync(
                         subscriber.getEmail(),
-                        subscriber.getNickname() != null ? subscriber.getNickname() : "璁㈤槄鑰?,
+                        subscriber.getNickname() != null ? subscriber.getNickname() : "订阅者",
                         article.getTitle(),
                         article.getSummary(),
                         articleUrl
                 );
             }
-            log.info("宸插悜 {} 涓猂SS璁㈤槄鑰呭彂閫佹柊鏂囩珷閫氱煡: title={}", subscribers.size(), article.getTitle());
+            log.info("已向 {} 个RSS订阅者发送新文章通知: title={}", subscribers.size(), article.getTitle());
         } catch (Exception e) {
-            log.error("閫氱煡RSS璁㈤槄鑰呭紓甯? title={}, ex={}", article.getTitle(), e.getMessage());
+            log.error("通知RSS订阅者异常: title={}, ex={}", article.getTitle(), e.getMessage());
         }
     }
 
     /**
-     * 鏂囩珷鎼滅储锛堟爣棰樸€佸唴瀹癸級
+     * 文章搜索（标题、内容）
      * @param keyword
      * @param page
      * @param pageSize
@@ -306,7 +315,7 @@ public class ArticleServiceImpl implements ArticleService {
         return new PageResult(pageResult.getTotal(), pageResult.getResult());
     }
 
-    // ===== 鍗氬绔柟娉?=====
+    // ===== 博客端方法 =====
 
     @Cacheable(value = "articleList", key = "'page:' + #page + ':' + #pageSize")
     public PageResult getPublishedPage(int page, int pageSize) {
@@ -322,16 +331,17 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleException(MessageConstant.ARTICLE_NOT_FOUND);
         }
 
-        // 濉厖鏍囩鍚嶇О鍒楄〃
+        // 填充标签名称列表
         List<ArticleTags> tags = articleTagMapper.getTagsByArticleId(articleDetail.getId());
         if (tags != null && !tags.isEmpty()) {
             articleDetail.setTagNames(tags.stream().map(ArticleTags::getName).toList());
         }
 
-        // 濉厖涓婁竴绡?涓嬩竴绡囧鑸?        articleDetail.setPrevArticle(articleMapper.getPrevArticle(articleDetail.getId()));
+        // 填充上一篇/下一篇导航
+        articleDetail.setPrevArticle(articleMapper.getPrevArticle(articleDetail.getId()));
         articleDetail.setNextArticle(articleMapper.getNextArticle(articleDetail.getId()));
 
-        // 濉厖鐩稿叧鏂囩珷鎺ㄨ崘锛堝悓鍒嗙被锛屾帓闄ゅ綋鍓嶆枃绔狅紝鏈€澶?绡囷級
+        // 填充相关文章推荐（同分类，排除当前文章，最多6篇）
         if (articleDetail.getCategoryId() != null) {
             articleDetail.setRelatedArticles(
                     articleMapper.getRelatedArticles(articleDetail.getId(), articleDetail.getCategoryId()));
@@ -341,7 +351,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 鏂囩珷娴忚閲?1锛堝啓鍏edis锛屽畾鏃跺悓姝ySQL锛?     */
+     * 文章浏览量+1（写入Redis，定时同步MySQL）
+     */
     public void incrementViewCount(Long articleId) {
         redisTemplate.opsForHash().increment(VIEW_COUNT_KEY, articleId.toString(), 1);
     }
@@ -356,7 +367,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Cacheable(value = "articleArchive", key = "'all'")
     public List<ArticleArchiveVO> getArchive() {
         List<ArticleArchiveItemVO> allArticles = articleMapper.getArchiveList();
-        // 鎸夊勾鏈堝垎缁勶紙鍒╃敤鏁版嵁搴撶殑 publish_year, publish_month 鐢熸垚鍒楋級
+        // 按年月分组（利用数据库的 publish_year, publish_month 生成列）
         Map<String, ArticleArchiveVO> archiveMap = new LinkedHashMap<>();
         for (ArticleArchiveItemVO item : allArticles) {
             if (item.getPublishTime() == null) {
@@ -392,7 +403,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * 缁熻瀛楁暟锛堜腑鏂囩畻1瀛楋紝鑻辨枃鍗曡瘝绠?瀛楋級
+     * 统计字数（中文算1字，英文单词算1字）
      * @param text
      * @return
      */
@@ -400,12 +411,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (text == null || text.isEmpty()) {
             return 0;
         }
-        // 鍘婚櫎Markdown璇硶绗﹀彿
+        // 去除Markdown语法符号
         String cleanText = text.replaceAll("[#*`>\\-\\[\\]()!|]", "");
-        // 涓枃瀛楃鏁?        long chineseCount = cleanText.chars()
+        // 中文字符数
+        long chineseCount = cleanText.chars()
                 .filter(c -> Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN)
                 .count();
-        // 鑻辨枃鍗曡瘝鏁?        String englishText = cleanText.replaceAll("[\\u4e00-\\u9fff]", " ");
+        // 英文单词数
+        String englishText = cleanText.replaceAll("[\\u4e00-\\u9fff]", " ");
         String[] words = englishText.trim().split("\\s+");
         long englishCount = 0;
         for (String word : words) {

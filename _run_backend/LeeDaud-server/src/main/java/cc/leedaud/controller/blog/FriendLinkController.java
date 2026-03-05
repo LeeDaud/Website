@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.result.Result;
 import cc.leedaud.service.FriendLinkService;
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 鍗氬绔弸閾炬帴鍙? */
+ * 博客端友链接口
+ */
 @RestController("blogFriendLinkController")
 @RequestMapping("/blog/friendLink")
 public class FriendLinkController {
@@ -20,7 +21,7 @@ public class FriendLinkController {
     private FriendLinkService friendLinkService;
 
     /**
-     * 鑾峰彇鍙鍙嬫儏閾炬帴
+     * 获取可见友情链接
      */
     @GetMapping
     public Result<List<FriendLinkVO>> getVisibleFriendLink() {

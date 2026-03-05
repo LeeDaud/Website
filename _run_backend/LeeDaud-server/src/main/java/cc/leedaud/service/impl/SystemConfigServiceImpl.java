@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service.impl;
+package cc.leedaud.service.impl;
 
 import cc.leedaud.constant.MessageConstant;
 import cc.leedaud.dto.SystemConfigDTO;
@@ -24,14 +24,16 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     private SystemConfigMapper systemConfigMapper;
 
     /**
-     * 鑾峰彇鎵€鏈夌郴缁熼厤缃?     * @return
+     * 获取所有系统配置
+     * @return
      */
     public List<SystemConfig> listAll() {
         return systemConfigMapper.listAll();
     }
 
     /**
-     * 鏍规嵁閰嶇疆閿幏鍙栭厤缃?     * @param configKey
+     * 根据配置键获取配置
+     * @param configKey
      * @return
      */
     @Cacheable(value = "systemConfig", key = "#configKey")
@@ -40,7 +42,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     }
 
     /**
-     * 鏍规嵁ID鑾峰彇閰嶇疆
+     * 根据ID获取配置
      * @param id
      * @return
      */
@@ -49,12 +51,13 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     }
 
     /**
-     * 娣诲姞绯荤粺閰嶇疆
+     * 添加系统配置
      * @param systemConfigDTO
      */
     @CacheEvict(value = "systemConfig", allEntries = true)
     public void addConfig(SystemConfigDTO systemConfigDTO) {
-        // 妫€鏌ラ厤缃敭鏄惁宸插瓨鍦?        SystemConfig existingConfig = systemConfigMapper.getByKey(systemConfigDTO.getConfigKey());
+        // 检查配置键是否已存在
+        SystemConfig existingConfig = systemConfigMapper.getByKey(systemConfigDTO.getConfigKey());
         if (existingConfig != null) {
             throw new SystemConfigException(MessageConstant.ConfigKeyExists);
         }
@@ -64,7 +67,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     }
 
     /**
-     * 鏇存柊绯荤粺閰嶇疆
+     * 更新系统配置
      * @param systemConfigDTO
      */
     @CacheEvict(value = "systemConfig", allEntries = true)
@@ -75,7 +78,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     }
 
     /**
-     * 鎵归噺鍒犻櫎绯荤粺閰嶇疆
+     * 批量删除系统配置
      * @param ids
      */
     @CacheEvict(value = "systemConfig", allEntries = true)

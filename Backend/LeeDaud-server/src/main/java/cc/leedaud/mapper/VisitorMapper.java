@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.dto.DailyVisitorCountDTO;
@@ -17,7 +17,7 @@ import java.util.List;
 @Mapper
 public interface VisitorMapper {
     /**
-     * 鏍规嵁璁垮鎸囩汗鏌ヨ璁垮淇℃伅
+     * 根据访客指纹查询访客信息
      * @param fingerprint
      * @return
      */
@@ -25,7 +25,7 @@ public interface VisitorMapper {
     Visitors findVisitorByFingerprint(String fingerprint);
 
     /**
-     * 鏍规嵁id鏌ヨ璁垮淇℃伅
+     * 根据id查询访客信息
      * @param id
      * @return
      */
@@ -33,7 +33,7 @@ public interface VisitorMapper {
     Visitors findById(Long id);
 
     /**
-     * 鎻掑叆璁垮淇℃伅
+     * 插入访客信息
      * @param visitor
      */
     @AutoFill(value = OperationType.INSERT)
@@ -41,49 +41,50 @@ public interface VisitorMapper {
     void insertVisitor(Visitors visitor);
 
     /**
-     * 鏍规嵁id鏇存柊璁垮淇℃伅
+     * 根据id更新访客信息
      * @param visitor
      */
     @AutoFill(value = OperationType.UPDATE)
     void updateById(Visitors visitor);
 
     /**
-     * 鍒嗛〉鏌ヨ
+     * 分页查询
      * @param visitorPageQueryDTO
      * @return
      */
     Page<Visitors> pageQuery(VisitorPageQueryDTO visitorPageQueryDTO);
 
     /**
-     * 鎵归噺灏佺璁垮
+     * 批量封禁访客
      * @param ids
      */
     void batchBlock(List<Long> ids);
 
     /**
-     * 鎵归噺瑙ｅ皝璁垮
+     * 批量解封访客
      * @param ids
      */
     void batchUnblock(List<Long> ids);
 
     /**
-     * 缁熻鎬昏瀹㈡暟
+     * 统计总访客数
      */
     @Select("select count(*) from visitors")
     Integer countTotal();
 
     /**
-     * 缁熻浠婃棩鏂板璁垮鏁?     */
+     * 统计今日新增访客数
+     */
     @Select("select count(*) from visitors where date(create_time) = curdate()")
     Integer countToday();
 
     /**
-     * 缁熻鎸囧畾鏃ユ湡鑼冨洿鍐呮瘡鏃ユ柊澧炶瀹㈡暟
+     * 统计指定日期范围内每日新增访客数
      */
     List<DailyVisitorCountDTO> getDailyNewVisitorStats(LocalDate begin, LocalDate end);
 
     /**
-     * 缁熻璁垮鐪佷唤鍒嗗竷
+     * 统计访客省份分布
      */
     List<ProvinceCountDTO> getProvinceDistribution();
 }

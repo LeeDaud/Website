@@ -1,19 +1,19 @@
-﻿package cc.leedaud.result;
+package cc.leedaud.result;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 鍚庣缁熶竴杩斿洖缁撴灉
+ * 后端统一返回结果
  * @param <T>
  */
 @Data
 public class Result<T> implements Serializable {
 
-    private Integer code; //缂栫爜锛?鎴愬姛锛?鍜屽叾瀹冩暟瀛椾负澶辫触
-    private String msg; //閿欒淇℃伅
-    private T data; //鏁版嵁
+    private Integer code; //编码：1成功，0和其它数字为失败
+    private String msg; //错误信息
+    private T data; //数据
 
     public static <T> Result<T> success() {
         Result<T> result = new Result<T>();

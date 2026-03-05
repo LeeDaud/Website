@@ -1,4 +1,4 @@
-﻿package cc.leedaud.config;
+package cc.leedaud.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 闄愭祦閰嶇疆绫伙紙鍩轰簬Bucket4j鏈湴浠ょ墝妗讹級
+ * 限流配置类（基于Bucket4j本地令牌桶）
  */
 @Data
 @Slf4j
@@ -19,15 +19,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RateLimitConfiguration {
 
     /**
-     * 鏈湴Bucket缂撳瓨: key -> Bucket
+     * 本地Bucket缓存: key -> Bucket
      */
     private final ConcurrentHashMap<String, Bucket> bucketCache = new ConcurrentHashMap<>();
 
     /**
-     * 鑾峰彇鎴栧垱寤轰护鐗屾《
-     * @param key 闄愭祦key
-     * @param burstCapacity 绐佸彂瀹归噺锛堟《瀹归噺锛?     * @param tokens 姣忎釜鏃堕棿绐楀彛琛ュ厖鐨勪护鐗屾暟
-     * @param duration 鏃堕棿绐楀彛
+     * 获取或创建令牌桶
+     * @param key 限流key
+     * @param burstCapacity 突发容量（桶容量）
+     * @param tokens 每个时间窗口补充的令牌数
+     * @param duration 时间窗口
      * @return Bucket
      */
     public Bucket resolveBucket(String key, int burstCapacity, long tokens, Duration duration) {
@@ -41,11 +42,13 @@ public class RateLimitConfiguration {
     }
 
     /**
-     * 灏濊瘯娑堣垂涓€涓护鐗?     * @param key 闄愭祦key
-     * @param burstCapacity 绐佸彂瀹归噺
-     * @param tokens 姣忎釜鏃堕棿绐楀彛琛ュ厖鐨勪护鐗屾暟
-     * @param duration 鏃堕棿绐楀彛
-     * @return true=鍏佽閫氳繃, false=琚檺娴?     */
+     * 尝试消费一个令牌
+     * @param key 限流key
+     * @param burstCapacity 突发容量
+     * @param tokens 每个时间窗口补充的令牌数
+     * @param duration 时间窗口
+     * @return true=允许通过, false=被限流
+     */
     public boolean tryConsume(String key, int burstCapacity, long tokens, Duration duration) {
         Bucket bucket = resolveBucket(key, burstCapacity, tokens, duration);
         return bucket.tryConsume(1);

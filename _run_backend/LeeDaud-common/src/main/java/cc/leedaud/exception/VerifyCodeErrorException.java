@@ -1,4 +1,4 @@
-﻿package cc.leedaud.exception;
+package cc.leedaud.exception;
 
 public class VerifyCodeErrorException extends BaseException {
     public VerifyCodeErrorException() {

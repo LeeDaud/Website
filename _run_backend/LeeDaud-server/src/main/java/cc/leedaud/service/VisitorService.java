@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.VisitorPageQueryDTO;
 import cc.leedaud.dto.VisitorRecordDTO;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VisitorService {
     /**
-     * 璁板綍璁垮璁块棶淇℃伅
+     * 记录访客访问信息
      * @param visitorRecordDTO
      * @param httpRequest
      * @return
@@ -18,20 +18,20 @@ public interface VisitorService {
     VisitorRecordVO recordVisitorViewInfo(VisitorRecordDTO visitorRecordDTO, HttpServletRequest httpRequest);
 
     /**
-     * 鍒嗛〉鏌ヨ璁垮鍒楄〃
+     * 分页查询访客列表
      * @param visitorPageQueryDTO
      * @return
      */
     PageResult pageQuery(VisitorPageQueryDTO visitorPageQueryDTO);
 
     /**
-     * 鎵归噺灏佺璁垮
+     * 批量封禁访客
      * @param ids
      */
     void batchBlock(List<Long> ids);
 
     /**
-     * 鎵归噺瑙ｅ皝璁垮
+     * 批量解封访客
      * @param ids
      */
     void batchUnblock(List<Long> ids);

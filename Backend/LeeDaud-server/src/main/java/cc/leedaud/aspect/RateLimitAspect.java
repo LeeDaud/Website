@@ -1,4 +1,4 @@
-﻿package cc.leedaud.aspect;
+package cc.leedaud.aspect;
 
 import cc.leedaud.annotation.RateLimit;
 import cc.leedaud.config.RateLimitConfiguration;
@@ -18,8 +18,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.Duration;
 
 /**
- * 闄愭祦鍒囬潰锛屽鐞?@RateLimit 娉ㄨВ
- * 鍩轰簬Bucket4j浠ょ墝妗剁畻娉曞疄鐜版帴鍙ｇ骇闄愭祦
+ * 限流切面，处理 @RateLimit 注解
+ * 基于Bucket4j令牌桶算法实现接口级限流
  */
 @Aspect
 @Component
@@ -30,7 +30,8 @@ public class RateLimitAspect {
     private RateLimitConfiguration rateLimitConfig;
 
     /**
-     * 鐜粫閫氱煡锛氭嫤鎴甫鏈?@RateLimit 娉ㄨВ鐨勬柟娉?     */
+     * 环绕通知：拦截带有 @RateLimit 注解的方法
+     */
     @Around("@annotation(rateLimit)")
     public Object around(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
         String key = buildRateLimitKey(joinPoint, rateLimit);
@@ -46,14 +47,14 @@ public class RateLimitAspect {
         if (allowed) {
             return joinPoint.proceed();
         } else {
-            log.warn("闄愭祦瑙﹀彂: key={}, type={}, message={}", key, rateLimit.type(), rateLimit.message());
-            // 403灏佺寮傚父
+            log.warn("限流触发: key={}, type={}, message={}", key, rateLimit.type(), rateLimit.message());
+            // 403封禁异常
             throw new BlockedException(rateLimit.message());
         }
     }
 
     /**
-     * 鏋勫缓闄愭祦Key
+     * 构建限流Key
      */
     private String buildRateLimitKey(ProceedingJoinPoint joinPoint, RateLimit rateLimit) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -82,7 +83,7 @@ public class RateLimitAspect {
     }
 
     /**
-     * 鑾峰彇瀹㈡埛绔疘P鍦板潃
+     * 获取客户端IP地址
      */
     private String getClientIp() {
         ServletRequestAttributes attributes =

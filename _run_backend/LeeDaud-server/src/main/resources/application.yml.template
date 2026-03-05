@@ -1,41 +1,46 @@
-﻿server:
+server:
   port: 5922
 
 spring:
   application:
     name: LeeDaudBackend
   profiles:
-    active: dev #鐜閰嶇疆dev/prod
+    active: dev #环境配置dev/prod
   threads:
     virtual:
-      enabled: true #鍚敤铏氭嫙绾跨▼
+      enabled: true #启用虚拟线程
   main:
-    allow-circular-references: true #鍏佽寰幆寮曠敤
+    allow-circular-references: true #允许循环引用
   servlet:
     multipart:
-      max-file-size: 15MB      # 鍗曚釜鏂囦欢鏈€澶уぇ灏?      max-request-size: 50MB   # 璇锋眰浣撴渶澶уぇ灏?  #鏁版嵁搴撹繛鎺ヤ俊鎭?  datasource:
+      max-file-size: 15MB      # 单个文件最大大小
+      max-request-size: 50MB   # 请求体最大大小
+  #数据库连接信息
+  datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: ${LeeDaud.datasource.driver-class-name}
-    url: jdbc:mysql://${LeeDaud.datasource.host}:${LeeDaud.datasource.port}/${LeeDaud.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: ${LeeDaud.datasource.username}
-    password: ${LeeDaud.datasource.password}
-    # Druid杩炴帴姹犱笓鐢ㄩ厤缃?    druid:
+    driver-class-name: ${leedaud.datasource.driver-class-name}
+    url: jdbc:mysql://${leedaud.datasource.host}:${leedaud.datasource.port}/${leedaud.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${leedaud.datasource.username}
+    password: ${leedaud.datasource.password}
+    # Druid连接池专用配置
+    druid:
       initial-size: 5
       min-idle: 5
       max-active: 20
       max-wait: 60000
   data:
     redis:
-    host: ${LeeDaud.redis.host}
-    port: ${LeeDaud.redis.port}
-    password: ${LeeDaud.redis.password}
-    database: ${LeeDaud.redis.database}
+    host: ${leedaud.redis.host}
+    port: ${leedaud.redis.port}
+    password: ${leedaud.redis.password}
+    database: ${leedaud.redis.database}
 
   mail:
     host: smtp.qq.com
     port: 587
-    username: # qq閭
-    password: # 閭鎺堟潈鐮?    properties:
+    username: # qq邮箱
+    password: # 邮箱授权码
+    properties:
       mail:
         smtp:
           auth: true
@@ -46,28 +51,29 @@ spring:
           writetimeout: 5000
 
 mybatis:
-  #mapper閰嶇疆鏂囦欢
+  #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: cc.leedaud.entity
   configuration:
-    #寮€鍚┘宄板懡鍚?    map-underscore-to-camel-case: true
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
 
-#閰嶇疆浜嬪姟绠＄悊鏃ュ織绾у埆
+#配置事务管理日志级别
 logging:
   level:
     cc:
-      LeeDaud:
+      leedaud:
         mapper: debug
         service: info
         controller: info
 
-LeeDaud:
+leedaud:
   jwt:
-    # 璁剧疆jwt绛惧悕鍔犲瘑鏃朵娇鐢ㄧ殑绉橀挜
+    # 设置jwt签名加密时使用的秘钥
     secret-key: your-jwt-secret-key-here
-    # 璁剧疆jwt杩囨湡鏃堕棿
-    ttl: ${LeeDaud.jwt.ttl}
-    # 璁剧疆鍓嶇浼犻€掕繃鏉ョ殑浠ょ墝鍚嶇О
+    # 设置jwt过期时间
+    ttl: ${leedaud.jwt.ttl}
+    # 设置前端传递过来的令牌名称
     token-name: Authorization
   alioss:
     endpoint: your-oss-endpoint-here
@@ -75,18 +81,19 @@ LeeDaud:
     access-key-secret: your-alioss-access-key-secret
     bucket-name: your-bucket-name
   email:
-    personal:    #SMTP閭欢鍙戦€佽€呮樀绉?    from:   #SMTP閭欢鍙戦€佽€呴偖绠憋紝璺熶笂闈㈤偅涓偖绠遍厤缃殑username涓€鑷村嵆鍙?  visitor:
-    verify-code:   #绠＄悊绔父瀹㈢櫥褰曠敤鐨勯偖绠遍獙璇佺爜
+    personal:    #SMTP邮件发送者昵称
+    from:   #SMTP邮件发送者邮箱，跟上面那个邮箱配置的username一致即可
+  visitor:
+    verify-code:   #管理端游客登录用的邮箱验证码
   image:
     compress:
-      enabled: true           # 鏄惁鍚敤鍥剧墖鍘嬬缉
-      max-size-kb: 500          # 鏈€澶?00KB
-      quality: 0.9              # 鍘嬬缉璐ㄩ噺(0-1)
-      output-format: webp       # 杈撳嚭鏍煎紡: webp
+      enabled: true           # 是否启用图片压缩
+      max-size-kb: 500          # 最大500KB
+      quality: 0.9              # 压缩质量(0-1)
+      output-format: webp       # 输出格式: webp
   website:
-    title:       # 缃戠珯鏍囬(鎴栦綘鐨勬樀绉?
-    home:        # 棣栭〉鍦板潃
-    admin:       # 鍚庡彴绠＄悊鍦板潃
-    cv:          # 涓汉绠€鍘嗗湴鍧€
-    blog:        # 鍗氬鍦板潃
-
+    title:       # 网站标题(或你的昵称)
+    home:        # 首页地址
+    admin:       # 后台管理地址
+    cv:          # 个人简历地址
+    blog:        # 博客地址

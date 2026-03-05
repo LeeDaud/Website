@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.entity.ArticleTags;
 import cc.leedaud.result.PageResult;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 鍗氬绔枃绔犳爣绛炬帴鍙? */
+ * 博客端文章标签接口
+ */
 @Slf4j
 @RestController("blogArticleTagController")
 @RequestMapping("/blog/article/tag")
@@ -25,7 +26,8 @@ public class ArticleTagController {
     private ArticleService articleService;
 
     /**
-     * 鑾峰彇鏈夊凡鍙戝竷鏂囩珷鐨勬爣绛惧垪琛?     */
+     * 获取有已发布文章的标签列表
+     */
     @GetMapping
     public Result<List<ArticleTags>> getVisibleTags() {
         List<ArticleTags> list = articleTagService.getVisibleTags();
@@ -33,12 +35,13 @@ public class ArticleTagController {
     }
 
     /**
-     * 鏍规嵁鏍囩ID鑾峰彇宸插彂甯冩枃绔犲垪琛?     */
+     * 根据标签ID获取已发布文章列表
+     */
     @GetMapping("/{tagId}")
     public Result<PageResult> getPublishedByTagId(@PathVariable Long tagId,
                                                    @RequestParam(defaultValue = "1") int page,
                                                    @RequestParam(defaultValue = "10") int pageSize) {
-        log.info("鍗氬绔牴鎹爣绛捐幏鍙栨枃绔犲垪琛? tagId={}", tagId);
+        log.info("博客端根据标签获取文章列表: tagId={}", tagId);
         PageResult pageResult = articleService.getPublishedByTagId(tagId, page, pageSize);
         return Result.success(pageResult);
     }

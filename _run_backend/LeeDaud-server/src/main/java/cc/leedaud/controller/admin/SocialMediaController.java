@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.admin;
+package cc.leedaud.controller.admin;
 
 import cc.leedaud.annotation.OperationLog;
 import cc.leedaud.dto.SocialMediaDTO;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- *  绠＄悊绔ぞ浜ゅ獟浣撴帴鍙? */
+ *  管理端社交媒体接口
+ */
 @RestController("adminSocialMediaController")
 @RequestMapping("/admin/socialMedia")
 @Slf4j
@@ -24,7 +25,8 @@ public class SocialMediaController {
     private SocialMediaService socialMediaService;
 
     /**
-     * 鑾峰彇鎵€鏈夌ぞ浜ゅ獟浣撲俊鎭?     */
+     * 获取所有社交媒体信息
+     */
     @GetMapping
     public Result<List<SocialMedia>> getAllSocialMedia() {
         List<SocialMedia> socialMediaList = socialMediaService.getAllSocialMedia();
@@ -32,33 +34,33 @@ public class SocialMediaController {
     }
 
     /**
-     * 娣诲姞绀句氦濯掍綋淇℃伅
+     * 添加社交媒体信息
      */
     @PostMapping
     @OperationLog(value = OperationType.INSERT, target = "socialMedia")
     public Result addSocialMedia(@Valid @RequestBody SocialMediaDTO socialMediaDTO) {
-        log.info("娣诲姞绀句氦濯掍綋淇℃伅: {}", socialMediaDTO);
+        log.info("添加社交媒体信息: {}", socialMediaDTO);
         socialMediaService.addSocialMedia(socialMediaDTO);
         return Result.success();
     }
     /**
-     * 鎵归噺鍒犻櫎绀句氦濯掍綋淇℃伅
+     * 批量删除社交媒体信息
      */
     @DeleteMapping
     @OperationLog(value = OperationType.DELETE, target = "socialMedia", targetId = "#ids")
     public Result deleteSocialMedia(@RequestParam List<Long> ids) {
-        log.info("鎵归噺鍒犻櫎绀句氦濯掍綋淇℃伅: {}", ids);
+        log.info("批量删除社交媒体信息: {}", ids);
         socialMediaService.batchDelete(ids);
         return Result.success();
     }
 
     /**
-     * 淇敼绀句氦濯掍綋淇℃伅
+     * 修改社交媒体信息
      */
     @PutMapping
     @OperationLog(value = OperationType.UPDATE, target = "socialMedia", targetId = "#socialMediaDTO.id")
     public Result updateSocialMedia(@Valid @RequestBody SocialMediaDTO socialMediaDTO) {
-        log.info("淇敼绀句氦濯掍綋淇℃伅: {}", socialMediaDTO);
+        log.info("修改社交媒体信息: {}", socialMediaDTO);
         socialMediaService.updateSocialMedia(socialMediaDTO);
         return Result.success();
     }

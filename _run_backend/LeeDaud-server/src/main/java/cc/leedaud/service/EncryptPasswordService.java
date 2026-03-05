@@ -1,12 +1,12 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 /**
- * 瀵嗙爜鍔犲瘑鏈嶅姟
+ * 密码加密服务
  */
 public interface EncryptPasswordService {
     
     /**
-     * 璁＄畻瀵嗙爜+鐩愮殑鍝堝笇
+     * 计算密码+盐的哈希
      * @param password
      * @param salt
      * @return

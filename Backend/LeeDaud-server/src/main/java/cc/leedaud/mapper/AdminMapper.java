@@ -1,4 +1,4 @@
-﻿package cc.leedaud.mapper;
+package cc.leedaud.mapper;
 
 import cc.leedaud.annotation.AutoFill;
 import cc.leedaud.dto.AdminChangePasswordDTO;
@@ -11,19 +11,24 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface AdminMapper {
     /**
-     * 鏍规嵁鐢ㄦ埛鍚嶆煡璇㈢鐞嗗憳
-     * @param username 鐢ㄦ埛鍚?     * @return 绠＄悊鍛?     */
+     * 根据用户名查询管理员
+     * @param username 用户名
+     * @return 管理员
+     */
     @Select("select * from admin where username = #{username}")
     Admin getByUsername(String username);
 
     /**
-     * 鏍规嵁id鏌ヨ绠＄悊鍛?     * @param adminId 绠＄悊鍛榠d
-     * @return 绠＄悊鍛?     */
+     * 根据id查询管理员
+     * @param adminId 管理员id
+     * @return 管理员
+     */
     @Select("select * from admin where id = #{adminId}")
     Admin getById(Long adminId);
 
     /**
-     * 淇敼绠＄悊鍛樹俊鎭?     * @param admin
+     * 修改管理员信息
+     * @param admin
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Admin admin);

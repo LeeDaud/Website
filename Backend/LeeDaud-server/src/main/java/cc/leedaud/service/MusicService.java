@@ -1,4 +1,4 @@
-﻿package cc.leedaud.service;
+package cc.leedaud.service;
 
 import cc.leedaud.dto.MusicDTO;
 import cc.leedaud.dto.MusicPageQueryDTO;
@@ -10,39 +10,39 @@ import java.util.List;
 
 public interface MusicService {
     /**
-     * 娣诲姞闊充箰
+     * 添加音乐
      * @param musicDTO
      */
     void addMusic(MusicDTO musicDTO);
 
     /**
-     * 鍒嗛〉鏌ヨ闊充箰鍒楄〃
+     * 分页查询音乐列表
      * @param musicPageQueryDTO
      * @return
      */
     PageResult pageQuery(MusicPageQueryDTO musicPageQueryDTO);
 
     /**
-     * 鏇存柊闊充箰
+     * 更新音乐
      * @param musicDTO
      */
     void updateMusic(MusicDTO musicDTO);
 
     /**
-     * 鎵归噺鍒犻櫎闊充箰
+     * 批量删除音乐
      * @param ids
      */
     void batchDelete(List<Long> ids);
 
     /**
-     * 鏍规嵁ID鏌ヨ闊充箰
+     * 根据ID查询音乐
      * @param id
      * @return
      */
     Music getById(Long id);
 
     /**
-     * 鑾峰彇鎵€鏈夊彲瑙佺殑闊充箰
+     * 获取所有可见的音乐
      * @return
      */
     List<MusicVO> getAllVisibleMusic();

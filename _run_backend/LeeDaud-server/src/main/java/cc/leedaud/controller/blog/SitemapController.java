@@ -1,4 +1,4 @@
-﻿package cc.leedaud.controller.blog;
+package cc.leedaud.controller.blog;
 
 import cc.leedaud.properties.WebsiteProperties;
 import cc.leedaud.result.PageResult;
@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * 鍗氬绔?Sitemap 鎺ュ彛
+ * 博客端 Sitemap 接口
  */
 @Slf4j
 @RestController("blogSitemapController")
@@ -30,7 +30,7 @@ public class SitemapController {
 
 
     /**
-     * 鍔ㄦ€佺敓鎴愮珯鐐瑰湴鍥?XML
+     * 动态生成站点地图 XML
      */
     @GetMapping(value = "/sitemap.xml", produces = "application/xml; charset=UTF-8")
     @Cacheable(value = "sitemap", key = "'xml'")

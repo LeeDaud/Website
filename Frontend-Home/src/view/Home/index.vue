@@ -6,15 +6,26 @@ import { recordVisitorAPI } from '@/api/visitor'
 import { getSystemConfigAPI } from '@/api/systemConfig'
 
 const FALLBACK_AVATAR = '/favicon.png'
-const REQUIRED_SOCIAL_LINKS = [
+const REQUIRED_SITE_LINKS = [
   { name: 'Blog', icon: 'boke', link: 'https://blog.licheng.website' },
   { name: 'CV', icon: 'jianli', link: 'https://cv.licheng.website' },
-  { name: 'TimelineJournal', icon: 'code', link: 'https://timelinejournal.licheng.website' },
-  { name: 'LongevityHabits', icon: 'code', link: 'https://longevityhabits.licheng.website' },
-  { name: 'Virtuals-Launch-Hunter', icon: 'code', link: 'https://launch.licheng.website' },
   { name: 'GitHub', icon: 'github', link: 'https://github.com/LeeDaud' },
   { name: 'X', icon: '', link: 'https://x.com/LeeDaud_0212' }
 ]
+const REQUIRED_PROJECT_LINKS = [
+  { name: 'Projects', icon: 'code', link: 'https://blog.licheng.website/projects' }
+]
+const PROJECT_LINK_BLOCKLIST = [
+  'timelinejournal.licheng.website',
+  'longevityhabits.licheng.website',
+  'launch.licheng.website'
+]
+const PROJECT_NAME_BLOCKLIST = [
+  'timelinejournal',
+  'longevityhabits',
+  'virtuals-launch-hunter'
+]
+const FIXED_LINK_GROUPS = new Set(['blog', 'cv', 'projects', 'github', 'x'])
 
 const startYear = ref(0)
 const currentYear = ref(0)
@@ -64,38 +75,80 @@ const normalizeExternalUrl = (url) => {
   if (!value) return ''
   if (/^https?:\/\//i.test(value)) return value
   if (/^\/\//.test(value)) return `https:${value}`
+  if (/^\//.test(value)) {
+    // 兼容后台填相对路径时的跳转
+    if (value === '/projects' || value === '/links') {
+      return 'https://blog.licheng.website/projects'
+    }
+    return `${window.location.origin}${value}`
+  }
   return `https://${value}`
 }
 
-const normalizeSocialMedia = (list) => {
-  const items = Array.isArray(list) ? list : []
-  const normalized = []
-  const seenNames = new Set()
+const classifyLinkGroup = (name, link) => {
+  const lowerName = (name || '').toLowerCase().trim()
+  const lowerLink = (link || '').toLowerCase()
+  if (lowerName === 'blog' || lowerLink.includes('blog.licheng.website')) return 'blog'
+  if (lowerName === 'cv' || lowerLink.includes('cv.licheng.website')) return 'cv'
+  if (
+    lowerName === 'project' ||
+    lowerName === 'projects' ||
+    lowerLink.includes('/projects') ||
+    lowerLink.endsWith('/links')
+  ) {
+    return 'projects'
+  }
+  if (lowerName === 'github' || lowerLink.includes('github.com/leedaud')) return 'github'
+  if (
+    lowerName === 'x' ||
+    lowerLink.includes('x.com/leedaud_0212') ||
+    lowerLink.includes('twitter.com/leedaud_0212')
+  ) {
+    return 'x'
+  }
+  return ''
+}
 
-  items.forEach((item, index) => {
-    const name = (item?.name || '').trim()
-    const link = normalizeExternalUrl(item?.link)
+const normalizeSocialMedia = (socialList) => {
+  const items = Array.isArray(socialList) ? socialList : []
+  const normalized = []
+  const seenKeys = new Set()
+  const seenGroups = new Set()
+
+  const pushIfValid = (rawItem, fallbackId) => {
+    const name = (rawItem?.name || '').trim()
+    const link = normalizeExternalUrl(rawItem?.link)
     if (!name || !link) return
-    const key = name.toLowerCase()
-    if (seenNames.has(key)) return
-    seenNames.add(key)
+    const lowerName = name.toLowerCase()
+    if (PROJECT_NAME_BLOCKLIST.includes(lowerName)) return
+    if (PROJECT_LINK_BLOCKLIST.some((domain) => link.toLowerCase().includes(domain))) return
+    const group = classifyLinkGroup(name, link)
+    if (group && seenGroups.has(group)) return
+    const key = `${name.toLowerCase()}|${link.toLowerCase()}`
+    if (seenKeys.has(key)) return
+    seenKeys.add(key)
+    if (group) seenGroups.add(group)
     normalized.push({
-      ...item,
-      id: item?.id ?? `api-${index}`,
+      ...rawItem,
+      id: rawItem?.id ?? fallbackId,
       name,
       link
     })
+  }
+
+  items.forEach((item, index) => {
+    const group = classifyLinkGroup(item?.name, normalizeExternalUrl(item?.link))
+    // 固定入口类链接只保留本地定义，避免后台重复/错误链接导致双份与跳转异常
+    if (group && FIXED_LINK_GROUPS.has(group)) return
+    pushIfValid(item, `api-social-${index}`)
   })
 
-  REQUIRED_SOCIAL_LINKS.forEach((item, index) => {
-    const key = item.name.toLowerCase()
-    if (seenNames.has(key)) return
-    seenNames.add(key)
-    normalized.push({
-      id: `default-${index}`,
-      ...item,
-      link: normalizeExternalUrl(item.link)
-    })
+  REQUIRED_SITE_LINKS.forEach((item, index) => {
+    pushIfValid(item, `default-site-${index}`)
+  })
+
+  REQUIRED_PROJECT_LINKS.forEach((item, index) => {
+    pushIfValid(item, `default-project-${index}`)
   })
 
   return normalized

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cc.leedaud.mapper.VisitorMapper">
@@ -67,11 +67,10 @@
     </select>
 
     <select id="getProvinceDistribution" resultType="cc.leedaud.dto.ProvinceCountDTO">
-        select ifnull(province, '鏈煡') as province, count(*) as count
+        select ifnull(province, '未知') as province, count(*) as count
         from visitors
         group by province
         order by count desc
         limit 10
     </select>
 </mapper>
-
