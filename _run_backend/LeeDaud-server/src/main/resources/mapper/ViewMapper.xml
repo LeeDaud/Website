@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cc.feitwnd.mapper.ViewMapper">
+<mapper namespace="cc.leedaud.mapper.ViewMapper">
 
     <insert id="insert">
         insert into views (visitor_id, page_path, referer,page_title, ip_address, user_agent, view_time)
         values (#{visitorId}, #{pagePath}, #{referer},#{pageTitle}, #{ipAddress}, #{userAgent}, #{viewTime})
     </insert>
 
-    <select id="pageQuery" resultType="cc.feitwnd.entity.Views">
+    <select id="pageQuery" resultType="cc.leedaud.entity.Views">
         select * from views
         <where>
             <if test="pagePath != null and pagePath != ''">
@@ -24,7 +24,7 @@
         order by view_time desc
     </select>
 
-    <select id="getDailyViewStats" resultType="cc.feitwnd.dto.DailyViewCountDTO">
+    <select id="getDailyViewStats" resultType="cc.leedaud.dto.DailyViewCountDTO">
         select date(view_time) as date, count(*) as count
         from views
         where date(view_time) between #{begin} and #{end}
@@ -39,3 +39,4 @@
         </foreach>
     </delete>
 </mapper>
+

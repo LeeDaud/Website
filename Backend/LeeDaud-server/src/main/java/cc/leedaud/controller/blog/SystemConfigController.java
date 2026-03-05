@@ -1,0 +1,32 @@
+﻿package cc.leedaud.controller.blog;
+
+import cc.leedaud.entity.SystemConfig;
+import cc.leedaud.result.Result;
+import cc.leedaud.service.SystemConfigService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController("blogSystemConfigController")
+@RequestMapping("/blog/systemConfig")
+public class SystemConfigController {
+
+    @Autowired
+    private SystemConfigService systemConfigService;
+
+    /**
+     * 鏍规嵁閰嶇疆閿幏鍙栭厤缃?     * @param configKey
+     * @return
+     */
+    @GetMapping("/key/{configKey}")
+    public Result<SystemConfig> getByKey(@PathVariable String configKey) {
+        log.info("鏍规嵁閰嶇疆閿幏鍙栭厤缃?{}", configKey);
+        SystemConfig systemConfig = systemConfigService.getByKey(configKey);
+        return Result.success(systemConfig);
+    }
+}
+

@@ -1,0 +1,28 @@
+﻿package cc.leedaud.vo;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+/**
+ * 鏂囩珷褰掓。涓殑鍗曠瘒鏂囩珷
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ArticleArchiveItemVO implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private String title;
+    private String slug;
+    private Integer publishDay;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishTime;
+}
+

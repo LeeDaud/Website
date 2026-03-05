@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cc.feitwnd.mapper.VisitorMapper">
+<mapper namespace="cc.leedaud.mapper.VisitorMapper">
 
     <insert id="insertVisitor" useGeneratedKeys="true" keyProperty="id">
         insert into visitors (fingerprint, session_id, ip, user_agent, country, province, city, longitude, latitude,
@@ -29,7 +29,7 @@
         </set>
         where id = #{id}
     </update>
-    <select id="pageQuery" resultType="cc.feitwnd.entity.Visitors">
+    <select id="pageQuery" resultType="cc.leedaud.entity.Visitors">
         select * from visitors
         <where>
             <if test="country != null">and country like concat('%',#{country},'%')</if>
@@ -58,7 +58,7 @@
         </foreach>
     </update>
 
-    <select id="getDailyNewVisitorStats" resultType="cc.feitwnd.dto.DailyVisitorCountDTO">
+    <select id="getDailyNewVisitorStats" resultType="cc.leedaud.dto.DailyVisitorCountDTO">
         select date(create_time) as date, count(*) as count
         from visitors
         where date(create_time) between #{begin} and #{end}
@@ -66,11 +66,12 @@
         order by date
     </select>
 
-    <select id="getProvinceDistribution" resultType="cc.feitwnd.dto.ProvinceCountDTO">
-        select ifnull(province, '未知') as province, count(*) as count
+    <select id="getProvinceDistribution" resultType="cc.leedaud.dto.ProvinceCountDTO">
+        select ifnull(province, '鏈煡') as province, count(*) as count
         from visitors
         group by province
         order by count desc
         limit 10
     </select>
 </mapper>
+

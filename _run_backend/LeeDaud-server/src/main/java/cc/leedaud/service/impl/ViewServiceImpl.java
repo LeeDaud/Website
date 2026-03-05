@@ -1,0 +1,42 @@
+﻿package cc.leedaud.service.impl;
+
+import cc.leedaud.dto.ViewPageQueryDTO;
+import cc.leedaud.entity.Views;
+import cc.leedaud.mapper.ViewMapper;
+import cc.leedaud.result.PageResult;
+import cc.leedaud.service.ViewService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ViewServiceImpl implements ViewService {
+
+    @Autowired
+    private ViewMapper viewMapper;
+
+    /**
+     * 鍒嗛〉鏌ヨ娴忚璁板綍
+     * @param viewPageQueryDTO
+     * @return
+     */
+    public PageResult pageQuery(ViewPageQueryDTO viewPageQueryDTO) {
+        PageHelper.startPage(viewPageQueryDTO.getPage(), viewPageQueryDTO.getPageSize());
+        Page<Views> page = viewMapper.pageQuery(viewPageQueryDTO);
+        long total = page.getTotal();
+        List<Views> records = page.getResult();
+        return new PageResult(total, records);
+    }
+
+    /**
+     * 鎵归噺鍒犻櫎娴忚璁板綍
+     * @param ids
+     */
+    public void batchDelete(List<Long> ids) {
+        viewMapper.batchDelete(ids);
+    }
+}
+

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cc.feitwnd.mapper.ArticleCommentMapper">
+<mapper namespace="cc.leedaud.mapper.ArticleCommentMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into article_comments
@@ -16,7 +16,7 @@
              #{createTime}, #{updateTime})
     </insert>
 
-    <select id="pageQuery" resultType="cc.feitwnd.entity.ArticleComments">
+    <select id="pageQuery" resultType="cc.leedaud.entity.ArticleComments">
         select c.*, a.title as article_title from article_comments c
         left join articles a on c.article_id = a.id
         <where>
@@ -36,7 +36,7 @@
         order by c.create_time desc
     </select>
 
-    <select id="getByArticleId" resultType="cc.feitwnd.entity.ArticleComments">
+    <select id="getByArticleId" resultType="cc.leedaud.entity.ArticleComments">
         select * from article_comments
         where article_id = #{articleId}
         order by create_time desc
@@ -59,9 +59,9 @@
         </foreach>
     </delete>
 
-    <!-- ===== 博客端查询 ===== -->
+    <!-- ===== 鍗氬绔煡璇?===== -->
 
-    <select id="getApprovedByArticleId" resultType="cc.feitwnd.vo.ArticleCommentVO">
+    <select id="getApprovedByArticleId" resultType="cc.leedaud.vo.ArticleCommentVO">
         select id, article_id, root_id, parent_id, parent_nickname, content, content_html, is_markdown,
                visitor_id, nickname, email_or_qq, location, user_agent_os, user_agent_browser,
                is_approved, is_secret, is_admin_reply, create_time
@@ -79,3 +79,4 @@
     </update>
 
 </mapper>
+

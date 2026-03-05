@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cc.feitwnd.mapper.MessageMapper">
+<mapper namespace="cc.leedaud.mapper.MessageMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into messages
@@ -16,7 +16,7 @@
              #{createTime}, #{updateTime})
     </insert>
 
-    <select id="pageQuery" resultType="cc.feitwnd.entity.Messages">
+    <select id="pageQuery" resultType="cc.leedaud.entity.Messages">
         select * from messages
         <where>
             <if test="isApproved != null">
@@ -32,7 +32,7 @@
         order by create_time desc
     </select>
 
-    <select id="getById" resultType="cc.feitwnd.entity.Messages">
+    <select id="getById" resultType="cc.leedaud.entity.Messages">
         select * from messages where id = #{id}
     </select>
 
@@ -53,9 +53,9 @@
         </foreach>
     </delete>
 
-    <!-- ===== 博客端查询 ===== -->
+    <!-- ===== 鍗氬绔煡璇?===== -->
 
-    <select id="getApprovedList" resultType="cc.feitwnd.vo.MessageVO">
+    <select id="getApprovedList" resultType="cc.leedaud.vo.MessageVO">
         select id, root_id, parent_id, parent_nickname, content, content_html, is_markdown,
                visitor_id, nickname, email_or_qq, location, user_agent_os, user_agent_browser,
                is_approved, is_secret, is_admin_reply, create_time
@@ -72,3 +72,4 @@
     </update>
 
 </mapper>
+

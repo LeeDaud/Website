@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cc.feitwnd.mapper.ArticleTagMapper">
+<mapper namespace="cc.leedaud.mapper.ArticleTagMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into article_tags (name, slug, create_time, update_time)
@@ -25,7 +25,7 @@
         </foreach>
     </delete>
 
-    <select id="getTagsByArticleId" resultType="cc.feitwnd.entity.ArticleTags">
+    <select id="getTagsByArticleId" resultType="cc.leedaud.entity.ArticleTags">
         select t.* from article_tags t
         inner join article_tag_relations atr on t.id = atr.tag_id
         where atr.article_id = #{articleId}
@@ -46,7 +46,7 @@
         </foreach>
     </delete>
 
-    <select id="getVisibleTags" resultType="cc.feitwnd.entity.ArticleTags">
+    <select id="getVisibleTags" resultType="cc.leedaud.entity.ArticleTags">
         select t.*, count(a.id) as article_count from article_tags t
         left join article_tag_relations atr on t.id = atr.tag_id
         left join articles a on atr.article_id = a.id and a.is_published = 1
@@ -55,3 +55,4 @@
     </select>
 
 </mapper>
+

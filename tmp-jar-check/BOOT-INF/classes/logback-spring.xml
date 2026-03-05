@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
 
-    <!-- 定义变量 -->
+    <!-- 瀹氫箟鍙橀噺 -->
     <property name="LOG_HOME" value="/opt/app/logs" />
-    <property name="APP_NAME" value="feitwnd" />
+    <property name="APP_NAME" value="LeeDaud" />
     <property name="MAX_HISTORY" value="30" />
     <property name="MAX_FILE_SIZE" value="10MB" />
     <property name="TOTAL_SIZE_CAP" value="1GB" />
 
-    <!-- 控制台输出（所有环境通用） -->
+    <!-- 鎺у埗鍙拌緭鍑猴紙鎵€鏈夌幆澧冮€氱敤锛?-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- ==================== 生产环境：文件 Appender ==================== -->
+    <!-- ==================== 鐢熶骇鐜锛氭枃浠?Appender ==================== -->
     <springProfile name="prod">
 
-        <!-- 主应用日志文件 -->
+        <!-- 涓诲簲鐢ㄦ棩蹇楁枃浠?-->
         <appender name="APPLICATION_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_HOME}/${APP_NAME}-application.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -32,7 +32,7 @@
             </encoder>
         </appender>
 
-        <!-- 错误日志单独文件 -->
+        <!-- 閿欒鏃ュ織鍗曠嫭鏂囦欢 -->
         <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_HOME}/${APP_NAME}-error.log</file>
             <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -49,7 +49,7 @@
             </encoder>
         </appender>
 
-        <!-- 安全扫描日志单独文件 -->
+        <!-- 瀹夊叏鎵弿鏃ュ織鍗曠嫭鏂囦欢 -->
         <appender name="SECURITY_SCAN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_HOME}/${APP_NAME}-security-scan.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -63,7 +63,7 @@
             </encoder>
         </appender>
 
-        <!-- SQL慢查询日志 -->
+        <!-- SQL鎱㈡煡璇㈡棩蹇?-->
         <appender name="SQL_SLOW_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_HOME}/${APP_NAME}-sql-slow.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -76,28 +76,28 @@
             </encoder>
         </appender>
 
-        <!-- 安全扫描日志器 -->
+        <!-- 瀹夊叏鎵弿鏃ュ織鍣?-->
         <logger name="SECURITY_SCAN" level="WARN" additivity="false">
             <appender-ref ref="SECURITY_SCAN_FILE" />
             <appender-ref ref="CONSOLE" />
         </logger>
 
-        <!-- MyBatis SQL日志 -->
-        <logger name="cc.feitwnd.mapper" level="WARN">
+        <!-- MyBatis SQL鏃ュ織 -->
+        <logger name="cc.leedaud.mapper" level="WARN">
             <appender-ref ref="APPLICATION_FILE" />
         </logger>
 
-        <!-- 慢SQL日志 -->
-        <logger name="cc.feitwnd.mapper.slow" level="DEBUG" additivity="false">
+        <!-- 鎱QL鏃ュ織 -->
+        <logger name="cc.leedaud.mapper.slow" level="DEBUG" additivity="false">
             <appender-ref ref="SQL_SLOW_FILE" />
         </logger>
 
-        <!-- 404错误处理 -->
+        <!-- 404閿欒澶勭悊 -->
         <logger name="org.springframework.web.servlet.PageNotFound" level="ERROR" additivity="false">
             <appender-ref ref="SECURITY_SCAN_FILE" />
         </logger>
 
-        <!-- 根日志 -->
+        <!-- 鏍规棩蹇?-->
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="APPLICATION_FILE" />
@@ -106,30 +106,30 @@
 
     </springProfile>
 
-    <!-- ==================== 开发环境：仅控制台 ==================== -->
+    <!-- ==================== 寮€鍙戠幆澧冿細浠呮帶鍒跺彴 ==================== -->
     <springProfile name="dev">
 
-        <!-- 安全扫描日志器（开发环境仅输出到控制台） -->
+        <!-- 瀹夊叏鎵弿鏃ュ織鍣紙寮€鍙戠幆澧冧粎杈撳嚭鍒版帶鍒跺彴锛?-->
         <logger name="SECURITY_SCAN" level="WARN" additivity="false">
             <appender-ref ref="CONSOLE" />
         </logger>
 
-        <!-- MyBatis SQL日志（开发环境显示 SQL） -->
-        <logger name="cc.feitwnd.mapper" level="DEBUG" />
+        <!-- MyBatis SQL鏃ュ織锛堝紑鍙戠幆澧冩樉绀?SQL锛?-->
+        <logger name="cc.leedaud.mapper" level="DEBUG" />
 
-        <!-- 404错误处理 -->
+        <!-- 404閿欒澶勭悊 -->
         <logger name="org.springframework.web.servlet.PageNotFound" level="ERROR" additivity="false">
             <appender-ref ref="CONSOLE" />
         </logger>
 
-        <!-- 根日志 -->
+        <!-- 鏍规棩蹇?-->
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
         </root>
 
     </springProfile>
 
-    <!-- ==================== 所有环境通用 ==================== -->
+    <!-- ==================== 鎵€鏈夌幆澧冮€氱敤 ==================== -->
     <logger name="org.apache.tomcat" level="ERROR" />
     <logger name="org.apache.coyote" level="ERROR" />
     <logger name="org.apache.catalina" level="ERROR" />
