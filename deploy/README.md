@@ -175,6 +175,10 @@ powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
   -PushRetryCount 5 -PushRetryDelaySeconds 6
 
+# SSH unstable/reset: add retries + connect timeout
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
+  -SshRetryCount 5 -SshRetryDelaySeconds 6 -SshConnectTimeoutSeconds 25
+
 # only deploy server (skip local commit/push)
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\one-click-deploy.ps1 `
   -SkipCommit -SkipPush

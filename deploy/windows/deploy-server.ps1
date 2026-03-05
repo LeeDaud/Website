@@ -5,6 +5,9 @@ param(
   [string]$FrontendBuildArgs = '',
   [int]$PushRetryCount = 3,
   [int]$PushRetryDelaySeconds = 5,
+  [int]$SshRetryCount = 3,
+  [int]$SshRetryDelaySeconds = 5,
+  [int]$SshConnectTimeoutSeconds = 20,
   [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipCommit,
   [switch]$SkipPush,
@@ -33,6 +36,9 @@ if ($FrontendNodeOptions) { $argsList += @('-FrontendNodeOptions', $FrontendNode
 if ($FrontendBuildArgs) { $argsList += @('-FrontendBuildArgs', $FrontendBuildArgs) }
 $argsList += @('-PushRetryCount', $PushRetryCount)
 $argsList += @('-PushRetryDelaySeconds', $PushRetryDelaySeconds)
+$argsList += @('-SshRetryCount', $SshRetryCount)
+$argsList += @('-SshRetryDelaySeconds', $SshRetryDelaySeconds)
+$argsList += @('-SshConnectTimeoutSeconds', $SshConnectTimeoutSeconds)
 if ($NoAutoStashBeforeDeploy) { $argsList += '-NoAutoStashBeforeDeploy' }
 if ($SkipCommit) { $argsList += '-SkipCommit' }
 if ($SkipPush) { $argsList += '-SkipPush' }

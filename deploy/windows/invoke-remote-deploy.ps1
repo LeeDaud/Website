@@ -10,6 +10,9 @@ param(
   [string]$KeyPath = '',
   [string]$FrontendNodeOptions = '',
   [string]$FrontendBuildArgs = '',
+  [int]$SshRetryCount = 3,
+  [int]$SshRetryDelaySeconds = 5,
+  [int]$SshConnectTimeoutSeconds = 20,
   [switch]$NoAutoStashBeforeDeploy,
   [switch]$SkipGitPull,
   [switch]$SkipFrontendBuild,
@@ -55,13 +58,46 @@ if ($KeyPath) {
   $sshArgs += '-i'
   $sshArgs += $KeyPath
 }
+$sshArgs += '-o'
+$sshArgs += "ConnectTimeout=$SshConnectTimeoutSeconds"
+$sshArgs += '-o'
+$sshArgs += 'ConnectionAttempts=1'
+$sshArgs += '-o'
+$sshArgs += 'ServerAliveInterval=15'
+$sshArgs += '-o'
+$sshArgs += 'ServerAliveCountMax=3'
 $sshArgs += '-p'
 $sshArgs += "$SshPort"
 $sshArgs += "$ServerUser@$ServerHost"
 $sshArgs += $remoteCommand
 
 Write-Step "Running remote deploy on $ServerUser@$ServerHost ..."
-& ssh @sshArgs
+$maxAttempts = [Math]::Max(1, $SshRetryCount)
+$baseDelay = [Math]::Max(1, $SshRetryDelaySeconds)
+$attempt = 1
+
+while ($true) {
+  & ssh @sshArgs
+  if ($LASTEXITCODE -eq 0) {
+    break
+  }
+
+  if ($LASTEXITCODE -eq 134) {
+    throw "Remote deploy failed (exit code: 134, likely Node OOM during frontend build). Retry with -SkipFrontendBuild, or set -FrontendNodeOptions '--max-old-space-size=3072'."
+  }
+
+  if ($attempt -ge $maxAttempts) {
+    if ($LASTEXITCODE -eq 255) {
+      throw "Remote deploy failed (exit code: 255, SSH connection reset/refused). Check server SSH status/firewall/fail2ban, then retry."
+    }
+    throw "Remote deploy failed (exit code: $LASTEXITCODE)"
+  }
+
+  $sleepSeconds = $baseDelay * [Math]::Pow(2, $attempt - 1)
+  Write-Warning "Remote deploy failed (exit code: $LASTEXITCODE). Retry in $sleepSeconds seconds ... (attempt $attempt/$maxAttempts)"
+  Start-Sleep -Seconds $sleepSeconds
+  $attempt++
+}
 
 if ($LASTEXITCODE -ne 0) {
   if ($LASTEXITCODE -eq 134) {
