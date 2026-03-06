@@ -27,6 +27,7 @@ BACKEND_JAR_NAME="${BACKEND_JAR_NAME:-LeeDaud-server.jar}"
 BACKEND_SERVICE_NAME="${BACKEND_SERVICE_NAME:-leedaud-backend}"
 BACKEND_PROFILE="${BACKEND_PROFILE:-prod}"
 BACKEND_PORT="${BACKEND_PORT:-5922}"
+BACKEND_JAVA_OPTS="${BACKEND_JAVA_OPTS:--Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true}"
 BACKEND_WRITE_RUNTIME_CONFIG="${BACKEND_WRITE_RUNTIME_CONFIG:-1}"
 BACKEND_CONFIG_FILE="${BACKEND_CONFIG_FILE:-${BACKEND_RUNTIME_DIR}/application.yml}"
 
@@ -254,7 +255,7 @@ ensure_backend_systemd_override() {
 [Service]
 WorkingDirectory=${BACKEND_RUNTIME_DIR}
 ExecStart=
-ExecStart=/usr/bin/java -jar ${runtime_jar} --spring.profiles.active=${BACKEND_PROFILE} --spring.config.additional-location=file:${BACKEND_RUNTIME_DIR}/
+ExecStart=/usr/bin/java ${BACKEND_JAVA_OPTS} -jar ${runtime_jar} --spring.profiles.active=${BACKEND_PROFILE} --spring.config.additional-location=file:${BACKEND_RUNTIME_DIR}/
 EOF
 
   run_maybe_sudo mkdir -p "${dropin_dir}"
@@ -389,9 +390,9 @@ restart_backend() {
   sleep 1
 
   if [[ -n "${SUDO}" ]]; then
-    ${SUDO} bash -lc "nohup java -jar '${runtime_jar}' --spring.profiles.active='${BACKEND_PROFILE}' > '${out_log}' 2>&1 &"
+    ${SUDO} bash -lc "nohup java ${BACKEND_JAVA_OPTS} -jar '${runtime_jar}' --spring.profiles.active='${BACKEND_PROFILE}' > '${out_log}' 2>&1 &"
   else
-    nohup java -jar "${runtime_jar}" --spring.profiles.active="${BACKEND_PROFILE}" > "${out_log}" 2>&1 &
+    nohup java ${BACKEND_JAVA_OPTS} -jar "${runtime_jar}" --spring.profiles.active="${BACKEND_PROFILE}" > "${out_log}" 2>&1 &
   fi
   log "Started backend by nohup: ${runtime_jar}"
 }
