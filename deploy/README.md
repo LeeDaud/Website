@@ -187,6 +187,12 @@ Remote deploy only (skip local commit/push and skip frontend build):
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1 -RemoteOnly
 ```
 
+Low-memory safe deploy (skip backend package build too, but still restart backend and sync runtime config/admin credentials):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1 -RemoteOnly -SkipBackendBuild
+```
+
 Optional examples:
 
 ```powershell

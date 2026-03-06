@@ -488,13 +488,14 @@ main() {
 
   if [[ "${SKIP_BACKEND_BUILD}" != "1" ]]; then
     build_backend
-    write_backend_runtime_config
-    sync_admin_credentials
-    restart_backend
-    check_backend
   else
-    log "Skip backend build/restart (SKIP_BACKEND_BUILD=1)."
+    log "Skip backend package build (SKIP_BACKEND_BUILD=1)."
   fi
+
+  write_backend_runtime_config
+  sync_admin_credentials
+  restart_backend
+  check_backend
 
   log "Deploy completed."
 }
