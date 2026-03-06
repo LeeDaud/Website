@@ -36,6 +36,10 @@ BACKEND_DB_PORT="${BACKEND_DB_PORT:-3306}"
 BACKEND_DB_NAME="${BACKEND_DB_NAME:-LeeDaud}"
 BACKEND_DB_USER="${BACKEND_DB_USER:-leedaud}"
 BACKEND_DB_PASSWORD="${BACKEND_DB_PASSWORD:-LeeDaud@2026}"
+BACKEND_SYNC_ADMIN_CREDENTIALS="${BACKEND_SYNC_ADMIN_CREDENTIALS:-0}"
+BACKEND_ADMIN_TARGET_ID="${BACKEND_ADMIN_TARGET_ID:-1}"
+BACKEND_ADMIN_USERNAME="${BACKEND_ADMIN_USERNAME:-}"
+BACKEND_ADMIN_PASSWORD="${BACKEND_ADMIN_PASSWORD:-}"
 
 BACKEND_REDIS_HOST="${BACKEND_REDIS_HOST:-127.0.0.1}"
 BACKEND_REDIS_PORT="${BACKEND_REDIS_PORT:-6379}"
@@ -118,6 +122,13 @@ run_root_bash() {
   else
     bash -lc "${cmd}"
   fi
+}
+
+sql_escape() {
+  local value="${1:-}"
+  value="${value//\\/\\\\}"
+  value="${value//\'/\'\'}"
+  printf '%s' "${value}"
 }
 
 write_backend_runtime_config() {
@@ -411,6 +422,49 @@ check_backend() {
   fi
 }
 
+sync_admin_credentials() {
+  if [[ "${BACKEND_SYNC_ADMIN_CREDENTIALS}" != "1" ]]; then
+    log "Skip admin credential sync (BACKEND_SYNC_ADMIN_CREDENTIALS=${BACKEND_SYNC_ADMIN_CREDENTIALS})."
+    return
+  fi
+
+  if [[ -z "${BACKEND_ADMIN_USERNAME}" || -z "${BACKEND_ADMIN_PASSWORD}" ]]; then
+    warn "Admin credential sync enabled, but BACKEND_ADMIN_USERNAME/BACKEND_ADMIN_PASSWORD is empty. Skip."
+    return
+  fi
+
+  ensure_cmd mysql
+
+  local escaped_username escaped_password sql
+  escaped_username="$(sql_escape "${BACKEND_ADMIN_USERNAME}")"
+  escaped_password="$(sql_escape "${BACKEND_ADMIN_PASSWORD}")"
+
+  read -r -d '' sql <<EOF || true
+SET NAMES utf8mb4;
+UPDATE admin
+SET username='${escaped_username}',
+    password=SHA2(CONCAT('${escaped_password}', salt), 256),
+    update_time=NOW()
+WHERE id=${BACKEND_ADMIN_TARGET_ID};
+SELECT id, username, role, update_time
+FROM admin
+WHERE id=${BACKEND_ADMIN_TARGET_ID}
+LIMIT 1;
+EOF
+
+  mysql \
+    --host="${BACKEND_DB_HOST}" \
+    --port="${BACKEND_DB_PORT}" \
+    --user="${BACKEND_DB_USER}" \
+    --password="${BACKEND_DB_PASSWORD}" \
+    --database="${BACKEND_DB_NAME}" \
+    --batch --raw --skip-column-names \
+    -e "${sql}" \
+    || fail "Failed to sync admin credentials to database."
+
+  log "Admin credentials synced for id=${BACKEND_ADMIN_TARGET_ID}."
+}
+
 main() {
   ensure_cmd git
   ensure_cmd npm
@@ -435,6 +489,7 @@ main() {
   if [[ "${SKIP_BACKEND_BUILD}" != "1" ]]; then
     build_backend
     write_backend_runtime_config
+    sync_admin_credentials
     restart_backend
     check_backend
   else

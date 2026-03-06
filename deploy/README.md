@@ -59,6 +59,13 @@ Backend runtime config behavior (important):
   - `/root/website/runtime/backend/application-prod.yml`
 - This prevents YAML syntax drift and startup failures after manual server edits.
 - If you need to change DB/Redis/Mail/JWT/site URLs, only update `deploy/deploy.env` in repo, then pull+deploy.
+- If you need to change backend admin login username/password without server manual SQL:
+  - set in `deploy/deploy.env`:
+    - `BACKEND_SYNC_ADMIN_CREDENTIALS=1`
+    - `BACKEND_ADMIN_TARGET_ID=1`
+    - `BACKEND_ADMIN_USERNAME=...`
+    - `BACKEND_ADMIN_PASSWORD=...`
+  - `deploy-all.sh` will update table `admin` during deploy.
 - Mail parameters are configurable in `deploy/deploy.env`:
   - `BACKEND_MAIL_PORT` / `BACKEND_MAIL_SSL_ENABLE` / `BACKEND_MAIL_STARTTLS_ENABLE`
   - `BACKEND_MAIL_CONNECTION_TIMEOUT_MS` / `BACKEND_MAIL_TIMEOUT_MS`
