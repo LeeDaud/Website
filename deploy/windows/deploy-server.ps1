@@ -47,6 +47,7 @@ if ($RemoteOnly) {
   $argsList += '-SkipCommit'
   $argsList += '-SkipPush'
   $argsList += '-SkipFrontendBuild'
+  $argsList += '-SkipBackendBuild'
 } else {
   if ($SkipCommit) { $argsList += '-SkipCommit' }
   if ($SkipPush) { $argsList += '-SkipPush' }

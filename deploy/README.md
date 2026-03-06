@@ -188,6 +188,11 @@ Remote deploy only (skip local commit/push and skip frontend build):
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1 -RemoteOnly
 ```
 
+`-RemoteOnly` now means:
+- skip local commit/push
+- skip frontend build on server
+- skip backend package build on server
+
 Small-memory server recommended flow (build locally, upload artifacts, remote restart only):
 
 ```powershell
