@@ -29,6 +29,7 @@ DNS `A` records should point to:
 - `deploy/windows/push-and-deploy.ps1`: push current branch then trigger remote deploy.
 - `deploy/windows/deploy-server.ps1`: one-click wrapper (pre-filled for `66.63.173.143` + `/root/website`).
 - `deploy/windows/one-click-deploy.ps1`: local one-click pipeline (`git add/commit/push` + remote deploy).
+- `deploy/windows/publish-prebuilt.ps1`: build on local machine, upload `dist/jar` artifacts, then remote restart only (no server compile).
 - `deploy/windows/deploy.local.example.psd1`: local deploy config template.
 
 ## Server First-Time Setup
@@ -186,6 +187,16 @@ Remote deploy only (skip local commit/push and skip frontend build):
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1 -RemoteOnly
 ```
+
+Small-memory server recommended flow (build locally, upload artifacts, remote restart only):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\publish-prebuilt.ps1
+```
+
+Notes:
+- This flow avoids `vite build` and `mvn package` on server.
+- Remote step still executes runtime config generation + admin credential sync + backend restart.
 
 Low-memory safe deploy (skip backend package build too, but still restart backend and sync runtime config/admin credentials):
 
