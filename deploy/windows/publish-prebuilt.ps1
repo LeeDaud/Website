@@ -35,7 +35,7 @@ function Assert-Command([string]$Name) {
 
 function Assert-Path([string]$Path, [string]$Message) {
   if (-not (Test-Path -LiteralPath $Path)) {
-    throw "$Message: $Path"
+    throw "${Message}: $Path"
   }
 }
 
@@ -51,10 +51,6 @@ function Invoke-Checked {
   if ($LASTEXITCODE -ne 0) {
     throw "$Name failed (exit code: $LASTEXITCODE)"
   }
-}
-
-function Quote-Sh([string]$Text) {
-  return "'" + ($Text -replace "'", "'\"'\"'") + "'"
 }
 
 function Invoke-RemoteSsh {
@@ -103,7 +99,7 @@ function Copy-ToRemoteDir {
   if ($Recurse) {
     $scpArgs += '-r'
   }
-  $scpArgs += @($LocalPath, "$ServerUser@$ServerHost:$RemoteDir/")
+  $scpArgs += @($LocalPath, "${ServerUser}@${ServerHost}:${RemoteDir}/")
 
   Invoke-Checked -Name "scp $LocalPath -> $RemoteDir" -Action { & scp @scpArgs }
 }
@@ -165,7 +161,9 @@ Push-Location $repoRoot
 try {
   if (-not $SkipFrontendBuild) {
     $oldNodeOptions = $env:NODE_OPTIONS
+    $oldHusky = $env:HUSKY
     $env:NODE_OPTIONS = $FrontendNodeOptions
+    $env:HUSKY = '0'
     try {
       foreach ($app in $frontendApps) {
         $appPath = Join-Path $repoRoot $app.LocalDir
@@ -175,16 +173,36 @@ try {
         Write-Step "Building frontend: $($app.Name)"
         Push-Location $appPath
         try {
-          if (Test-Path -LiteralPath (Join-Path $appPath 'package-lock.json') -or Test-Path -LiteralPath (Join-Path $appPath 'npm-shrinkwrap.json')) {
+          $hasPnpmLock = (Test-Path -LiteralPath (Join-Path $appPath 'pnpm-lock.yaml'))
+          $hasNpmLock = (
+            (Test-Path -LiteralPath (Join-Path $appPath 'package-lock.json')) -or
+            (Test-Path -LiteralPath (Join-Path $appPath 'npm-shrinkwrap.json'))
+          )
+
+          if ($hasPnpmLock) {
+            if (-not (Get-Command corepack -ErrorAction SilentlyContinue)) {
+              throw "pnpm-lock.yaml found in $($app.LocalDir), but 'corepack' is not available. Install Node.js with Corepack or remove pnpm lockfile."
+            }
+            Invoke-Checked -Name "pnpm install ($($app.Name))" -Action { & corepack pnpm install --frozen-lockfile }
+            if ($FrontendBuildArgs) {
+              Invoke-Checked -Name "pnpm run build ($($app.Name))" -Action { & corepack pnpm run build -- $FrontendBuildArgs }
+            } else {
+              Invoke-Checked -Name "pnpm run build ($($app.Name))" -Action { & corepack pnpm run build }
+            }
+          } elseif ($hasNpmLock) {
             Invoke-Checked -Name "npm ci ($($app.Name))" -Action { & npm ci --no-audit --no-fund }
+            if ($FrontendBuildArgs) {
+              Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build -- $FrontendBuildArgs }
+            } else {
+              Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build }
+            }
           } else {
             Invoke-Checked -Name "npm install ($($app.Name))" -Action { & npm install --no-audit --no-fund }
-          }
-
-          if ($FrontendBuildArgs) {
-            Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build -- $FrontendBuildArgs }
-          } else {
-            Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build }
+            if ($FrontendBuildArgs) {
+              Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build -- $FrontendBuildArgs }
+            } else {
+              Invoke-Checked -Name "npm run build ($($app.Name))" -Action { & npm run build }
+            }
           }
         } finally {
           Pop-Location
@@ -194,6 +212,7 @@ try {
       }
     } finally {
       $env:NODE_OPTIONS = $oldNodeOptions
+      $env:HUSKY = $oldHusky
     }
   } else {
     Write-Step 'Skip local frontend build.'
@@ -213,11 +232,11 @@ try {
       $dist = Join-Path (Join-Path $repoRoot $app.LocalDir) 'dist'
       Assert-Path -Path $dist -Message "dist not found ($($app.Name))"
 
-      $remoteDirQ = Quote-Sh $app.RemoteDir
+      $remoteDirQ = $app.RemoteDir
       if ($NoCleanRemoteDist) {
-        Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p $remoteDirQ"
+        Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p -- $remoteDirQ"
       } else {
-        Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p $remoteDirQ && find $remoteDirQ -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +"
+        Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p -- $remoteDirQ && find $remoteDirQ -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +"
       }
 
       $items = @(Get-ChildItem -LiteralPath $dist -Force)
@@ -231,15 +250,15 @@ try {
       }
     }
 
-    $backendDirQ = Quote-Sh $BackendRuntimeDir
-    Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p $backendDirQ"
+    $backendDirQ = $BackendRuntimeDir
+    Invoke-RemoteSsh -ServerHost $serverHost -ServerUser $serverUser -SshPort $sshPort -KeyPath $keyPath -SshConnectTimeoutSeconds $SshConnectTimeoutSeconds -RemoteCommand "mkdir -p -- $backendDirQ"
     Write-Step "Uploading backend jar -> $BackendRuntimeDir/$BackendJarName"
 
     $scpJarArgs = @()
     if ($keyPath) {
       $scpJarArgs += @('-i', $keyPath)
     }
-    $scpJarArgs += @('-P', "$sshPort", $backendJarLocal, "$serverUser@$serverHost:$BackendRuntimeDir/$BackendJarName")
+    $scpJarArgs += @('-P', "$sshPort", $backendJarLocal, "${serverUser}@${serverHost}:${BackendRuntimeDir}/${BackendJarName}")
     Invoke-Checked -Name 'scp backend jar' -Action { & scp @scpJarArgs }
   } else {
     Write-Step 'Skip upload.'
