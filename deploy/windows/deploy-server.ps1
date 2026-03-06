@@ -13,7 +13,8 @@ param(
   [switch]$SkipCommit,
   [switch]$SkipPush,
   [switch]$SkipFrontendBuild,
-  [switch]$SkipBackendBuild
+  [switch]$SkipBackendBuild,
+  [switch]$RemoteOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -42,9 +43,15 @@ $argsList += @('-SshRetryDelaySeconds', $SshRetryDelaySeconds)
 $argsList += @('-SshConnectTimeoutSeconds', $SshConnectTimeoutSeconds)
 if ($NoAutoStashBeforeDeploy) { $argsList += '-NoAutoStashBeforeDeploy' }
 if ($PreserveServerDeployEnv) { $argsList += '-PreserveServerDeployEnv' }
-if ($SkipCommit) { $argsList += '-SkipCommit' }
-if ($SkipPush) { $argsList += '-SkipPush' }
-if ($SkipFrontendBuild) { $argsList += '-SkipFrontendBuild' }
+if ($RemoteOnly) {
+  $argsList += '-SkipCommit'
+  $argsList += '-SkipPush'
+  $argsList += '-SkipFrontendBuild'
+} else {
+  if ($SkipCommit) { $argsList += '-SkipCommit' }
+  if ($SkipPush) { $argsList += '-SkipPush' }
+  if ($SkipFrontendBuild) { $argsList += '-SkipFrontendBuild' }
+}
 if ($SkipBackendBuild) { $argsList += '-SkipBackendBuild' }
 
 & powershell @argsList

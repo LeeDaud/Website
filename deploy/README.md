@@ -181,6 +181,12 @@ This will do:
 powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1
 ```
 
+Remote deploy only (skip local commit/push and skip frontend build):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\windows\deploy-server.ps1 -RemoteOnly
+```
+
 Optional examples:
 
 ```powershell
