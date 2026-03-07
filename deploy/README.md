@@ -91,6 +91,24 @@ curl -I https://api.licheng.website/health
 
 If any `/api` endpoint returns `404`, check your Nginx site file includes `location /api/ { proxy_pass http://127.0.0.1:5922/; ... }` for that domain.
 
+If backend log shows `No endpoint GET /ws/online`, your WebSocket upgrade is not being forwarded by Nginx. Add these to `/api` proxy location:
+
+```nginx
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection $connection_upgrade;
+proxy_read_timeout 600s;
+```
+
+Also define this once in `http` scope:
+
+```nginx
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+```
+
 If remote deploy exits with `Aborted (core dumped)` / exit code `134`, this is usually Node OOM during frontend build:
 
 1. Increase server frontend build memory in `/root/website/deploy/deploy.env`:

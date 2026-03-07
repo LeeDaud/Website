@@ -69,6 +69,23 @@ const normalizeExternalUrl = (url) => {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`
 }
 
+const normalizeExperienceDate = (value, { required = false, fieldName = '日期' } = {}) => {
+  const raw = (value ?? '').toString().trim()
+  if (!raw) {
+    if (required) {
+      return { error: `${fieldName}不能为空` }
+    }
+    return { value: null }
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return { value: raw }
+  }
+  if (/^\d{4}-\d{2}$/.test(raw)) {
+    return { value: `${raw}-01` }
+  }
+  return { error: `${fieldName}格式应为 YYYY-MM 或 YYYY-MM-DD` }
+}
+
 const getExpTypeLabel = (type) => {
   const value = Number(type)
   if (value === 0) return '教育'
@@ -153,13 +170,27 @@ const handleExpSave = async () => {
   if (!title) return ElMessage.warning('标题不能为空')
   if (!content) return ElMessage.warning('内容不能为空')
 
+  const normalizedStartDate = normalizeExperienceDate(expForm.value.startDate, {
+    required: true,
+    fieldName: '开始时间'
+  })
+  if (normalizedStartDate.error) return ElMessage.warning(normalizedStartDate.error)
+
+  const normalizedEndDate = normalizeExperienceDate(expForm.value.endDate, {
+    required: false,
+    fieldName: '结束时间'
+  })
+  if (normalizedEndDate.error) return ElMessage.warning(normalizedEndDate.error)
+
   expSaving.value = true
   try {
     const payload = {
       ...expForm.value,
       type: Number(expForm.value.type),
       title,
-      content
+      content,
+      startDate: normalizedStartDate.value,
+      endDate: normalizedEndDate.value
     }
     if (payload.type !== 2) {
       payload.projectLink = ''

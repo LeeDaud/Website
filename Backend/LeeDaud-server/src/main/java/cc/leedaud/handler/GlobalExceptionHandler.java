@@ -8,6 +8,7 @@ import cc.leedaud.exception.TokenException;
 import cc.leedaud.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -112,6 +113,16 @@ public class GlobalExceptionHandler {
     public Result exceptionHandler(MaxUploadSizeExceededException ex){
         log.error("文件上传大小超限：{}", ex.getMessage());
         return Result.error("上传文件大小超过限制");
+    }
+
+    /**
+     * JSON 请求体解析异常（常见于日期格式错误）
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result exceptionHandler(HttpMessageNotReadableException ex){
+        log.error("请求体格式错误：{}", ex.getMessage());
+        return Result.error("请求参数格式错误");
     }
 
     /**
