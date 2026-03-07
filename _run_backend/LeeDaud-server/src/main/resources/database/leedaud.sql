@@ -1,9 +1,9 @@
 -- LeeDaud个人网站数据库
 -- 包含四个网站的后端数据库
--- 主页home.LeeDaud.cc
--- 管理admin.LeeDaud.cc
--- 简历cv.LeeDaud.cc
--- 博客blog.LeeDaud.cc
+-- 主页licheng.website
+-- 管理admin.licheng.website
+-- 简历cv.licheng.website
+-- 博客blog.licheng.website
 
 drop database if exists LeeDaud;
 create database LeeDaud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -11,7 +11,7 @@ create database LeeDaud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 use LeeDaud;
 set names utf8mb4;
 
--- ===========管理端(admin.LeeDaud.cc)相关表====================
+-- ===========管理端(admin.licheng.website)相关表====================
 -- 管理员表
 create table admin(
     id int primary key auto_increment,
@@ -52,7 +52,7 @@ create table system_config(
 ) comment '系统配置表';
 -- ==========================================================
 
--- ================主页(home.LeeDaud.cc)相关表================
+-- ================主页(licheng.website)相关表================
 -- 个人信息表
 create table personal_info(
     id int primary key auto_increment,
@@ -82,7 +82,7 @@ create table social_media(
 -- ==========================================================
 
 
--- ====================简历(cv.LeeDaud.cc)相关表===============
+-- ====================简历(cv.licheng.website)相关表===============
 -- 经历表
 create table experiences(
     id int primary key auto_increment,
@@ -118,7 +118,7 @@ create table skills(
 ) comment '技能表';
 -- ==========================================================
 
--- ================博客(blog.LeeDaud.cc)相关表=================
+-- ================博客(blog.licheng.website)相关表=================
 -- 访客表
 create table visitors(
     id int primary key auto_increment comment '访客ID',

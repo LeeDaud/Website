@@ -116,6 +116,27 @@ SWAP_SIZE_MB=2048
 SWAP_FILE_PATH=/swapfile.leedaud
 ```
 
+If frontend domains are reachable but admin login reports network errors, backend is usually down or cannot connect DB/Redis. For small-memory VPS, add these runtime limits in `/root/website/deploy/deploy.env`:
+
+```bash
+BACKEND_JAVA_OPTS="-Xms128m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:+UseSerialGC -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+BACKEND_DB_DRUID_INITIAL_SIZE=2
+BACKEND_DB_DRUID_MIN_IDLE=2
+BACKEND_DB_DRUID_MAX_ACTIVE=8
+BACKEND_DB_DRUID_MAX_WAIT_MS=60000
+BACKEND_LOG_MAPPER_LEVEL=info
+BACKEND_LOG_SERVICE_LEVEL=info
+BACKEND_LOG_CONTROLLER_LEVEL=info
+```
+
+Then re-run:
+
+```bash
+bash /root/website/deploy/server/deploy-all.sh
+```
+
+The deploy script now prints explicit DB/Redis connectivity checks before backend restart, making root-cause diagnosis easier.
+
 ## First-Time Bootstrap (Ubuntu, optional)
 
 ```bash

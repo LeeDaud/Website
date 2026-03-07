@@ -36,6 +36,10 @@ BACKEND_DB_PORT="${BACKEND_DB_PORT:-3306}"
 BACKEND_DB_NAME="${BACKEND_DB_NAME:-LeeDaud}"
 BACKEND_DB_USER="${BACKEND_DB_USER:-leedaud}"
 BACKEND_DB_PASSWORD="${BACKEND_DB_PASSWORD:-LeeDaud@2026}"
+BACKEND_DB_DRUID_INITIAL_SIZE="${BACKEND_DB_DRUID_INITIAL_SIZE:-5}"
+BACKEND_DB_DRUID_MIN_IDLE="${BACKEND_DB_DRUID_MIN_IDLE:-5}"
+BACKEND_DB_DRUID_MAX_ACTIVE="${BACKEND_DB_DRUID_MAX_ACTIVE:-20}"
+BACKEND_DB_DRUID_MAX_WAIT_MS="${BACKEND_DB_DRUID_MAX_WAIT_MS:-60000}"
 BACKEND_SYNC_ADMIN_CREDENTIALS="${BACKEND_SYNC_ADMIN_CREDENTIALS:-0}"
 BACKEND_ADMIN_TARGET_ID="${BACKEND_ADMIN_TARGET_ID:-1}"
 BACKEND_ADMIN_USERNAME="${BACKEND_ADMIN_USERNAME:-}"
@@ -67,6 +71,9 @@ BACKEND_VISITOR_VERIFY_CODE="${BACKEND_VISITOR_VERIFY_CODE:-123456}"
 BACKEND_MYBATIS_MAPPER_LOCATIONS="${BACKEND_MYBATIS_MAPPER_LOCATIONS:-classpath:mapper/*.xml}"
 BACKEND_MYBATIS_ALIASES_PACKAGE="${BACKEND_MYBATIS_ALIASES_PACKAGE:-cc.leedaud.entity,cc.feitwnd.entity}"
 BACKEND_LOG_ROOT_PACKAGE="${BACKEND_LOG_ROOT_PACKAGE:-cc}"
+BACKEND_LOG_MAPPER_LEVEL="${BACKEND_LOG_MAPPER_LEVEL:-debug}"
+BACKEND_LOG_SERVICE_LEVEL="${BACKEND_LOG_SERVICE_LEVEL:-info}"
+BACKEND_LOG_CONTROLLER_LEVEL="${BACKEND_LOG_CONTROLLER_LEVEL:-info}"
 
 BACKEND_WEBSITE_TITLE="${BACKEND_WEBSITE_TITLE:-LeeDaud}"
 BACKEND_WEBSITE_HOME="${BACKEND_WEBSITE_HOME:-https://licheng.website}"
@@ -160,10 +167,10 @@ spring:
     username: ${BACKEND_DB_USER}
     password: "${BACKEND_DB_PASSWORD}"
     druid:
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
-      max-wait: 60000
+      initial-size: ${BACKEND_DB_DRUID_INITIAL_SIZE}
+      min-idle: ${BACKEND_DB_DRUID_MIN_IDLE}
+      max-active: ${BACKEND_DB_DRUID_MAX_ACTIVE}
+      max-wait: ${BACKEND_DB_DRUID_MAX_WAIT_MS}
   data:
     redis:
       host: ${BACKEND_REDIS_HOST}
@@ -197,9 +204,9 @@ mybatis:
 logging:
   level:
     ${BACKEND_LOG_ROOT_PACKAGE}:
-      mapper: debug
-      service: info
-      controller: info
+      mapper: ${BACKEND_LOG_MAPPER_LEVEL}
+      service: ${BACKEND_LOG_SERVICE_LEVEL}
+      controller: ${BACKEND_LOG_CONTROLLER_LEVEL}
 
 leedaud:
   jwt:
@@ -422,6 +429,44 @@ check_backend() {
   fi
 }
 
+check_database_connectivity() {
+  ensure_cmd mysql
+
+  if mysql \
+    --host="${BACKEND_DB_HOST}" \
+    --port="${BACKEND_DB_PORT}" \
+    --user="${BACKEND_DB_USER}" \
+    --password="${BACKEND_DB_PASSWORD}" \
+    --database="${BACKEND_DB_NAME}" \
+    --connect-timeout=5 \
+    --batch --raw --skip-column-names \
+    -e "SELECT 1;" >/dev/null 2>&1; then
+    log "Database connectivity check passed: ${BACKEND_DB_HOST}:${BACKEND_DB_PORT}/${BACKEND_DB_NAME}"
+  else
+    warn "Database connectivity check failed: ${BACKEND_DB_HOST}:${BACKEND_DB_PORT}/${BACKEND_DB_NAME}"
+  fi
+}
+
+check_redis_connectivity() {
+  if ! command -v redis-cli >/dev/null 2>&1; then
+    warn "redis-cli not found, skip redis connectivity check."
+    return
+  fi
+
+  local redis_reply
+  if [[ -n "${BACKEND_REDIS_PASSWORD}" ]]; then
+    redis_reply="$(redis-cli -h "${BACKEND_REDIS_HOST}" -p "${BACKEND_REDIS_PORT}" -n "${BACKEND_REDIS_DATABASE}" -a "${BACKEND_REDIS_PASSWORD}" ping 2>/dev/null || true)"
+  else
+    redis_reply="$(redis-cli -h "${BACKEND_REDIS_HOST}" -p "${BACKEND_REDIS_PORT}" -n "${BACKEND_REDIS_DATABASE}" ping 2>/dev/null || true)"
+  fi
+
+  if [[ "${redis_reply}" == "PONG" ]]; then
+    log "Redis connectivity check passed: ${BACKEND_REDIS_HOST}:${BACKEND_REDIS_PORT}/${BACKEND_REDIS_DATABASE}"
+  else
+    warn "Redis connectivity check failed: ${BACKEND_REDIS_HOST}:${BACKEND_REDIS_PORT}/${BACKEND_REDIS_DATABASE}"
+  fi
+}
+
 sync_admin_credentials() {
   if [[ "${BACKEND_SYNC_ADMIN_CREDENTIALS}" != "1" ]]; then
     log "Skip admin credential sync (BACKEND_SYNC_ADMIN_CREDENTIALS=${BACKEND_SYNC_ADMIN_CREDENTIALS})."
@@ -492,6 +537,8 @@ main() {
     log "Skip backend package build (SKIP_BACKEND_BUILD=1)."
   fi
 
+  check_database_connectivity
+  check_redis_connectivity
   write_backend_runtime_config
   sync_admin_credentials
   restart_backend

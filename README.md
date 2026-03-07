@@ -12,7 +12,7 @@
 
 一套基于 **Spring Boot 3 + Vue 3** 的个人网站全栈解决方案，包含博客、后台管理、个人主页、在线简历四个子站点和一个统一后端服务。
 
-> 在线演示：[blog.licheng.website](https://blog.licheng.website) · [home.licheng.website](https://home.licheng.website) · [cv.licheng.website](https://cv.licheng.website)
+> 在线演示：[blog.licheng.website](https://blog.licheng.website) · [licheng.website](https://licheng.website) · [cv.licheng.website](https://cv.licheng.website)
 
 ---
 
@@ -58,7 +58,7 @@
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                      Nginx 反向代理                       │
-│  blog.xxx.cc  home.xxx.cc  cv.xxx.cc  admin.xxx.cc      │
+│  blog.licheng.website  licheng.website  cv.licheng.website  admin.licheng.website      │
 └────┬──────────────┬───────────┬──────────────┬──────────┘
      │              │           │              │
      ▼              ▼           ▼              ▼
@@ -287,7 +287,7 @@ pnpm build
 # 博客端
 server {
     listen 80;
-    server_name blog.yourdomain.com;
+    server_name blog.licheng.website;
     root /path/to/Frontend-Blog/dist;
     index index.html;
 
