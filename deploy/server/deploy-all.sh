@@ -433,6 +433,7 @@ check_database_connectivity() {
   ensure_cmd mysql
 
   if mysql \
+    --no-defaults \
     --host="${BACKEND_DB_HOST}" \
     --port="${BACKEND_DB_PORT}" \
     --user="${BACKEND_DB_USER}" \
@@ -498,6 +499,7 @@ LIMIT 1;
 EOF
 
   mysql \
+    --no-defaults \
     --host="${BACKEND_DB_HOST}" \
     --port="${BACKEND_DB_PORT}" \
     --user="${BACKEND_DB_USER}" \
