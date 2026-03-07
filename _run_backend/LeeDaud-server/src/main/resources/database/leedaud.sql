@@ -396,5 +396,5 @@ insert into system_config(config_key, config_value, config_type, description, cr
 values ('gongan-beian','xxx','string','公安备案',now(),now());
 -- 网站建立时间
 insert into system_config(config_key, config_value, config_type, description, create_time, update_time)
-values ('start-time','xxxx-xx-xx','string','网站建立时间',now(),now());
+values ('start-time','2025-05-12','string','网站建立时间',now(),now());
 
