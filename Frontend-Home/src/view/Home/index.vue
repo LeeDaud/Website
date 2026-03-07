@@ -35,8 +35,6 @@ const personalInfo = ref({
   avatar: FALLBACK_AVATAR
 })
 const socialMedia = ref([])
-const icpBeian = ref('')
-const gonganBeian = ref('')
 const isDataLoaded = ref(false)
 
 const isDarkMode = ref(false)
@@ -164,12 +162,10 @@ const handleAvatarError = (event) => {
 
 const fetchData = async () => {
   try {
-    const [personalRes, socialRes, icpRes, gonganRes, startTimeRes] =
+    const [personalRes, socialRes, startTimeRes] =
       await Promise.all([
         getPersonalInfoAPI(),
         getSocialMediaAPI(),
-        getSystemConfigAPI('icp-beian').catch(() => null),
-        getSystemConfigAPI('gongan-beian').catch(() => null),
         getSystemConfigAPI('start-time').catch(() => null)
       ])
 
@@ -180,8 +176,6 @@ const fetchData = async () => {
       avatar: normalizeExternalUrl(personalData.avatar) || FALLBACK_AVATAR
     }
     socialMedia.value = normalizeSocialMedia(socialRes?.data?.data || [])
-    icpBeian.value = icpRes?.data?.data?.configValue || ''
-    gonganBeian.value = gonganRes?.data?.data?.configValue || ''
 
     const startTime = startTimeRes?.data?.data?.configValue || ''
     const parsed = Number((startTime || '').split('-')[0])
@@ -265,18 +259,6 @@ watch([() => socialMedia.value, isDataLoaded], () => {
 
       <footer>
         <div class="beian-info">
-          <template v-if="gonganBeian">
-            <span>{{ gonganBeian }}</span>
-            <span class="beian-divider">|</span>
-          </template>
-
-          <template v-if="icpBeian">
-            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
-              {{ icpBeian }}
-            </a>
-            <span class="beian-divider">|</span>
-          </template>
-
           <span>© 2024-{{ currentYear }} {{ personalInfo.nickname || 'LeeDaud' }}</span>
         </div>
       </footer>
@@ -455,24 +437,8 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
+  gap: 0.5rem;
   margin-top: 0.5rem;
-}
-
-.beian-info a {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px dotted currentColor;
-  transition: border-color 0.2s ease;
-}
-
-.beian-info a:hover {
-  border-bottom-style: solid;
-}
-
-.beian-divider {
-  opacity: 0.5;
 }
 
 @keyframes fadeIn {
