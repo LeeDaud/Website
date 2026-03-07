@@ -57,14 +57,26 @@ const fetchOverview = async () => {
 /* 运行天数 */
 const runDays = ref(null)
 
+const parseStartDate = (value) => {
+  const raw = (value ?? '').toString().trim()
+  if (!raw) return null
+
+  // 兼容 YYYY-MM 输入，默认按当月 1 号计算
+  const normalized = /^\d{4}-\d{2}$/.test(raw) ? `${raw}-01` : raw
+  const parsed = dayjs(normalized)
+  return parsed.isValid() ? parsed.startOf('day') : null
+}
+
 const fetchRunDays = async () => {
+  runDays.value = null
   try {
     const res = await getConfigByKey('start-time')
     const dateStr = res.data?.configValue ?? ''
-    if (dateStr) {
-      const start = dayjs(dateStr)
-      runDays.value = dayjs().diff(start, 'day')
-    }
+    const start = parseStartDate(dateStr)
+    if (!start) return
+
+    const diff = dayjs().startOf('day').diff(start, 'day')
+    runDays.value = Number.isFinite(diff) ? Math.max(0, diff) : null
   } catch (e) {
     console.error('获取运行天数失败', e)
   }
