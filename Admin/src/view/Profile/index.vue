@@ -28,7 +28,9 @@ const personalForm = ref({
 const savingPersonal = ref(false)
 const resumeConfig = ref(null)
 const uploadingResume = ref(false)
-const resumeConfigured = computed(() => Boolean(resumeConfig.value?.configValue))
+const resumeConfigured = computed(() =>
+  Boolean(resumeConfig.value?.configValue)
+)
 const resumeUsesLocalStorage = computed(() =>
   resumeConfig.value?.configValue?.startsWith('/api/common/file/')
 )
@@ -83,7 +85,10 @@ const normalizeExternalUrl = (url) => {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`
 }
 
-const normalizeExperienceDate = (value, { required = false, fieldName = '日期' } = {}) => {
+const normalizeExperienceDate = (
+  value,
+  { required = false, fieldName = '日期' } = {}
+) => {
   const raw = (value ?? '').toString().trim()
   if (!raw) {
     if (required) {
@@ -243,7 +248,8 @@ const handleExpSave = async () => {
     required: true,
     fieldName: '开始时间'
   })
-  if (normalizedStartDate.error) return ElMessage.warning(normalizedStartDate.error)
+  if (normalizedStartDate.error)
+    return ElMessage.warning(normalizedStartDate.error)
 
   const normalizedEndDate = normalizeExperienceDate(expForm.value.endDate, {
     required: false,
@@ -540,9 +546,13 @@ onMounted(async () => {
                   </el-link>
                 </div>
                 <p class="resume-hint">
-                  上传后会写入系统配置 <code>{{ RESUME_CONFIG_KEY }}</code>，
-                  简历页下载按钮会自动生效。
-                  {{ resumeUsesLocalStorage ? '当前服务器未配置 OSS，文件会保存到后端本地 uploads 目录。' : '' }}
+                  上传后会写入系统配置 <code>{{ RESUME_CONFIG_KEY }}</code
+                  >， 简历页下载按钮会自动生效。
+                  {{
+                    resumeUsesLocalStorage
+                      ? '当前服务器未配置 OSS，文件会保存到后端本地 uploads 目录。'
+                      : ''
+                  }}
                 </p>
               </div>
             </el-form-item>

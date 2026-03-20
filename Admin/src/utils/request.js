@@ -49,7 +49,9 @@ http.interceptors.response.use(
     } else if (!status) {
       ElMessage.error('后端不可达，请检查 /api 代理与后端服务')
     } else if (status >= 500) {
-      ElMessage.error(`后端服务异常(${status})，请检查数据库/Redis连接与后端日志`)
+      ElMessage.error(
+        `后端服务异常(${status})，请检查数据库/Redis连接与后端日志`
+      )
     } else {
       ElMessage.error(`请求失败(${status})`)
     }

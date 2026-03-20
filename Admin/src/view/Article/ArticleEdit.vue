@@ -11,6 +11,7 @@ const router = useRouter()
 const articleStore = useArticleStore()
 const isDarkMode = ref(document.documentElement.classList.contains('dark'))
 const editorTheme = computed(() => (isDarkMode.value ? 'dark' : 'light'))
+const markdownInputRef = ref(null)
 let themeObserver = null
 
 const isEdit = computed(() => !!route.params.id)
@@ -35,6 +36,236 @@ const onHtmlChanged = (html) => {
 
 const saving = ref(false)
 const uploadingCover = ref(false)
+const importingMarkdown = ref(false)
+
+const generateSlug = (value) =>
+  value
+    .toLowerCase()
+    .replace(/[\u4e00-\u9fff]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 50) || `article-${Date.now()}`
+
+const stripMatchingQuotes = (value) => {
+  if (value.length < 2) return value
+  const firstChar = value[0]
+  const lastChar = value[value.length - 1]
+  if (
+    (firstChar === '"' && lastChar === '"') ||
+    (firstChar === "'" && lastChar === "'")
+  ) {
+    return value.slice(1, -1)
+  }
+  return value
+}
+
+const parseInlineArrayValue = (value) => {
+  const trimmed = value.trim()
+  if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) return null
+  return trimmed
+    .slice(1, -1)
+    .split(',')
+    .map((item) => stripMatchingQuotes(item.trim()))
+    .filter(Boolean)
+}
+
+const parseFrontMatter = (text) => {
+  const frontMatterMatch = text.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)
+  if (!frontMatterMatch) {
+    return {
+      meta: {},
+      content: text
+    }
+  }
+
+  const meta = {}
+  let currentArrayKey = ''
+  const arrayLikeKeys = new Set(['tags', 'tag', 'categories', 'category'])
+
+  for (const line of frontMatterMatch[1].split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+
+    const arrayItemMatch = currentArrayKey && trimmed.match(/^-\s+(.*)$/)
+    if (arrayItemMatch) {
+      meta[currentArrayKey].push(stripMatchingQuotes(arrayItemMatch[1].trim()))
+      continue
+    }
+
+    const keyValueMatch = trimmed.match(/^([A-Za-z0-9_-]+)\s*:\s*(.*)$/)
+    if (!keyValueMatch) {
+      currentArrayKey = ''
+      continue
+    }
+
+    const key = keyValueMatch[1].trim().toLowerCase()
+    const rawValue = keyValueMatch[2].trim()
+    const canBeArray = arrayLikeKeys.has(key)
+
+    if (!rawValue) {
+      meta[key] = canBeArray ? [] : ''
+      currentArrayKey = canBeArray ? key : ''
+      continue
+    }
+
+    currentArrayKey = ''
+    const inlineArrayValue = parseInlineArrayValue(rawValue)
+    meta[key] = inlineArrayValue ?? stripMatchingQuotes(rawValue)
+  }
+
+  return {
+    meta,
+    content: text.slice(frontMatterMatch[0].length)
+  }
+}
+
+const normalizeLookupValue = (value) =>
+  String(value ?? '')
+    .trim()
+    .toLocaleLowerCase()
+
+const toValueList = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item ?? '').trim()).filter(Boolean)
+  }
+  if (typeof value !== 'string') return []
+  return value
+    .split(',')
+    .map((item) => stripMatchingQuotes(item.trim()))
+    .filter(Boolean)
+}
+
+const findCategoryId = (value) => {
+  const candidates = toValueList(value).map(normalizeLookupValue)
+  if (!candidates.length) return null
+
+  const matchedCategory = articleStore.categories.find((item) =>
+    candidates.some((candidate) => {
+      const name = normalizeLookupValue(item.name)
+      const slug = normalizeLookupValue(item.slug)
+      return candidate === name || candidate === slug
+    })
+  )
+
+  return matchedCategory?.id ?? null
+}
+
+const findTagIds = (value) => {
+  const candidates = toValueList(value).map(normalizeLookupValue)
+  if (!candidates.length) return []
+
+  return [
+    ...new Set(
+      articleStore.tags
+        .filter((item) =>
+          candidates.some((candidate) => {
+            const name = normalizeLookupValue(item.name)
+            const slug = normalizeLookupValue(item.slug)
+            return candidate === name || candidate === slug
+          })
+        )
+        .map((item) => item.id)
+    )
+  ]
+}
+
+const applyImportedMarkdown = (rawText, fileName) => {
+  const normalizedText = rawText.replace(/^\uFEFF/, '')
+  const { meta, content } = parseFrontMatter(normalizedText)
+  const fallbackTitle = fileName.replace(/\.[^.]+$/, '').trim()
+  const importedTitle = String(meta.title ?? meta.name ?? '').trim()
+  const importedSlug = String(meta.slug ?? meta.permalink ?? '').trim()
+  const importedSummary = String(
+    meta.summary ?? meta.description ?? meta.excerpt ?? ''
+  ).trim()
+  const importedCoverImage = String(
+    meta.coverimage ??
+      meta.cover_image ??
+      meta.cover ??
+      meta.banner ??
+      meta.thumbnail ??
+      ''
+  ).trim()
+  const importedCategoryId = findCategoryId(meta.category ?? meta.categories)
+  const importedTagIds = findTagIds(meta.tags ?? meta.tag)
+
+  if (importedTitle) {
+    form.value.title = importedTitle
+  } else if (!form.value.title.trim() && fallbackTitle) {
+    form.value.title = fallbackTitle
+  }
+
+  if (importedSlug) {
+    form.value.slug = importedSlug
+  } else if (!form.value.slug.trim() && form.value.title.trim()) {
+    form.value.slug = generateSlug(form.value.title)
+  }
+
+  if (importedSummary) {
+    form.value.summary = importedSummary
+  }
+
+  if (importedCoverImage) {
+    form.value.coverImage = importedCoverImage
+  }
+
+  if (importedCategoryId !== null) {
+    form.value.categoryId = importedCategoryId
+  }
+
+  if (importedTagIds.length) {
+    form.value.tagIds = importedTagIds
+  }
+
+  form.value.contentMarkdown = content
+  form.value.contentHtml = ''
+}
+
+const triggerMarkdownImport = () => {
+  markdownInputRef.value?.click()
+}
+
+const shouldConfirmMarkdownImport = () =>
+  Boolean(
+    form.value.title.trim() ||
+      form.value.summary.trim() ||
+      form.value.coverImage.trim() ||
+      form.value.categoryId ||
+      form.value.tagIds.length ||
+      form.value.contentMarkdown.trim()
+  )
+
+const handleMarkdownImport = async (event) => {
+  const input = event.target
+  const [file] = Array.from(input.files || [])
+  if (!file) return
+
+  try {
+    if (shouldConfirmMarkdownImport()) {
+      await ElMessageBox.confirm(
+        '导入 .md 会替换当前正文，并尝试用 Front Matter 填充标题、摘要、封面、分类和标签，是否继续？',
+        '确认导入',
+        {
+          confirmButtonText: '继续导入',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+    }
+
+    importingMarkdown.value = true
+    applyImportedMarkdown(await file.text(), file.name)
+    ElMessage.success('Markdown 导入成功')
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      ElMessage.error('Markdown 导入失败，请确认文件编码为 UTF-8')
+    }
+  } finally {
+    importingMarkdown.value = false
+    input.value = ''
+  }
+}
 
 /* ---- 图片上传（md-editor-v3 回调格式） ---- */
 const onUploadImg = async (files, callback) => {
@@ -72,14 +303,7 @@ const handleCoverUpload = async (options) => {
 /* ---- 标题失焦自动生成 slug ---- */
 const autoSlug = () => {
   if (form.value.title && !form.value.slug) {
-    form.value.slug =
-      form.value.title
-        .toLowerCase()
-        .replace(/[\u4e00-\u9fff]+/g, '-')
-        .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .substring(0, 50) || `article-${Date.now()}`
+    form.value.slug = generateSlug(form.value.title)
   }
 }
 
@@ -193,11 +417,25 @@ onUnmounted(() => {
 
 <template>
   <div class="article-edit">
+    <input
+      ref="markdownInputRef"
+      type="file"
+      accept=".md,.markdown,text/markdown,text/plain"
+      hidden
+      @change="handleMarkdownImport"
+    />
+
     <!-- 顶部操作栏 -->
     <div class="edit-topbar">
       <span class="edit-title">{{ isEdit ? '编辑文章' : '新建文章' }}</span>
 
       <div class="edit-actions">
+        <el-button
+          size="small"
+          :loading="importingMarkdown"
+          @click="triggerMarkdownImport"
+          >导入 .md</el-button
+        >
         <el-button size="small" @click="router.push('/article/list')"
           >取消</el-button
         >

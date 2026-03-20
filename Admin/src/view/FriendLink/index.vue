@@ -206,9 +206,7 @@ onMounted(() => friendLinkStore.fetchList())
               accept="image/*"
             >
               <el-button size="small" :loading="uploading"
-                ><span
-                  class="iconfont icon-upload"
-                />点击上传</el-button
+                ><span class="iconfont icon-upload" />点击上传</el-button
               >
             </el-upload>
             <el-input
@@ -363,4 +361,3 @@ onMounted(() => friendLinkStore.fetchList())
   margin-top: 6px;
 }
 </style>
-

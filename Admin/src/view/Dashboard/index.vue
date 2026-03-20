@@ -39,7 +39,11 @@ const statCards = [
   { key: 'totalVisitorCount', label: '总访客数', icon: 'icon-user' },
   { key: 'todayViewCount', label: '今日浏览', icon: 'icon-today' },
   { key: 'todayNewVisitorCount', label: '今日新访客', icon: 'icon-new' },
-  { key: 'totalArticleCount', label: '文章总数', icon: 'icon-bianjiwenzhang_huaban' },
+  {
+    key: 'totalArticleCount',
+    label: '文章总数',
+    icon: 'icon-bianjiwenzhang_huaban'
+  },
   { key: 'totalCommentCount', label: '评论总数', icon: 'icon-comment' },
   { key: 'pendingCommentCount', label: '待审评论', icon: 'icon-pending' }
 ]
@@ -193,7 +197,12 @@ const fetchViewChart = async () => {
   const vo = res.data ?? {}
   const p = getChartPalette()
   viewChart.value?.setOption(
-    makeLineOption('浏览量', splitStr(vo.dateList), splitNum(vo.viewCountList), p.linePrimary)
+    makeLineOption(
+      '浏览量',
+      splitStr(vo.dateList),
+      splitNum(vo.viewCountList),
+      p.linePrimary
+    )
   )
 }
 
@@ -203,7 +212,12 @@ const fetchVisitorChart = async () => {
   const vo = res.data ?? {}
   const p = getChartPalette()
   visitorChart.value?.setOption(
-    makeLineOption('访客数', splitStr(vo.dateList), splitNum(vo.newVisitorCountList), p.lineSecondary)
+    makeLineOption(
+      '访客数',
+      splitStr(vo.dateList),
+      splitNum(vo.newVisitorCountList),
+      p.lineSecondary
+    )
   )
 }
 
