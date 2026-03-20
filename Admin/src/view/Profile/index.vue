@@ -1,9 +1,17 @@
 ﻿<script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useProfileStore } from '@/stores'
-import { getPersonalInfo, updatePersonalInfo, uploadFile } from '@/api/settings'
+import {
+  createConfig,
+  getConfigByKey,
+  getPersonalInfo,
+  updateConfig,
+  updatePersonalInfo,
+  uploadFile
+} from '@/api/settings'
 
 const profileStore = useProfileStore()
+const RESUME_CONFIG_KEY = 'cv.resume_pdf_url'
 
 const activeTab = ref('personal')
 
@@ -18,6 +26,9 @@ const personalForm = ref({
   location: ''
 })
 const savingPersonal = ref(false)
+const resumeConfig = ref(null)
+const uploadingResume = ref(false)
+const resumeConfigured = computed(() => Boolean(resumeConfig.value?.configValue))
 
 const expFilter = ref('')
 const expDialogVisible = ref(false)
@@ -98,6 +109,11 @@ const fetchPersonal = async () => {
   Object.assign(personalForm.value, res.data ?? {})
 }
 
+const fetchResumeConfig = async () => {
+  const res = await getConfigByKey(RESUME_CONFIG_KEY)
+  resumeConfig.value = res.data ?? null
+}
+
 const savePersonal = async () => {
   savingPersonal.value = true
   try {
@@ -114,6 +130,42 @@ const handleAvatarUpload = async (options) => {
   const res = await uploadFile(fd)
   personalForm.value.avatar = res.data
   ElMessage.success('头像上传成功')
+}
+
+const handleResumeUpload = async (options) => {
+  const file = options.file
+  const fileName = file?.name ?? ''
+  const isPdf = file?.type === 'application/pdf' || /\.pdf$/i.test(fileName)
+  if (!isPdf) {
+    ElMessage.warning('仅支持上传 PDF 简历')
+    return
+  }
+
+  uploadingResume.value = true
+  const isReplacing = Boolean(resumeConfig.value?.id)
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const uploadRes = await uploadFile(fd)
+    const payload = {
+      id: resumeConfig.value?.id ?? null,
+      configKey: RESUME_CONFIG_KEY,
+      configValue: uploadRes.data,
+      configType: 'url',
+      description: '简历 PDF 下载地址'
+    }
+
+    if (isReplacing) {
+      await updateConfig(payload)
+    } else {
+      await createConfig(payload)
+    }
+
+    await fetchResumeConfig()
+    ElMessage.success(isReplacing ? '简历 PDF 更新成功' : '简历 PDF 上传成功')
+  } finally {
+    uploadingResume.value = false
+  }
 }
 
 const loadExperiences = async () => {
@@ -348,6 +400,7 @@ const deleteSocial = async (row) => {
 onMounted(async () => {
   await Promise.all([
     fetchPersonal(),
+    fetchResumeConfig(),
     loadExperiences(),
     profileStore.fetchSkills(),
     profileStore.fetchSocialMedias()
@@ -430,6 +483,46 @@ onMounted(async () => {
                 placeholder="例如：中国 · 广州"
                 clearable
               />
+            </el-form-item>
+            <el-form-item label="简历 PDF">
+              <div class="resume-field">
+                <div
+                  :class="[
+                    'resume-status',
+                    { 'resume-status--configured': resumeConfigured }
+                  ]"
+                >
+                  {{
+                    resumeConfigured
+                      ? '已配置，简历页会显示下载按钮'
+                      : '未配置，简历页暂不显示下载按钮'
+                  }}
+                </div>
+                <div class="resume-actions">
+                  <el-upload
+                    :show-file-list="false"
+                    :http-request="handleResumeUpload"
+                    accept=".pdf,application/pdf"
+                  >
+                    <el-button type="primary" plain :loading="uploadingResume">
+                      {{ resumeConfigured ? '替换 PDF' : '上传 PDF' }}
+                    </el-button>
+                  </el-upload>
+                  <el-link
+                    v-if="resumeConfigured"
+                    :href="resumeConfig.configValue"
+                    target="_blank"
+                    rel="noopener"
+                    type="primary"
+                  >
+                    查看 OSS 原文件
+                  </el-link>
+                </div>
+                <p class="resume-hint">
+                  上传后会写入系统配置 <code>{{ RESUME_CONFIG_KEY }}</code>，
+                  简历页下载按钮会自动生效。
+                </p>
+              </div>
             </el-form-item>
             <el-form-item>
               <el-button
@@ -920,6 +1013,41 @@ onMounted(async () => {
   gap: 28px;
   align-items: flex-start;
   padding: 8px 0;
+}
+
+.resume-field {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+
+.resume-status {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--admin-soft-bg);
+  color: var(--admin-text3);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.resume-status--configured {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.resume-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.resume-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--admin-text3);
 }
 
 .avatar-uploader {
