@@ -2,6 +2,7 @@ package cc.leedaud.controller.cv;
 
 import cc.leedaud.entity.SystemConfig;
 import cc.leedaud.result.Result;
+import cc.leedaud.service.LocalUploadStorageService;
 import cc.leedaud.service.SystemConfigService;
 import cc.leedaud.vo.ResumeStatusVO;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 @Slf4j
 @RestController("cvResumeController")
@@ -35,14 +39,14 @@ public class ResumeController {
 
     @Autowired
     private SystemConfigService systemConfigService;
+    @Autowired
+    private LocalUploadStorageService localUploadStorageService;
 
     @GetMapping("/status")
     public Result<ResumeStatusVO> getResumeStatus() {
-        return Result.success(
-                ResumeStatusVO.builder()
-                        .available(StringUtils.hasText(getResumePdfUrl()))
-                        .build()
-        );
+        String resumePdfUrl = getResumePdfUrl();
+        boolean available = StringUtils.hasText(resumePdfUrl) && isLocalFileAvailable(resumePdfUrl);
+        return Result.success(ResumeStatusVO.builder().available(available).build());
     }
 
     @GetMapping(value = "/download", produces = MediaType.APPLICATION_PDF_VALUE)
@@ -52,23 +56,10 @@ public class ResumeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) URI.create(resumePdfUrl).toURL().openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-            connection.setReadTimeout(READ_TIMEOUT_MS);
-            connection.setInstanceFollowRedirects(true);
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                log.warn("Resume PDF fetch failed with status {} for {}", responseCode, resumePdfUrl);
-                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-            }
-
-            byte[] fileBytes;
-            try (InputStream inputStream = connection.getInputStream()) {
-                fileBytes = StreamUtils.copyToByteArray(inputStream);
+            byte[] fileBytes = readResumeBytes(resumePdfUrl);
+            if (fileBytes == null || fileBytes.length == 0) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
             HttpHeaders headers = new HttpHeaders();
@@ -82,14 +73,51 @@ public class ResumeController {
             headers.setContentLength(fileBytes.length);
 
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (java.nio.file.NoSuchFileException ex) {
+            log.warn("Resume PDF local file not found for {}", resumePdfUrl);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IOException ex) {
             log.error("Resume PDF download failed for {}", resumePdfUrl, ex);
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        }
+    }
+
+    private byte[] readResumeBytes(String resumePdfUrl) throws IOException {
+        Optional<Path> localFilePath = localUploadStorageService.resolvePublicPath(resumePdfUrl);
+        if (localFilePath.isPresent()) {
+            return Files.readAllBytes(localFilePath.get());
+        }
+        return fetchRemoteResumeBytes(resumePdfUrl);
+    }
+
+    private byte[] fetchRemoteResumeBytes(String resumePdfUrl) throws IOException {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) URI.create(resumePdfUrl).toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+            connection.setReadTimeout(READ_TIMEOUT_MS);
+            connection.setInstanceFollowRedirects(true);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                log.warn("Resume PDF fetch failed with status {} for {}", responseCode, resumePdfUrl);
+                return null;
+            }
+
+            try (InputStream inputStream = connection.getInputStream()) {
+                return StreamUtils.copyToByteArray(inputStream);
+            }
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
+    }
+
+    private boolean isLocalFileAvailable(String resumePdfUrl) {
+        Optional<Path> localFilePath = localUploadStorageService.resolvePublicPath(resumePdfUrl);
+        return localFilePath.map(Files::exists).orElse(true);
     }
 
     private String getResumePdfUrl() {

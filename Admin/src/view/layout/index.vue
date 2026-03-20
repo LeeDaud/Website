@@ -1,5 +1,5 @@
-﻿<script setup>
-import { ref, computed } from 'vue'
+<script setup>
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores'
 
@@ -35,6 +35,11 @@ const handleLogout = () => {
     userStore.logoutAction()
   })
 }
+
+const toggleSidebar = () => {
+  collapsed.value = !collapsed.value
+}
+
 </script>
 
 <template>
@@ -59,7 +64,7 @@ const handleLogout = () => {
         </router-link>
       </nav>
 
-      <button class="collapse-btn" @click="collapsed = !collapsed">
+      <button type="button" class="collapse-btn" @click="toggleSidebar">
         <span
           :class="[
             'iconfont',
@@ -105,6 +110,7 @@ const handleLogout = () => {
   display: flex;
   height: 100vh;
   background-color: var(--admin-bg);
+  isolation: isolate;
 }
 
 .sidebar {
@@ -115,6 +121,8 @@ const handleLogout = () => {
   flex-direction: column;
   transition: width 0.25s ease;
   flex-shrink: 0;
+  position: relative;
+  z-index: 30;
 }
 
 .sidebar.collapsed {
@@ -143,6 +151,8 @@ const handleLogout = () => {
   flex: 1;
   padding: 12px 0;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-item {
@@ -158,6 +168,8 @@ const handleLogout = () => {
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-item:hover {
@@ -187,6 +199,8 @@ const handleLogout = () => {
   cursor: pointer;
   color: var(--admin-text3);
   transition: color 0.15s;
+  position: relative;
+  z-index: 2;
 }
 
 .collapse-btn:hover {
@@ -198,6 +212,9 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .topbar {
@@ -209,6 +226,8 @@ const handleLogout = () => {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  position: relative;
+  z-index: 20;
 }
 
 .topbar-right {
@@ -253,6 +272,9 @@ const handleLogout = () => {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .page-main.editor-page {

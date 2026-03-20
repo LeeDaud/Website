@@ -29,6 +29,9 @@ const savingPersonal = ref(false)
 const resumeConfig = ref(null)
 const uploadingResume = ref(false)
 const resumeConfigured = computed(() => Boolean(resumeConfig.value?.configValue))
+const resumeUsesLocalStorage = computed(() =>
+  resumeConfig.value?.configValue?.startsWith('/api/common/file/')
+)
 
 const expFilter = ref('')
 const expDialogVisible = ref(false)
@@ -125,11 +128,17 @@ const savePersonal = async () => {
 }
 
 const handleAvatarUpload = async (options) => {
-  const fd = new FormData()
-  fd.append('file', options.file)
-  const res = await uploadFile(fd)
-  personalForm.value.avatar = res.data
-  ElMessage.success('头像上传成功')
+  try {
+    const fd = new FormData()
+    fd.append('file', options.file)
+    const res = await uploadFile(fd)
+    personalForm.value.avatar = res.data
+    options.onSuccess?.(res.data)
+    ElMessage.success('头像上传成功')
+  } catch (error) {
+    options.onError?.(error)
+    throw error
+  }
 }
 
 const handleResumeUpload = async (options) => {
@@ -162,7 +171,11 @@ const handleResumeUpload = async (options) => {
     }
 
     await fetchResumeConfig()
+    options.onSuccess?.(uploadRes.data)
     ElMessage.success(isReplacing ? '简历 PDF 更新成功' : '简历 PDF 上传成功')
+  } catch (error) {
+    options.onError?.(error)
+    throw error
   } finally {
     uploadingResume.value = false
   }
@@ -210,7 +223,11 @@ const handleLogoUpload = async (options) => {
     fd.append('file', options.file)
     const res = await uploadFile(fd)
     expForm.value.logoUrl = res.data
+    options.onSuccess?.(res.data)
     ElMessage.success('Logo 上传成功')
+  } catch (error) {
+    options.onError?.(error)
+    throw error
   } finally {
     uploadingLogo.value = false
   }
@@ -302,7 +319,11 @@ const handleSkillIconUpload = async (options) => {
     fd.append('file', options.file)
     const res = await uploadFile(fd)
     skillForm.value.icon = res.data
+    options.onSuccess?.(res.data)
     ElMessage.success('图标上传成功')
+  } catch (error) {
+    options.onError?.(error)
+    throw error
   } finally {
     uploadingSkillIcon.value = false
   }
@@ -515,12 +536,13 @@ onMounted(async () => {
                     rel="noopener"
                     type="primary"
                   >
-                    查看 OSS 原文件
+                    查看当前文件
                   </el-link>
                 </div>
                 <p class="resume-hint">
                   上传后会写入系统配置 <code>{{ RESUME_CONFIG_KEY }}</code>，
                   简历页下载按钮会自动生效。
+                  {{ resumeUsesLocalStorage ? '当前服务器未配置 OSS，文件会保存到后端本地 uploads 目录。' : '' }}
                 </p>
               </div>
             </el-form-item>
